@@ -4,49 +4,35 @@
   .text-balance {
     text-wrap: balance;
   }
-
-  /* text colors */
   .text-heading {
     color: var(--color-heading);
   }
-
   .text-text {
     color: var(--color-text);
   }
-
   .text-primary {
     color: var(--color-primary);
   }
-
-  /* background colors */
   .bg-background {
     background-color: var(--color-background);
   }
-
   .bg-card {
     background-color: var(--color-card);
   }
-
   .bg-primary {
     background-color: var(--color-primary);
   }
-
   .bg-primary-light {
     background-color: var(--color-primary-light);
   }
-
-  /* border colors */
   .border-primary {
     border-color: var(--color-primary) !important;
   }
 }
 
-/* -----------------------------
-   Theme variables
------------------------------ */
 :root {
   --color-primary: #3a9aff;
-  --color-primary-light: #66b8ff;
+  --color-primary-light: #f5fdff;
   --color-heading: #111827;
   --color-text: #6b7280;
   --color-background: #ffffff;

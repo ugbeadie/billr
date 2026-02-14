@@ -15,7 +15,7 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-background text-text">
       {/* NavBar */}
-      <nav className="fixed top-0 w-full z-50 bg-background border-b border-border">
+      <nav className="fixed top-0 w-full z-50 bg-primary-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary text-white">
@@ -46,7 +46,7 @@ export default function Page() {
       </nav>
 
       {/* Hero */}
-      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 rounded-b-3xl">
+      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-primary-light">
         <div className="max-w-4xl mx-auto text-center pt-8">
           <h1 className="text-5xl sm:text-6xl font-bold mb-8 text-balance leading-tight text-heading">
             Invoicing That Helps Small Businesses Get{" "}
@@ -84,7 +84,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="py-12 px-4 sm:px-6 lg:px-8 border-y border-border">
+      <section className="py-12 px-4 sm:px-6 lg:px-8  bg-primary-light">
         <div className="max-w-7xl mx-auto">
           <p className="text-center text-sm mb-8 text-text">
             Used by thousands worldwide
@@ -162,7 +162,7 @@ export default function Page() {
                 key={i}
                 className="p-6 rounded-lg border border-border bg-card transition-colors hover:border-primary"
               >
-                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-primary-light text-white">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-primary text-white">
                   {feature.icon}
                 </div>
                 <h3 className="font-semibold text-lg mb-2 text-heading">
@@ -176,7 +176,7 @@ export default function Page() {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-primary-light">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 text-heading">
@@ -261,7 +261,10 @@ export default function Page() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section
+        id="pricing"
+        className="py-20 px-4 sm:px-6 lg:px-8 bg-primary-light"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 text-heading">
