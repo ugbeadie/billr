@@ -240,7 +240,7 @@ export default function Page() {
               Who It's For
             </h2>
             <p className="text-lg text-text">
-              If you send invoices, Invoxa is for you
+              If you send invoices, Billr is for you
             </p>
           </div>
 
@@ -302,10 +302,8 @@ export default function Page() {
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
                 Popular
               </div>
-
               <h3 className="text-2xl font-bold mb-2 text-heading">Pro Plan</h3>
               <p className="mb-6 text-text">For growing businesses</p>
-
               <div className="space-y-3 mb-8">
                 {[
                   "Everything in Free",
@@ -319,7 +317,7 @@ export default function Page() {
                   </div>
                 ))}
               </div>
-
+              //TODO:MAKE BUTTONS CONSISTENT
               <Button className="w-full bg-primary hover:bg-primary-light text-white">
                 Upgrade to Pro
               </Button>
@@ -341,7 +339,7 @@ export default function Page() {
             {[
               {
                 q: "Is this free?",
-                a: "Yes! Invoxa is free to use forever. Create unlimited invoices with our Free Plan.",
+                a: "Yes! Billr is free to use forever. Create unlimited invoices with our Free Plan.",
               },
               {
                 q: "Can I download invoices as PDF?",
@@ -377,7 +375,7 @@ export default function Page() {
             Start Creating Invoices Today
           </h2>
           <p className="text-lg mb-8 text-white">
-            Join thousands of freelancers and small businesses using Invoxa
+            Join thousands of freelancers and small businesses using Billr
           </p>
 
           <Button

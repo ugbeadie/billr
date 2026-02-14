@@ -36,8 +36,8 @@
   }
 
   /* border colors */
-  .border-border {
-    border-color: var(--color-border);
+  .border-primary {
+    border-color: var(--color-primary) !important;
   }
 }
 
@@ -67,7 +67,9 @@
 }
 
 @layer base {
-  * {
+  *,
+  ::before,
+  ::after {
     border-color: var(--color-border);
     outline-color: var(--color-primary);
   }
