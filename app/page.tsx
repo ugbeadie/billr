@@ -1,4 +1,5 @@
 "use client";
+//TODO:MAKE BUTTONS CONSISTENT and WORK ON HOVER EFFECT
 
 import { Button } from "@/components/ui/button";
 import {
@@ -274,7 +275,7 @@ export default function Page() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            <div className="rounded-lg border border-border bg-card p-8">
+            <div className="rounded-lg border border-border bg-white p-8">
               <h3 className="text-2xl font-bold mb-2 text-heading">
                 Free Plan
               </h3>
@@ -301,7 +302,7 @@ export default function Page() {
               </Button>
             </div>
 
-            <div className="rounded-lg border-2 border-primary bg-card p-8 relative">
+            <div className="rounded-lg border-2 border-primary bg-white p-8 relative">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
                 Popular
               </div>
@@ -320,7 +321,6 @@ export default function Page() {
                   </div>
                 ))}
               </div>
-              //TODO:MAKE BUTTONS CONSISTENT
               <Button className="w-full bg-primary hover:bg-primary-light text-white">
                 Upgrade to Pro
               </Button>
