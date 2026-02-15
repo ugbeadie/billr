@@ -1,36 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Billr 🧾  
+**Professional Invoicing for Freelancers & Small Businesses**
 
-## Getting Started
+Billr is a modern SaaS invoicing application built to help freelancers, agencies, consultants, and small businesses create professional invoices quickly and get paid faster.
 
-First, run the development server:
+This project includes a responsive marketing landing page and is designed to evolve into a full-featured invoicing platform with authentication, dashboards, and payment tracking.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Overview
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Billr simplifies invoicing by providing:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Fast invoice creation
+- Client management
+- Professional PDF downloads
+- Payment tracking
+- Revenue dashboard insights
+- Beautiful invoice templates
+- Secure authentication system
 
-## Learn More
+The mission is simple:
 
-To learn more about Next.js, take a look at the following resources:
+> Help small businesses look professional and improve cash flow.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🎯 Target Audience
 
-## Deploy on Vercel
+Billr is built for:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Freelancers  
+- Agencies  
+- Consultants  
+- Startups  
+- Small businesses  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+If you send invoices, Billr is for you.
+
+---
+
+## ✨ Features
+
+### 🧾 Invoice Creation
+- Create invoices in seconds
+- Auto-calculated totals & taxes
+- Itemized billing
+- Custom payment terms
+
+### 👥 Client Management
+- Save client details
+- Reuse client information
+- Organized invoice history
+
+### 📄 PDF Downloads
+- Professional print-ready invoices
+- Download and share with clients
+
+### 📊 Dashboard Overview
+- Revenue tracking
+- Invoice statistics
+- Paid vs unpaid status
+
+### 💳 Payment Tracking (Pro Plan)
+- Monitor invoice status
+- Track completed payments
+- Send receipts
+
+### 🎨 Custom Templates
+- Clean, modern invoice designs
+- Custom branding (Pro plan)
+
+### 🔐 Authentication (Planned / Core Feature)
+
+Billr includes a secure authentication system to ensure:
+
+- User account creation (Register)
+- Secure login & logout
+- Protected dashboard routes
+- Session management
+
+Authentication will allow each user to:
+- Access their own invoices
+- Manage their own clients
+- View personalized dashboard metrics
+- Securely store business data
+
+---
+
+## 💰 Pricing Model
+
+### 🟢 Free Plan
+- Unlimited invoices
+- PDF downloads
+- Client management
+
+### 🔵 Pro Plan
+- Everything in Free
+- Payment tracking
+- Custom branding
+- Email receipts
+
+Users can start free and upgrade anytime.
+
+---
+
+## 🧠 How It Works
+
+1. Add your business & client details
+2. Create an invoice
+3. Download or send to client
+4. Track payment status
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+- Next.js (App Router)
+- React
+- Tailwind CSS
+- Framer Motion
+- Lucide React (icons)
+
+### Backend
+- Next.js API Routes
+- Database (PostgreSQL)
+- ORM (Drizzle)
+- Authentication (Better-Auth)
+- Cloud Storage (for PDFs)
+
+---
+
+## 📁 Project Structure
+
