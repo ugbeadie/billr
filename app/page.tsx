@@ -1,7 +1,4 @@
 "use client";
-//TODO:MAKE BUTTONS CONSISTENT and WORK ON HOVER EFFECT
-
-import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
   FileText,
@@ -11,6 +8,12 @@ import {
   BarChart3,
   ArrowRight,
 } from "lucide-react";
+import { motion } from "framer-motion";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0 },
+};
 
 export default function Page() {
   return (
@@ -39,16 +42,26 @@ export default function Page() {
               Pricing
             </a>
 
-            <button className="bg-primary text-white px-6 py-2 rounded-md font-medium hover:opacity-90 transition">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-primary text-white px-6 py-2 rounded-md font-medium hover:bg-primary-light transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
+            >
               Register
-            </button>
+            </motion.button>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
       <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-primary-light">
-        <div className="max-w-4xl mx-auto text-center pt-8">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          transition={{ duration: 0.6 }}
+          className="max-w-4xl mx-auto text-center pt-8"
+        >
           <h1 className="text-5xl sm:text-6xl font-bold mb-8 text-balance leading-tight text-heading">
             Invoicing That Helps Small Businesses Get{" "}
             <span className="relative inline-block whitespace-nowrap">
@@ -69,41 +82,59 @@ export default function Page() {
               </svg>
             </span>
           </h1>
+
           <p className="text-lg text-balance max-w-2xl mx-auto text-text">
             Helps business owners world-wide make beautiful invoices, look
             professional and get paid faster.
           </p>
-          <div className="mt-6 flex justify-center flex-wrap gap-4">
-            <button className="bg-primary text-white px-6 py-2 rounded-md font-medium hover:opacity-90 transition">
-              Get started
-            </button>
 
-            <button className="bg-white text-primary border border-border px-6 py-2 rounded-md font-medium hover:bg-card transition">
+          <div className="mt-6 flex justify-center flex-wrap gap-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-primary text-white px-6 py-2 rounded-md font-medium hover:bg-primary-light transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
+            >
+              Get started
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-white text-primary border border-border px-6 py-2 rounded-md font-medium hover:bg-card transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
+            >
               Learn more
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
       </section>
 
-      <section className="py-12 px-4 sm:px-6 lg:px-8  bg-primary-light">
+      {/* Stats */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-primary-light">
         <div className="max-w-7xl mx-auto">
           <p className="text-center text-sm mb-8 text-text">
             Used by thousands worldwide
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center ">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
             {[
               ["10k+", "Freelancers"],
               ["2k+", "Agencies"],
               ["5k+", "Startups"],
               ["$50M+", "Invoiced"],
             ].map(([value, label]) => (
-              <div key={label}>
+              <motion.div
+                key={label}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                transition={{ duration: 0.4 }}
+              >
                 <div className="text-2xl font-bold mb-1 text-heading text-primary">
                   {value}
                 </div>
                 <div className="text-sm text-text">{label}</div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -159,8 +190,14 @@ export default function Page() {
                   "Choose from beautiful, customizable invoice templates",
               },
             ].map((feature, i) => (
-              <div
+              <motion.div
                 key={i}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.05 }}
+                whileHover={{ y: -6 }}
                 className="p-6 rounded-lg border border-border bg-card transition-colors hover:border-primary"
               >
                 <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-primary text-white">
@@ -170,7 +207,7 @@ export default function Page() {
                   {feature.title}
                 </h3>
                 <p className="text-text">{feature.description}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -209,7 +246,15 @@ export default function Page() {
                   "Get a professional PDF or send directly to your client",
               },
             ].map((step, i) => (
-              <div key={i} className="relative">
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                className="relative"
+              >
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold flex-shrink-0 bg-primary text-white">
                     {step.number}
@@ -227,13 +272,13 @@ export default function Page() {
                     <ArrowRight className="w-8 h-8" />
                   </div>
                 )}
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Who It's For */}
+      {/* Who it's for */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -248,13 +293,19 @@ export default function Page() {
           <div className="grid md:grid-cols-4 gap-6">
             {["Freelancers", "Agencies", "Consultants", "Small Businesses"].map(
               (audience, i) => (
-                <div
+                <motion.div
                   key={i}
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: i * 0.05 }}
+                  whileHover={{ y: -4 }}
                   className="p-6 rounded-lg border border-border bg-card text-center"
                 >
                   <CheckCircle2 className="w-8 h-8 mx-auto mb-3 text-primary" />
                   <h3 className="font-semibold text-heading">{audience}</h3>
-                </div>
+                </motion.div>
               ),
             )}
           </div>
@@ -275,7 +326,13 @@ export default function Page() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            <div className="rounded-lg border border-border bg-white p-8">
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              className="rounded-lg border border-border bg-white p-8"
+            >
               <h3 className="text-2xl font-bold mb-2 text-heading">
                 Free Plan
               </h3>
@@ -294,20 +351,29 @@ export default function Page() {
                 ))}
               </div>
 
-              <Button
-                variant="outline"
-                className="w-full border-border text-heading hover:bg-card"
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full border border-border text-white px-4 py-2 rounded-md hover:bg-card transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
                 Start Free
-              </Button>
-            </div>
+              </motion.button>
+            </motion.div>
 
-            <div className="rounded-lg border-2 border-primary bg-white p-8 relative">
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              className="rounded-lg border-2 border-primary bg-white p-8 relative"
+            >
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
                 Popular
               </div>
+
               <h3 className="text-2xl font-bold mb-2 text-heading">Pro Plan</h3>
               <p className="mb-6 text-text">For growing businesses</p>
+
               <div className="space-y-3 mb-8">
                 {[
                   "Everything in Free",
@@ -321,10 +387,15 @@ export default function Page() {
                   </div>
                 ))}
               </div>
-              <Button className="w-full bg-primary hover:bg-primary-light text-white">
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-light transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
+              >
                 Upgrade to Pro
-              </Button>
-            </div>
+              </motion.button>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -357,15 +428,19 @@ export default function Page() {
                 a: "Yes. We use industry-standard encryption and secure servers to protect your data.",
               },
             ].map((item, i) => (
-              <div
+              <motion.div
                 key={i}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
                 className="p-6 rounded-lg border border-border bg-card"
               >
                 <h3 className="font-semibold text-lg mb-2 text-heading">
                   {item.q}
                 </h3>
                 <p className="text-text">{item.a}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -373,7 +448,13 @@ export default function Page() {
 
       {/* Final CTA */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-primary">
-        <div className="max-w-3xl mx-auto text-center">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="max-w-3xl mx-auto text-center"
+        >
           <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white">
             Start Creating Invoices Today
           </h2>
@@ -381,16 +462,16 @@ export default function Page() {
             Join thousands of freelancers and small businesses using Billr
           </p>
 
-          <Button
-            size="lg"
-            variant="outline"
-            className="w-full border-border text-white bg-primary hover:bg-card"
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full border border-border text-white bg-primary px-4 py-3 rounded-md hover:bg-primary-light transition-colors focus:outline-none focus:ring-2 focus:ring-white/40"
           >
             Create Free Invoice
-          </Button>
+          </motion.button>
 
           <p className="text-sm mt-4 text-white">✓ No credit card required</p>
-        </div>
+        </motion.div>
       </section>
 
       {/* Footer */}
