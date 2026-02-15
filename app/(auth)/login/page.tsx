@@ -1,24 +1,35 @@
 "use client";
 
+import { signIn } from "@/server/actions";
 import { EyeOff } from "lucide-react";
+import { useActionState } from "react";
 
 export default function LoginPage() {
+  const [state, formAction, pending] = useActionState(signIn, null);
+
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
-      {/* LEFT – FORM */}
       <div className="flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
           <h1 className="text-2xl font-semibold mb-8">Login</h1>
 
-          <form className="space-y-5">
+          <form action={formAction} className="space-y-5">
             {/* Email */}
             <div>
               <label className="text-sm font-medium">Email*</label>
               <input
+                name="email"
                 type="email"
                 placeholder="mail@website.com"
+                defaultValue={state?.values?.email ?? ""}
                 className="mt-2 h-12 w-full rounded-full border px-5 outline-none focus:border-primary"
               />
+
+              {state?.errors?.email && (
+                <p className="mt-1 text-xs text-red-500">
+                  {state.errors.email[0]}
+                </p>
+              )}
             </div>
 
             {/* Password */}
@@ -27,6 +38,7 @@ export default function LoginPage() {
 
               <div className="relative mt-2">
                 <input
+                  name="password"
                   type="password"
                   placeholder="••••••••"
                   className="h-12 w-full rounded-full border px-5 pr-12 outline-none focus:border-primary"
@@ -39,6 +51,12 @@ export default function LoginPage() {
                   <EyeOff size={18} />
                 </button>
               </div>
+
+              {state?.errors?.password && (
+                <p className="mt-1 text-xs text-red-500">
+                  {state.errors.password[0]}
+                </p>
+              )}
             </div>
 
             {/* Remember / forgot */}
@@ -56,8 +74,12 @@ export default function LoginPage() {
             {/* Login */}
             <button
               type="submit"
-              className="h-12 w-full rounded-full bg-primary text-white font-medium hover:opacity-90"
+              disabled={pending}
+              className="h-12 w-full rounded-full bg-primary text-white font-medium hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
             >
+              {pending && (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              )}
               Login
             </button>
 
@@ -73,7 +95,6 @@ export default function LoginPage() {
               type="button"
               className="flex h-12 w-full items-center justify-center gap-3 rounded-full border bg-transparent font-medium text-text hover:bg-gray-50"
             >
-              {/* Google logo */}
               <svg width="20" height="20" viewBox="0 0 48 48">
                 <path
                   fill="#FFC107"
@@ -98,7 +119,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* RIGHT – IMAGE / BLUE PANEL */}
       <div className="hidden lg:block bg-primary/10">
         <div className="h-full w-full bg-[radial-gradient(circle_at_top,rgba(58,154,255,0.35),transparent_60%)]" />
       </div>
