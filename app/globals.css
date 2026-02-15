@@ -80,13 +80,28 @@
     text-decoration: none;
   }
 
-  a:hover {
-    text-decoration: underline;
-  }
+  @layer base {
+    button {
+      cursor: pointer;
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease,
+        opacity 0.15s ease;
+    }
 
-  button {
-    background-color: var(--color-primary);
-    color: white;
-    cursor: pointer;
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(58, 154, 255, 0.18);
+    }
+
+    button:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   }
 }
