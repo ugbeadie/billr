@@ -1,5 +1,5 @@
 "use client";
-//TODO: ADD TOAST FOR SUCCESFUL SIGN IN/ SIGN UP, AND ERRORS
+
 import { authClient } from "@/auth-client";
 import { signIn } from "@/server/actions";
 import { EyeOff } from "lucide-react";

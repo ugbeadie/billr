@@ -60,30 +60,52 @@ export default function ResetPasswordPage() {
             </p>
           </div>
 
-          {error && (
-            <div className="mb-4 text-sm text-red-500 text-center">{error}</div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="text-sm font-medium">New password*</label>
-              <input
-                name="password"
-                type="password"
-                required
-                className="mt-2 h-12 w-full rounded-full border px-5 outline-none focus:border-primary"
-              />
+              <label className="text-sm font-medium">Password*</label>
+
+              <div className="relative mt-2">
+                <input
+                  name="password"
+                  type="password"
+                  placeholder="••••••••"
+                  className="h-12 w-full rounded-full border px-5 pr-12 outline-none focus:border-primary"
+                />
+
+                <button
+                  type="button"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  <EyeOff size={18} />
+                </button>
+              </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium">Confirm password*</label>
-              <input
-                name="confirmPassword"
-                type="password"
-                required
-                className="mt-2 h-12 w-full rounded-full border px-5 outline-none focus:border-primary"
-              />
+              <label className="text-sm font-medium">Confirm Password*</label>
+
+              <div className="relative mt-2">
+                <input
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  className="h-12 w-full rounded-full border px-5 pr-12 outline-none focus:border-primary"
+                />
+
+                <button
+                  type="button"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  <EyeOff size={18} />
+                </button>
+              </div>
             </div>
+
+            {error && (
+              <div className="mb-4 text-sm text-red-500 text-center">
+                {error}
+              </div>
+            )}
 
             <button
               type="submit"
