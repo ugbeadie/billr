@@ -50,9 +50,9 @@ export async function signUp(
     await auth.api.signUpEmail({
       body: result.data,
     });
-  } catch (err: any) {
-    const message =
-      err?.message || err?.error?.message || "Unable to create account";
+  } catch (err) {
+    const e = err as Error;
+    const message = e?.message || "Unable to create account";
 
     return {
       errors: {
@@ -90,8 +90,10 @@ export async function signIn(
     await auth.api.signInEmail({
       body: result.data,
     });
-  } catch (err: any) {
-    const message = err?.message || err?.error?.message || "Unable to sign in";
+  } catch (err) {
+    const e = err as Error;
+
+    const message = e?.message || "Unable to sign in";
 
     return {
       errors: {

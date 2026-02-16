@@ -1,17 +1,40 @@
 "use client";
-
+//TODO: ADD TOAST FOR SUCCESFUL SIGN IN/ SIGN UP, AND ERRORS
+import { authClient } from "@/auth-client";
 import { signIn } from "@/server/actions";
 import { EyeOff } from "lucide-react";
-import { useActionState } from "react";
+import Link from "next/link";
+import { useActionState, useState } from "react";
 
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(signIn, null);
+  const [googlePending, setGooglePending] = useState(false);
+
+  const signInWithGoogle = async () => {
+    try {
+      setGooglePending(true);
+
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard",
+      });
+    } finally {
+      setGooglePending(false);
+    }
+  };
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
       <div className="flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
-          <h1 className="text-2xl font-semibold mb-8">Login</h1>
+          {/* Header */}
+          <div className="mb-6 text-center">
+            <h1 className="text-2xl font-semibold">Welcome back</h1>
+            <p className="mt-2 text-sm text-text">
+              Sign in to access your dashboard and manage everything in one
+              place.
+            </p>
+          </div>
 
           <form action={formAction} className="space-y-5">
             {/* Email */}
@@ -59,19 +82,14 @@ export default function LoginPage() {
               )}
             </div>
 
-            {/* Remember / forgot */}
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" className="h-4 w-4 accent-primary" />
-                Remember me
-              </label>
-
-              <a className="text-primary hover:underline" href="#">
-                Forgot Password?
+            {/* Forgot */}
+            <div className="flex justify-end text-sm">
+              <a href="#" className="text-primary hover:underline">
+                Forgot password?
               </a>
             </div>
 
-            {/* Login */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={pending}
@@ -80,42 +98,58 @@ export default function LoginPage() {
               {pending && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
               )}
-              Login
+              {pending ? "Logging in..." : "Login"}
             </button>
 
             {/* Divider */}
             <div className="flex items-center gap-3 text-xs text-gray-400">
               <div className="h-px flex-1 bg-gray-200" />
-              or sign in with Email
+              or sign in with
               <div className="h-px flex-1 bg-gray-200" />
             </div>
 
             {/* Google */}
             <button
               type="button"
-              className="flex h-12 w-full items-center justify-center gap-3 rounded-full border bg-transparent font-medium text-text hover:bg-gray-50"
+              onClick={signInWithGoogle}
+              disabled={googlePending}
+              className="flex h-12 w-full items-center justify-center gap-3 rounded-full border bg-transparent font-medium text-text hover:bg-gray-50 disabled:opacity-60"
             >
-              <svg width="20" height="20" viewBox="0 0 48 48">
-                <path
-                  fill="#FFC107"
-                  d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.2 6.2 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"
-                />
-                <path
-                  fill="#FF3D00"
-                  d="M6.3 14.7l6.6 4.8C14.7 16 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.2 6.2 29.3 4 24 4c-7.7 0-14.4 4.3-17.7 10.7z"
-                />
-                <path
-                  fill="#4CAF50"
-                  d="M24 44c5.2 0 10.1-2 13.7-5.3l-6.3-5.2C29.5 35.4 26.9 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.6 5.1C9.3 39.6 16.1 44 24 44z"
-                />
-                <path
-                  fill="#1976D2"
-                  d="M43.6 20.5H42V20H24v8h11.3c-1.1 2.9-3.3 5.1-6 6.5l6.3 5.2C39.1 36.3 44 31 44 24c0-1.3-.1-2.7-.4-3.5z"
-                />
-              </svg>
-              Continue with Google
+              {googlePending && (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
+              )}
+
+              {!googlePending && (
+                <svg width="20" height="20" viewBox="0 0 48 48">
+                  <path
+                    fill="#FFC107"
+                    d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.2 6.2 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"
+                  />
+                  <path
+                    fill="#FF3D00"
+                    d="M6.3 14.7l6.6 4.8C14.7 16 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.2 6.2 29.3 4 24 4c-7.7 0-14.4 4.3-17.7 10.7z"
+                  />
+                  <path
+                    fill="#4CAF50"
+                    d="M24 44c5.2 0 10.1-2 13.7-5.3l-6.3-5.2C29.5 35.4 26.9 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.6 5.1C9.3 39.6 16.1 44 24 44z"
+                  />
+                  <path
+                    fill="#1976D2"
+                    d="M43.6 20.5H42V20H24v8h11.3c-1.1 2.9-3.3 5.1-6 6.5l6.3 5.2C39.1 36.3 44 31 44 24c0-1.3-.1-2.7-.4-3.5z"
+                  />
+                </svg>
+              )}
+
+              {googlePending ? "Signing in..." : "Continue with Google"}
             </button>
           </form>
+
+          <p className="mt-6 text-sm text-text text-center">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="text-primary hover:underline">
+              Sign up
+            </Link>
+          </p>
         </div>
       </div>
 

@@ -9,6 +9,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -42,13 +43,15 @@ export default function Page() {
               Pricing
             </a>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-primary text-white px-6 py-2 rounded-md font-medium hover:bg-primary-light transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
-            >
-              Register
-            </motion.button>
+            <Link href="/register">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-primary text-white px-6 py-2 rounded-md font-medium hover:bg-primary-light transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
+              >
+                Register
+              </motion.button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -89,21 +92,25 @@ export default function Page() {
           </p>
 
           <div className="mt-6 flex justify-center flex-wrap gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-primary text-white px-6 py-2 rounded-md font-medium hover:bg-primary-light transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
-            >
-              Get started
-            </motion.button>
+            <Link href="/register">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-primary text-white px-6 py-2 rounded-md font-medium hover:bg-primary-light transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
+              >
+                Get started
+              </motion.button>
+            </Link>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white text-primary border border-border px-6 py-2 rounded-md font-medium hover:bg-card transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
-            >
-              Learn more
-            </motion.button>
+            <Link href="#features">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white text-primary border border-border px-6 py-2 rounded-md font-medium hover:bg-card transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                Learn more
+              </motion.button>
+            </Link>
           </div>
         </motion.div>
       </section>
