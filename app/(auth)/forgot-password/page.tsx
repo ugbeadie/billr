@@ -4,13 +4,13 @@ import { authClient } from "@/auth-client";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export default function ForgotPasswordPage() {
   const [pending, setPending] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
     if (pending) return;
 
     setPending(true);
@@ -23,8 +23,6 @@ export default function ForgotPasswordPage() {
       redirectTo: "/reset-password",
     });
 
-    if (error) console.error("Error sending reset password link:", error);
-
     setPending(false);
 
     if (error) {
@@ -35,21 +33,40 @@ export default function ForgotPasswordPage() {
     toast.success("Password reset link sent! Check your email.");
   }
 
+  const containerVariants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15 } },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="min-h-screen grid grid-cols-1">
+    <div className="min-h-screen bg-primary-light grid grid-cols-1">
       <div className="flex items-center justify-center px-6">
-        <div className="w-full max-w-sm">
+        <motion.div
+          className="w-full max-w-sm"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
           {/* Header */}
-          <div className="mb-6 text-center">
+          <motion.div className="mb-6 text-center" variants={itemVariants}>
             <h1 className="text-2xl font-semibold">Forgot password</h1>
             <p className="mt-2 text-sm text-text">
               Enter your email and we’ll send you a link to reset your password.
             </p>
-          </div>
+          </motion.div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <motion.form
+            onSubmit={handleSubmit}
+            className="space-y-5"
+            variants={containerVariants}
+          >
             {/* Email */}
-            <div>
+            <motion.div variants={itemVariants}>
               <label className="text-sm font-medium">Email*</label>
               <input
                 name="email"
@@ -58,28 +75,33 @@ export default function ForgotPasswordPage() {
                 placeholder="mail@website.com"
                 className="mt-2 h-12 w-full rounded-full border px-5 outline-none focus:border-primary"
               />
-            </div>
+            </motion.div>
 
             {/* Submit */}
-            <button
+            <motion.button
               type="submit"
               disabled={pending}
               className="h-12 w-full rounded-full bg-primary text-white font-medium hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
+              variants={itemVariants}
             >
               {pending && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
               )}
               {pending ? "Sending link..." : "Send reset link"}
-            </button>
-          </form>
+            </motion.button>
+          </motion.form>
 
-          <p className="mt-6 text-sm text-text text-center">
+          {/* Back to login */}
+          <motion.p
+            className="mt-6 text-sm text-text text-center"
+            variants={itemVariants}
+          >
             Remember your password?{" "}
             <Link href="/login" className="text-primary hover:underline">
               Back to login
             </Link>
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </div>
     </div>
   );

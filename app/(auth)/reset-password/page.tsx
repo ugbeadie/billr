@@ -10,7 +10,6 @@ import { toast } from "sonner";
 
 export default function ResetPasswordPage() {
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -20,8 +19,6 @@ export default function ResetPasswordPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
-
     if (!token) {
       toast.error("Invalid or missing reset token.");
       return;
@@ -45,40 +42,59 @@ export default function ResetPasswordPage() {
       toast.error("Password must be at least 6 characters.");
       return;
     }
-    setPending(true);
 
+    setPending(true);
     const { error } = await authClient.resetPassword({
       token,
       newPassword: password,
     });
-
     setPending(false);
 
     if (error) {
       toast.error(error.message || "Failed to reset password.");
       return;
     }
+
     toast.success(
       "Password reset successfully! Please log in with your new password.",
     );
     router.push("/login");
   }
 
+  const containerVariants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.15 } },
+  };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="min-h-screen grid grid-cols-1">
+    <div className="min-h-screen bg-primary-light grid grid-cols-1">
       <div className="flex items-center justify-center px-6">
-        <div className="w-full max-w-sm">
-          <div className="mb-6 text-center">
+        <motion.div
+          className="w-full max-w-sm"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          {/* Header */}
+          <motion.div className="mb-6 text-center" variants={itemVariants}>
             <h1 className="text-2xl font-semibold">Reset password</h1>
             <p className="mt-2 text-sm text-text">
               Enter a new password for your account.
             </p>
-          </div>
+          </motion.div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
+          <motion.form
+            onSubmit={handleSubmit}
+            className="space-y-5"
+            variants={containerVariants}
+          >
+            {/* Password */}
+            <motion.div variants={itemVariants}>
               <label className="text-sm font-medium">Password*</label>
-
               <div className="relative mt-2">
                 <input
                   name="password"
@@ -86,7 +102,6 @@ export default function ResetPasswordPage() {
                   placeholder="••••••••"
                   className="h-12 w-full rounded-full border px-5 pr-12 outline-none focus:border-primary"
                 />
-
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
@@ -105,11 +120,11 @@ export default function ResetPasswordPage() {
                   </AnimatePresence>
                 </button>
               </div>
-            </div>
+            </motion.div>
 
-            <div>
+            {/* Confirm Password */}
+            <motion.div variants={itemVariants}>
               <label className="text-sm font-medium">Confirm Password*</label>
-
               <div className="relative mt-2">
                 <input
                   name="confirmPassword"
@@ -117,7 +132,6 @@ export default function ResetPasswordPage() {
                   placeholder="••••••••"
                   className="h-12 w-full rounded-full border px-5 pr-12 outline-none focus:border-primary"
                 />
-
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
@@ -142,33 +156,33 @@ export default function ResetPasswordPage() {
                   </AnimatePresence>
                 </button>
               </div>
-            </div>
+            </motion.div>
 
-            {error && (
-              <div className="mb-4 text-sm text-red-500 text-center">
-                {error}
-              </div>
-            )}
-
-            <button
+            {/* Submit */}
+            <motion.button
               type="submit"
               disabled={pending}
               className="h-12 w-full rounded-full bg-primary text-white font-medium hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
+              variants={itemVariants}
             >
               {pending && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
               )}
               {pending ? "Resetting password..." : "Reset password"}
-            </button>
-          </form>
+            </motion.button>
+          </motion.form>
 
-          <p className="mt-6 text-sm text-text text-center">
+          {/* Back to login */}
+          <motion.p
+            className="mt-6 text-sm text-text text-center"
+            variants={itemVariants}
+          >
             Remember your password?{" "}
             <Link href="/login" className="text-primary hover:underline">
               Back to login
             </Link>
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </div>
     </div>
   );
