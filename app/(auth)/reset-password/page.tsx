@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { authClient } from "@/auth-client";
@@ -10,6 +11,8 @@ import { toast } from "sonner";
 export default function ResetPasswordPage() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -79,16 +82,27 @@ export default function ResetPasswordPage() {
               <div className="relative mt-2">
                 <input
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   className="h-12 w-full rounded-full border px-5 pr-12 outline-none focus:border-primary"
                 />
 
                 <button
                   type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  <EyeOff size={18} />
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={showPassword ? "eye-off" : "eye"}
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {!showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </motion.div>
+                  </AnimatePresence>
                 </button>
               </div>
             </div>
@@ -99,16 +113,33 @@ export default function ResetPasswordPage() {
               <div className="relative mt-2">
                 <input
                   name="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="••••••••"
                   className="h-12 w-full rounded-full border px-5 pr-12 outline-none focus:border-primary"
                 />
 
                 <button
                   type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  <EyeOff size={18} />
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={
+                        showConfirmPassword ? "eye-off-confirm" : "eye-confirm"
+                      }
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {!showConfirmPassword ? (
+                        <EyeOff size={18} />
+                      ) : (
+                        <Eye size={18} />
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
                 </button>
               </div>
             </div>
