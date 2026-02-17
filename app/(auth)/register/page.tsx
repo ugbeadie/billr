@@ -5,19 +5,34 @@ import { signUp } from "@/server/actions";
 import { EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 export default function RegisterPage() {
   const [state, formAction, pending] = useActionState(signUp, null);
   const [googlePending, setGooglePending] = useState(false);
 
+  useEffect(() => {
+    if (!state) return;
+
+    if (state.errors) {
+      toast.error(
+        state.errors[0] || "Registration failed. Please check your input.",
+      );
+    }
+  }, [state]);
+
   const signInWithGoogle = async () => {
     try {
       setGooglePending(true);
+      toast.loading("Redirecting to Google...");
 
       await authClient.signIn.social({
         provider: "google",
         callbackURL: "/dashboard",
       });
+    } catch (err) {
+      toast.error("Google sign-in failed.");
     } finally {
       setGooglePending(false);
     }

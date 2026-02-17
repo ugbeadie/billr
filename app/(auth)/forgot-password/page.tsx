@@ -3,6 +3,7 @@
 import { authClient } from "@/auth-client";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ForgotPasswordPage() {
   const [pending, setPending] = useState(false);
@@ -25,6 +26,13 @@ export default function ForgotPasswordPage() {
     if (error) console.error("Error sending reset password link:", error);
 
     setPending(false);
+
+    if (error) {
+      toast.error("Failed to send reset link.");
+      return;
+    }
+
+    toast.success("Password reset link sent! Check your email.");
   }
 
   return (

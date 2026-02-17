@@ -5,6 +5,7 @@ import { EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { authClient } from "@/auth-client";
+import { toast } from "sonner";
 
 export default function ResetPasswordPage() {
   const [pending, setPending] = useState(false);
@@ -19,7 +20,7 @@ export default function ResetPasswordPage() {
     setError(null);
 
     if (!token) {
-      setError("Invalid or missing reset token.");
+      toast.error("Invalid or missing reset token.");
       return;
     }
 
@@ -27,11 +28,20 @@ export default function ResetPasswordPage() {
     const password = String(formData.get("password") || "");
     const confirmPassword = String(formData.get("confirmPassword") || "");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+    if (!password || !confirmPassword) {
+      toast.error("Please fill in all fields.");
       return;
     }
 
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return;
+    }
     setPending(true);
 
     const { error } = await authClient.resetPassword({
@@ -42,10 +52,12 @@ export default function ResetPasswordPage() {
     setPending(false);
 
     if (error) {
-      setError(error.message || "Failed to reset password.");
+      toast.error(error.message || "Failed to reset password.");
       return;
     }
-
+    toast.success(
+      "Password reset successfully! Please log in with your new password.",
+    );
     router.push("/login");
   }
 
