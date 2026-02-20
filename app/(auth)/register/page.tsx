@@ -152,7 +152,7 @@ export default function RegisterPage() {
               type="button"
               onClick={signInWithGoogle}
               disabled={googlePending}
-              className="flex h-12 w-full items-center justify-center gap-3 rounded-full border bg-transparent font-medium text-text hover:bg-gray-50 disabled:opacity-60"
+              className="h-12 w-full rounded-full border flex items-center justify-center gap-3"
               variants={itemVariants}
             >
               {googlePending ? "Signing up..." : "Continue with Google"}

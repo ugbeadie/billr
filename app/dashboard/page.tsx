@@ -1,3 +1,4 @@
+import Navbar from "@/components/navbar";
 import { auth } from "@/lib/auth";
 import { signOut } from "@/server/actions";
 import { headers } from "next/headers";
@@ -8,13 +9,14 @@ export default async function Dashboard() {
   });
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-4">Dashboard</h1>
-      <p>Welcome, {session?.user.name}!</p>
+    // <div>
+    //   <h1 className="text-2xl font-semibold mb-4">Dashboard</h1>
+    //   <p>Welcome, {session?.user.name}!</p>
 
-      <form action={signOut}>
-        <button>logout</button>
-      </form>
-    </div>
+    //   <form action={signOut}>
+    //     <button>logout</button>
+    //   </form>
+    // </div>
+    <Navbar />
   );
 }
