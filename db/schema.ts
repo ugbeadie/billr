@@ -7,6 +7,7 @@ import {
   boolean,
   index,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -100,7 +101,9 @@ export const accountRelations = relations(account, ({ one }) => ({
 }));
 
 export const boards = pgTable("boards", {
-  id: text("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
 
   userId: text("user_id")
@@ -115,7 +118,9 @@ export const boards = pgTable("boards", {
 });
 
 export const columns = pgTable("columns", {
-  id: text("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
 
   boardId: text("board_id")
@@ -131,7 +136,9 @@ export const columns = pgTable("columns", {
 });
 
 export const jobs = pgTable("jobs", {
-  id: text("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
 
   company: text("company").notNull(),
   position: text("position").notNull(),
