@@ -16,15 +16,19 @@ export default async function Dashboard() {
     return <Navbar />;
   }
 
-  const userBoards = await db.query.boards.findMany({
+  const userBoards = await db.query.boards.findFirst({
     where: eq(boards.userId, session.user.id),
     with: {
       columns: true,
     },
   });
 
-  // ✅ This logs directly from Neon
-  console.log("✅ Boards for current user:", userBoards);
+  console.log("Boards for current user:", userBoards);
 
-  return <Navbar />;
+  return (
+    <div>
+      <Navbar />
+      <p>{userBoards?.name}</p>
+    </div>
+  );
 }
