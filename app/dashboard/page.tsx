@@ -6,6 +6,8 @@ import { db } from "@/db/drizzle";
 import { boards } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import KanbanBoard from "@/components/KanbanBoard";
+import { Button } from "@/components/ui/button";
+import DashboardAddJobButton from "@/components/DashboardAddJobButton";
 
 export default async function Dashboard() {
   const session = await auth.api.getSession({
@@ -29,9 +31,18 @@ export default async function Dashboard() {
   return (
     <div>
       <Navbar />
+      {board ? (
+        <>
+          <DashboardAddJobButton
+            boardId={board.id}
+            columnId={board.columns[0]?.id || ""}
+          />
 
-      <p>{board?.name}</p>
-      <KanbanBoard board={board} userId={session.user.id} />
+          <KanbanBoard board={board} userId={session.user.id} />
+        </>
+      ) : (
+        <p>No board found</p>
+      )}
     </div>
   );
 }

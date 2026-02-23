@@ -147,7 +147,7 @@ export const jobs = pgTable("jobs", {
   location: text("location"),
   jobType: text("job_type"),
   url: text("url"),
-  appliedDate: timestamp("applied_date"),
+  appliedDate: timestamp("applied_date", { withTimezone: true }),
   description: text("description"),
   columnId: text("column_id")
     .notNull()

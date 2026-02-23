@@ -17,7 +17,7 @@ import { Button } from "./ui/button";
 import CreateJobModal from "./CreateJobModal";
 
 type KanbanBoardProps = {
-  board: Board | undefined;
+  board: Board;
   userId: string;
 };
 
@@ -63,6 +63,8 @@ function DropToColumn({
 }) {
   const [open, setOpen] = useState(false);
 
+  console.log("Column data:", column);
+
   return (
     <>
       <Card className="w-[320px] shrink-0 bg-gray-200 rounded-2xl p-2 flex flex-col h-125 shadow-sm border-0">
@@ -93,6 +95,7 @@ function DropToColumn({
       <CreateJobModal
         columnId={column.id}
         boardId={boardId}
+        defaultStatus={column.name.toLowerCase()}
         open={open}
         onOpenChange={setOpen}
       />
@@ -102,13 +105,14 @@ function DropToColumn({
 
 export default function KanbanBoard({ board, userId }: KanbanBoardProps) {
   const columns = board?.columns || [];
+  console.log("Board columns:", columns);
   return (
     <div>
       {columns.map((column, index) => {
         const config = COLUMN_CONFIG[index % COLUMN_CONFIG.length];
         return (
           <DropToColumn
-            key={index}
+            key={column.id}
             column={column}
             config={config}
             boardId={board!.id}
