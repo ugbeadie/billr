@@ -1,9 +1,15 @@
 "use server";
 
+"use server";
+
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { initializeUserBoard } from "@/lib/board";
+import { db } from "@/db/drizzle";
+import { user as userTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 const signUpSchema = z.object({
   name: z.string().min(2, "Full name must be at least 2 characters"),
@@ -47,9 +53,21 @@ export async function signUp(
   }
 
   try {
-    await auth.api.signUpEmail({
-      body: result.data,
-    });
+    await auth.api.signUpEmail({ body: result.data });
+
+    // Retrieve the created user from the DB
+    const [createdUser] = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.email, result.data.email))
+      .limit(1);
+
+    if (!createdUser?.id) {
+      throw new Error("User not found after signup");
+    }
+
+    // Initialize the user's board and columns
+    await initializeUserBoard(createdUser.id);
   } catch (err) {
     const e = err as Error;
     const message = e?.message || "Unable to create account";

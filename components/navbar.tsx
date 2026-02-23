@@ -71,7 +71,7 @@ export default async function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/sign-in">
+              <Link href="/login">
                 <Button
                   variant="ghost"
                   className="text-gray-700 hover:text-black"
