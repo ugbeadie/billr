@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { db } from "@/db/drizzle";
 import { boards } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import KanbanBoard from "@/components/KanbanBoard";
 
 export default async function Dashboard() {
   const session = await auth.api.getSession({
@@ -16,19 +17,21 @@ export default async function Dashboard() {
     return <Navbar />;
   }
 
-  const userBoards = await db.query.boards.findFirst({
+  const board = await db.query.boards.findFirst({
     where: eq(boards.userId, session.user.id),
     with: {
       columns: true,
     },
   });
 
-  console.log("Boards for current user:", userBoards);
+  console.log("Boards for current user:", board);
 
   return (
     <div>
       <Navbar />
-      <p>{userBoards?.name}</p>
+
+      <p>{board?.name}</p>
+      <KanbanBoard board={board} userId={session.user.id} />
     </div>
   );
 }

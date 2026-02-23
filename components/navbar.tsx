@@ -1,6 +1,5 @@
 import { auth } from "@/lib/auth";
 import { Button } from "./ui/button";
-import { signOut } from "@/server/actions";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { Briefcase } from "lucide-react";
@@ -8,12 +7,11 @@ import { Briefcase } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import LogoutButton from "./logout-button";
+import LogoutButton from "./LogoutButton";
 
 export default async function Navbar() {
   const session = await auth.api.getSession({

@@ -142,9 +142,13 @@ export const jobs = pgTable("jobs", {
 
   company: text("company").notNull(),
   position: text("position").notNull(),
-
   status: text("status").default("applied").notNull(),
-
+  salary: text("salary"),
+  location: text("location"),
+  jobType: text("job_type"),
+  url: text("url"),
+  appliedDate: timestamp("applied_date"),
+  description: text("description"),
   columnId: text("column_id")
     .notNull()
     .references(() => columns.id, { onDelete: "cascade" }),
@@ -158,10 +162,6 @@ export const jobs = pgTable("jobs", {
     .references(() => user.id, { onDelete: "cascade" }),
 
   order: integer("order").default(0).notNull(),
-
-  jobUrl: text("job_url"), // optional
-  appliedDate: timestamp("applied_date"), // optional
-  description: text("description"), // optional
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
