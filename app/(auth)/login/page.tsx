@@ -5,7 +5,6 @@ import { signIn } from "@/server/actions";
 import { Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { useActionState, useState, useEffect } from "react";
 import { toast } from "sonner";
 

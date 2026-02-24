@@ -1,22 +1,49 @@
 import Navbar from "@/components/navbar";
 import { auth } from "@/lib/auth";
-import { signOut } from "@/server/actions";
 import { headers } from "next/headers";
+
+import { db } from "@/db/drizzle";
+import { boards } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import KanbanBoard from "@/components/KanbanBoard";
+import { Button } from "@/components/ui/button";
+import DashboardAddJobButton from "@/components/DashboardAddJobButton";
 
 export default async function Dashboard() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  return (
-    // <div>
-    //   <h1 className="text-2xl font-semibold mb-4">Dashboard</h1>
-    //   <p>Welcome, {session?.user.name}!</p>
+  if (!session?.user?.id) {
+    console.log("No user session");
+    return <Navbar />;
+  }
 
-    //   <form action={signOut}>
-    //     <button>logout</button>
-    //   </form>
-    // </div>
-    <Navbar />
+  const board = await db.query.boards.findFirst({
+    where: eq(boards.userId, session.user.id),
+    with: {
+      columns: {
+        with: {
+          jobs: true,
+        },
+      },
+    },
+  });
+
+  console.log("Boards for current user:", board);
+
+  return (
+    <div>
+      <Navbar />
+      {board ? (
+        <>
+          <DashboardAddJobButton boardId={board.id} columns={board.columns} />
+
+          <KanbanBoard board={board} userId={session.user.id} />
+        </>
+      ) : (
+        <p>No board found</p>
+      )}
+    </div>
   );
 }
