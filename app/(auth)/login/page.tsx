@@ -138,14 +138,14 @@ export default function LoginPage() {
           </motion.div>
 
           {/* Forgot password */}
-          <motion.div
+          {/* <motion.div
             className="flex justify-end text-sm"
             variants={itemVariants}
           >
             <Link href="/forgot-password" className="text-primary">
               Forgot password?
             </Link>
-          </motion.div>
+          </motion.div> */}
 
           {/* Submit */}
           <motion.button

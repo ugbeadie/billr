@@ -11,7 +11,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Billr - Professional Invoice Generator",
+  title: "Trackr - Professional Invoice Generator",
   description:
     "Create professional invoices in minutes. Simple invoicing for freelancers and small businesses.",
   generator: "v0.app",
