@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import CreateJobModal from "@/components/CreateJobModal";
+import type { Column } from "@/lib/types";
 
 interface Props {
   boardId: string;
-  columnId: string;
+  columns: Column[];
 }
 
-export default function DashboardAddJobButton({ boardId, columnId }: Props) {
+export default function DashboardAddJobButton({ boardId, columns }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -20,8 +21,7 @@ export default function DashboardAddJobButton({ boardId, columnId }: Props) {
 
       <CreateJobModal
         boardId={boardId}
-        columnId={columnId}
-        defaultStatus="applied"
+        columns={columns}
         open={open}
         onOpenChange={setOpen}
       />

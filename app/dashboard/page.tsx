@@ -22,7 +22,11 @@ export default async function Dashboard() {
   const board = await db.query.boards.findFirst({
     where: eq(boards.userId, session.user.id),
     with: {
-      columns: true,
+      columns: {
+        with: {
+          jobs: true,
+        },
+      },
     },
   });
 
@@ -33,10 +37,7 @@ export default async function Dashboard() {
       <Navbar />
       {board ? (
         <>
-          <DashboardAddJobButton
-            boardId={board.id}
-            columnId={board.columns[0]?.id || ""}
-          />
+          <DashboardAddJobButton boardId={board.id} columns={board.columns} />
 
           <KanbanBoard board={board} userId={session.user.id} />
         </>

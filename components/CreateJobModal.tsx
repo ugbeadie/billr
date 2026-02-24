@@ -26,79 +26,95 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createJob } from "@/server/actions";
+import { toast } from "sonner";
+import type { Column } from "@/lib/types";
 
 interface CreateJobModalProps {
-  columnId: string;
+  columns: Column[];
   boardId: string;
-  defaultStatus: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultColumnId?: string;
 }
 
 export default function CreateJobModal({
-  columnId,
+  columns,
   boardId,
   open,
-  defaultStatus,
   onOpenChange,
+  defaultColumnId = "",
 }: CreateJobModalProps) {
+  const [loading, setLoading] = useState(false);
+  const today = new Date().toISOString().split("T")[0];
+  const [selectedColumnId, setSelectedColumnId] =
+    useState<string>(defaultColumnId);
+
   const [formData, setFormData] = useState({
     company: "",
     position: "",
-    status: defaultStatus,
     salary: "",
     location: "",
     jobType: "",
     url: "",
-    appliedDate: "",
+    appliedDate: today,
     description: "",
   });
 
   useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      status: defaultStatus,
-    }));
-  }, [defaultStatus]);
+    if (open) {
+      setSelectedColumnId(defaultColumnId);
+    }
+  }, [open, defaultColumnId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!columnId) {
-      console.error("Missing columnId");
+    if (loading) return;
+
+    if (!selectedColumnId) {
+      toast.error("Please select a column");
       return;
     }
 
     try {
+      setLoading(true);
+
       await createJob({
         company: formData.company,
         position: formData.position,
-        status: formData.status,
         salary: formData.salary || undefined,
         location: formData.location || undefined,
         jobType: formData.jobType || undefined,
         url: formData.url || undefined,
         description: formData.description || undefined,
+        appliedDate: new Date(formData.appliedDate),
         boardId,
-        columnId,
+        columnId: selectedColumnId,
       });
+
+      toast.success("Job added successfully");
 
       onOpenChange(false);
 
-      // (optional) reset form
+      const today = new Date().toISOString().split("T")[0];
+
       setFormData({
         company: "",
         position: "",
-        status: defaultStatus,
         salary: "",
         location: "",
         jobType: "",
         url: "",
-        appliedDate: "",
+        appliedDate: today,
         description: "",
       });
+
+      setSelectedColumnId("");
     } catch (error) {
       console.error("Failed to create job:", error);
+      toast.error("Failed to add job");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -148,29 +164,27 @@ export default function CreateJobModal({
                 </div>
               </div>
 
-              {/* Status */}
+              {/* Column */}
               <div>
-                <Label>Status</Label>
+                <Label>Column *</Label>
                 <Select
-                  value={formData.status}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, status: value })
-                  }
+                  value={selectedColumnId}
+                  onValueChange={setSelectedColumnId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select application status" />
+                    <SelectValue placeholder="Select column" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border shadow-md z-[100]">
-                    <SelectItem value="wishlist">Wishlist</SelectItem>
-                    <SelectItem value="applied">Applied</SelectItem>
-                    <SelectItem value="interview">Interviewing</SelectItem>
-                    <SelectItem value="offer">Offer</SelectItem>
-                    <SelectItem value="rejected">Rejected</SelectItem>
-                    <SelectItem value="ghosted">Ghosted</SelectItem>
+                    {columns
+                      .sort((a, b) => a.order - b.order)
+                      .map((column) => (
+                        <SelectItem key={column.id} value={column.id}>
+                          {column.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
-
               {/* Salary */}
               <div>
                 <Label>Salary</Label>
@@ -271,6 +285,7 @@ export default function CreateJobModal({
               <Button
                 type="button"
                 variant="outline"
+                disabled={loading}
                 className="rounded-xl px-6"
                 onClick={() => onOpenChange(false)}
               >
@@ -279,9 +294,10 @@ export default function CreateJobModal({
 
               <Button
                 type="submit"
+                disabled={loading}
                 className="bg-primary text-white rounded-xl px-6"
               >
-                Save & Close
+                {loading ? "Saving..." : "Save & Close"}
               </Button>
             </div>
           </form>

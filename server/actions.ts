@@ -8,6 +8,7 @@ import { initializeUserBoard } from "@/lib/board";
 import { db } from "@/db/drizzle";
 import { boards, columns, jobs, user as userTable } from "@/db/schema";
 import { eq, and, max } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 const signUpSchema = z.object({
   name: z.string().min(2, "Full name must be at least 2 characters"),
@@ -28,7 +29,6 @@ type ActionState = {
 interface CreateJobData {
   company: string;
   position: string;
-  status: string;
   salary?: string;
   location?: string;
   jobType?: string;
@@ -36,6 +36,7 @@ interface CreateJobData {
   description?: string;
   boardId: string;
   columnId: string;
+  appliedDate?: Date;
 }
 
 export async function signUp(
@@ -120,7 +121,6 @@ export async function createJob(data: CreateJobData): Promise<void> {
   const {
     company,
     position,
-    status,
     salary,
     location,
     jobType,
@@ -128,8 +128,9 @@ export async function createJob(data: CreateJobData): Promise<void> {
     description,
     boardId,
     columnId,
+    appliedDate,
   } = data;
-  if (!company || !position || !status || !boardId || !columnId)
+  if (!company || !position || !boardId || !columnId)
     throw new Error("Missing required fields");
 
   // Verify board ownership
@@ -138,11 +139,14 @@ export async function createJob(data: CreateJobData): Promise<void> {
   });
   if (!board) throw new Error("Unauthorized board access");
 
-  // Verify column belongs to board
+  // Verify column belongs to board and get column name for status
   const column = await db.query.columns.findFirst({
     where: and(eq(columns.id, columnId), eq(columns.boardId, boardId)),
   });
   if (!column) throw new Error("Invalid column");
+
+  // Derive status from column name
+  const status = column.name.toLowerCase();
 
   // Get max order in this column
   const [maxOrderResult] = await db
@@ -172,8 +176,7 @@ export async function createJob(data: CreateJobData): Promise<void> {
     })
     .returning();
 
-  // Optional: revalidate dashboard page in Next.js
-  // revalidatePath("/dashboard");
+  revalidatePath("/dashboard");
 
   return;
 }

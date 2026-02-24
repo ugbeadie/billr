@@ -3,13 +3,13 @@ export type Job = {
   company: string;
   position: string;
   status: string;
-  salary?: string;
-  location?: string;
-  type?: string;
-  url?: string;
-  description?: string;
+  salary?: string | null;
+  location?: string | null;
+  jobType?: string | null;
+  url?: string | null;
+  description?: string | null;
   order: number;
-  columnId?: string;
+  columnId: string;
 };
 
 export type Column = {
@@ -17,6 +17,7 @@ export type Column = {
   name: string;
   boardId: string;
   order: number;
+  jobs: Job[];
   createdAt: Date;
   updatedAt: Date;
 };

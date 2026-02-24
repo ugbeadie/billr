@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState } from "react";
-import type { Board, Column } from "@/lib/types";
+import type { Board, Column, Job } from "@/lib/types";
 import {
   Calendar,
   CheckCircle2,
@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import CreateJobModal from "./CreateJobModal";
+import JobTile from "./JobTile";
 
 type KanbanBoardProps = {
   board: Board;
@@ -52,19 +53,30 @@ const COLUMN_CONFIG: Array<ColumnConfig> = [
   },
 ];
 
+function DraggableJobTiles({ job, columns }: { job: Job; columns: Column[] }) {
+  return (
+    <div>
+      <JobTile job={job} columns={columns} />
+    </div>
+  );
+}
+
 function DropToColumn({
   column,
   config,
   boardId,
+  sortedColumns,
 }: {
   column: Column;
   config: ColumnConfig;
   boardId: string;
+  sortedColumns: Column[];
 }) {
   const [open, setOpen] = useState(false);
 
   console.log("Column data:", column);
 
+  const sortedJobs = [...column.jobs].sort((a, b) => a.order - b.order);
   return (
     <>
       <Card className="w-[320px] shrink-0 bg-gray-200 rounded-2xl p-2 flex flex-col h-125 shadow-sm border-0">
@@ -81,7 +93,15 @@ function DropToColumn({
           <Settings className="w-4 h-4 cursor-pointer opacity-80 hover:opacity-100" />
         </CardHeader>
 
-        <CardContent className="flex-1 mt-3 p-0" />
+        <CardContent className="flex-1 mt-3 p-0"></CardContent>
+
+        {sortedJobs.map((job) => (
+          <DraggableJobTiles
+            key={job.id}
+            job={{ ...job, columnId: column.id || column.id }}
+            columns={sortedColumns}
+          />
+        ))}
 
         <Button
           onClick={() => setOpen(true)}
@@ -93,9 +113,9 @@ function DropToColumn({
       </Card>
 
       <CreateJobModal
-        columnId={column.id}
+        columns={sortedColumns}
         boardId={boardId}
-        defaultStatus={column.name.toLowerCase()}
+        defaultColumnId={column.id}
         open={open}
         onOpenChange={setOpen}
       />
@@ -106,6 +126,8 @@ function DropToColumn({
 export default function KanbanBoard({ board, userId }: KanbanBoardProps) {
   const columns = board?.columns || [];
   console.log("Board columns:", columns);
+  const sortedColumns = columns?.sort((a, b) => a.order - b.order);
+
   return (
     <div>
       {columns.map((column, index) => {
@@ -116,6 +138,7 @@ export default function KanbanBoard({ board, userId }: KanbanBoardProps) {
             column={column}
             config={config}
             boardId={board!.id}
+            sortedColumns={sortedColumns}
           />
         );
       })}

@@ -33,7 +33,6 @@ export async function initializeUserBoard(userId: string) {
     name: col.name,
     order: col.order,
     boardId: board.id,
-    job: [],
   }));
 
   await db.insert(columns).values(columnRows);
