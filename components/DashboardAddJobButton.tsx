@@ -13,6 +13,8 @@ interface Props {
 export default function DashboardAddJobButton({ boardId, columns }: Props) {
   const [open, setOpen] = useState(false);
 
+  const appliedColumn = columns.find((c) => c.name.toLowerCase() === "applied");
+
   return (
     <>
       <Button className="mt-4" onClick={() => setOpen(true)}>
@@ -22,6 +24,7 @@ export default function DashboardAddJobButton({ boardId, columns }: Props) {
       <CreateJobModal
         boardId={boardId}
         columns={columns}
+        defaultColumnId={appliedColumn?.id} // ✅ default to Applied
         open={open}
         onOpenChange={setOpen}
       />

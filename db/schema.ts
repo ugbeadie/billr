@@ -148,6 +148,7 @@ export const jobs = pgTable("jobs", {
   location: text("location"),
   jobType: text("job_type"),
   url: text("url"),
+  jobMode: text("job_mode"),
   appliedDate: timestamp("applied_date", { withTimezone: true }),
   description: text("description"),
   columnId: text("column_id")

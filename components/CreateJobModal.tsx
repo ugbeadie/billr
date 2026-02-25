@@ -56,6 +56,7 @@ export default function CreateJobModal({
     location: "",
     jobType: "",
     url: "",
+    jobMode: "",
     appliedDate: today,
     description: "",
   });
@@ -86,6 +87,7 @@ export default function CreateJobModal({
         location: formData.location || undefined,
         jobType: formData.jobType || undefined,
         url: formData.url || undefined,
+        jobMode: formData.jobMode || undefined,
         description: formData.description || undefined,
         appliedDate: new Date(formData.appliedDate),
         boardId,
@@ -105,6 +107,7 @@ export default function CreateJobModal({
         location: "",
         jobType: "",
         url: "",
+        jobMode: "",
         appliedDate: today,
         description: "",
       });
@@ -252,6 +255,26 @@ export default function CreateJobModal({
                     }
                   />
                 </div>
+              </div>
+
+              {/* JOB MODE  */}
+              <div>
+                <Label>Job Mode</Label>
+                <Select
+                  value={formData.jobMode}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, jobMode: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select job mode" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border shadow-md z-[100]">
+                    <SelectItem value="remote">Remote</SelectItem>
+                    <SelectItem value="onsite">On-site</SelectItem>
+                    <SelectItem value="hybrid">Hybrid</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Applied Date */}
