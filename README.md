@@ -1,27 +1,28 @@
-# Billr 🧾  
-**Professional Invoicing for Freelancers & Small Businesses**
+# Trackr 💼
 
-Billr is a modern SaaS invoicing application built to help freelancers, agencies, consultants, and small businesses create professional invoices quickly and get paid faster.
+**Smart Job Application Tracking for Modern Job Seekers**
 
-This project includes a responsive marketing landing page and is designed to evolve into a full-featured invoicing platform with authentication, dashboards, and payment tracking.
+Trackr is a modern SaaS job application tracking platform built to help job seekers organize applications, manage interviews, and land roles faster.
+
+This project includes a responsive marketing landing page and is designed to evolve into a full-featured job tracking platform with authentication, dashboards, analytics, and productivity tools.
 
 ---
 
 ## 🚀 Overview
 
-Billr simplifies invoicing by providing:
+Trackr simplifies job hunting by providing:
 
-- Fast invoice creation
-- Client management
-- Professional PDF downloads
-- Payment tracking
-- Revenue dashboard insights
-- Beautiful invoice templates
+- Application tracking
+- Interview management
+- Status monitoring
+- Kanban-style job board
+- Progress insights
+- Organized company notes
 - Secure authentication system
 
 The mission is simple:
 
-> Help small businesses look professional and improve cash flow.
+> Help job seekers stay organized and increase their chances of getting hired.
 
 ---
 
@@ -29,50 +30,41 @@ The mission is simple:
 
 Billr is built for:
 
-- Freelancers  
-- Agencies  
-- Consultants  
-- Startups  
-- Small businesses  
+- Students
+- Recent graduates
+- Career switchers
+- Remote job seekers
+- Professionals actively job hunting
 
-If you send invoices, Billr is for you.
+If you're applying to jobs, Trackr is for you.
 
 ---
 
 ## ✨ Features
 
-### 🧾 Invoice Creation
-- Create invoices in seconds
-- Auto-calculated totals & taxes
-- Itemized billing
-- Custom payment terms
+### 📌 Job Application Tracking
 
-### 👥 Client Management
-- Save client details
-- Reuse client information
-- Organized invoice history
+- Log every job you apply to
+- Track roles by status (Applied, Interviewing, Offer, Rejected)
+- Organize applications visually with Kanban boards
+- Add notes for each opportunity
 
-### 📄 PDF Downloads
-- Professional print-ready invoices
-- Download and share with clients
+### 📅 Interview Management
+
+- Track interview stages
+- Add interview dates & notes
+- Stay on top of follow-ups
 
 ### 📊 Dashboard Overview
-- Revenue tracking
-- Invoice statistics
-- Paid vs unpaid status
 
-### 💳 Payment Tracking (Pro Plan)
-- Monitor invoice status
-- Track completed payments
-- Send receipts
+- Visual overview of application progress
+- Monitor success rates
+- Track application volume
+- Status breakdown insights
 
-### 🎨 Custom Templates
-- Clean, modern invoice designs
-- Custom branding (Pro plan)
+### 🔐 Authentication (Core Feature)
 
-### 🔐 Authentication (Planned / Core Feature)
-
-Billr includes a secure authentication system to ensure:
+Trackr includes a secure authentication system to ensure:
 
 - User account creation (Register)
 - Secure login & logout
@@ -80,42 +72,27 @@ Billr includes a secure authentication system to ensure:
 - Session management
 
 Authentication will allow each user to:
-- Access their own invoices
-- Manage their own clients
-- View personalized dashboard metrics
-- Securely store business data
 
----
-
-## 💰 Pricing Model
-
-### 🟢 Free Plan
-- Unlimited invoices
-- PDF downloads
-- Client management
-
-### 🔵 Pro Plan
-- Everything in Free
-- Payment tracking
-- Custom branding
-- Email receipts
-
-Users can start free and upgrade anytime.
+- Access their own jobs
+- Manage their own applications
+- Track personal interview progress
+- Securely store job search data
 
 ---
 
 ## 🧠 How It Works
 
-1. Add your business & client details
-2. Create an invoice
-3. Download or send to client
-4. Track payment status
+1. Create your account
+2. Add a job application
+3. Move it through stages
+4. Track interview and progress
 
 ---
 
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - Next.js (App Router)
 - React
 - Tailwind CSS
@@ -123,13 +100,9 @@ Users can start free and upgrade anytime.
 - Lucide React (icons)
 
 ### Backend
+
 - Next.js API Routes
 - Database (PostgreSQL)
 - ORM (Drizzle)
 - Authentication (Better-Auth)
 - Cloud Storage (for PDFs)
-
----
-
-## 📁 Project Structure
-

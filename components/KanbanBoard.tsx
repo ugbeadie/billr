@@ -93,7 +93,7 @@ function DropToColumn({
           {/* <Settings className="w-4 h-4 cursor-pointer opacity-80 hover:opacity-100" /> */}
         </CardHeader>
 
-        <CardContent className="flex-1 mt-3 p-0">
+        <CardContent className="flex-1 mt-3 p-0 overflow-y-auto">
           {sortedJobs.map((job) => (
             <DraggableJobTiles
               key={job.id}
