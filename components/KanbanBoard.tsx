@@ -53,11 +53,22 @@ const COLUMN_CONFIG: Array<ColumnConfig> = [
   },
 ];
 
-function DraggableJobTiles({ job, columns }: { job: Job; columns: Column[] }) {
+function DraggableJobTiles({
+  job,
+  columns,
+  columnColor,
+}: {
+  job: Job;
+  columns: Column[];
+  columnColor: string;
+}) {
   return (
-    <div>
-      <JobTile job={job} columns={columns} />
-    </div>
+    <JobTile
+      key={job.id}
+      job={job}
+      columns={columns}
+      columnColor={columnColor}
+    />
   );
 }
 
@@ -93,12 +104,13 @@ function DropToColumn({
           {/* <Settings className="w-4 h-4 cursor-pointer opacity-80 hover:opacity-100" /> */}
         </CardHeader>
 
-        <CardContent className="flex-1 mt-3 p-0 overflow-y-auto">
+        <CardContent className="flex-1 mt-2 p-0 overflow-y-auto">
           {sortedJobs.map((job) => (
             <DraggableJobTiles
               key={job.id}
               job={{ ...job, columnId: column.id || column.id }}
               columns={sortedColumns}
+              columnColor={config.color}
             />
           ))}
         </CardContent>
