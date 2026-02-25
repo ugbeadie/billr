@@ -23,6 +23,7 @@ import {
   DollarSign,
   MapPin,
   Link as LinkIcon,
+  X,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createJob } from "@/server/actions";
@@ -125,10 +126,16 @@ export default function CreateJobModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl w-full rounded-2xl p-0">
         <div className="max-h-[95vh] overflow-y-auto p-6">
-          <DialogHeader>
+          <DialogHeader className="flex flex-row justify-between">
             <DialogTitle className="text-2xl font-semibold">
               Add a New Job
             </DialogTitle>
+            <button
+              onClick={() => onOpenChange(false)}
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
+            >
+              <X className="h-4 w-5 text-gray-600" />
+            </button>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="mt-6">

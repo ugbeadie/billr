@@ -1,6 +1,8 @@
 import { Column, Job } from "@/lib/types";
 import { Card } from "./ui/card";
 import { MapPin, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import JobDetailsModal from "./JobDetailsModal";
 
 interface JobTileProps {
   job: Job;
@@ -9,6 +11,9 @@ interface JobTileProps {
 }
 
 export default function JobTile({ job, columnColor }: JobTileProps) {
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [open, setOpen] = useState(false);
+
   function getColorValue(twColor?: string) {
     const map: Record<string, string> = {
       "bg-blue-500": "#3b82f6",
@@ -56,10 +61,14 @@ export default function JobTile({ job, columnColor }: JobTileProps) {
   return (
     <div className="mb-2 min-w-0">
       <Card
-        className="relative p-3 rounded-xl shadow-sm min-w-0 border-l-4"
+        onClick={() => {
+          setSelectedJob(job);
+          setOpen(true);
+        }}
+        className="relative p-3 rounded-xl shadow-sm min-w-0 border-l-4 cursor-pointer"
         style={{ borderLeftColor: columnHex }}
       >
-        {/* 🔗 URL Icon */}
+        {/* URL Icon */}
         {job.url && (
           <a
             href={job.url}
@@ -113,6 +122,12 @@ export default function JobTile({ job, columnColor }: JobTileProps) {
           </div>
         )}
       </Card>
+      <JobDetailsModal
+        job={selectedJob}
+        open={open}
+        onClose={() => setOpen(false)}
+        columnColor={columnColor}
+      />
     </div>
   );
 }

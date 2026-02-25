@@ -11,6 +11,9 @@ export type Job = {
   description?: string | null;
   order: number;
   columnId: string;
+  appliedDate?: Date | string | null;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type Column = {
