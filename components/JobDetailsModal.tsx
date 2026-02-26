@@ -72,7 +72,7 @@ export default function JobDetailsModal({
             </div>
           </div>
 
-          <div className="border-t my-6" />
+          <div className="border-t my-3" />
 
           <div className="flex flex-col md:flex-row gap-6 items-stretch">
             {/* Left Column */}
