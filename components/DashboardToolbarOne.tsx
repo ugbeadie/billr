@@ -5,14 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import CreateJobModal from "@/components/CreateJobModal";
 import type { Column } from "@/lib/types";
-import { ChevronDown, Kanban, LayoutGrid, List, Plus } from "lucide-react";
+import { ChevronDown, Kanban, List, Plus, Search } from "lucide-react";
 
 interface Props {
   boardId: string;
   columns: Column[];
+  view: "kanban" | "list";
+  onViewChange: (v: "kanban" | "list") => void;
 }
 
-export default function DashboardToolbarOne({ boardId, columns }: Props) {
+export default function DashboardToolbarOne({
+  boardId,
+  columns,
+  view,
+  onViewChange,
+}: Props) {
   const [open, setOpen] = useState(false);
 
   const appliedColumn = columns.find((c) => c.name.toLowerCase() === "applied");
@@ -21,10 +28,11 @@ export default function DashboardToolbarOne({ boardId, columns }: Props) {
     <>
       <div className="flex items-center flex-nowrap gap-2 sm:gap-3 my-2 px-3 sm:px-4 border-b border-gray-200 pb-2 overflow-x-auto">
         {/* Search */}
-        <div className="w-32 sm:w-56 md:w-72 flex-shrink-0">
+        <div className="w-32 sm:w-56 md:w-72 flex-shrink-0 relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             placeholder="Search by company or position"
-            className="h-9 text-sm"
+            className="h-9 text-sm pl-8"
           />
         </div>
 
@@ -40,13 +48,30 @@ export default function DashboardToolbarOne({ boardId, columns }: Props) {
 
           <div className="h-5 w-px bg-gray-200 hidden sm:block" />
 
+          {/* View toggle */}
           <div className="flex items-center gap-1">
-            <button className="p-1.5 rounded-md hover:bg-gray-100">
-              <Kanban className="h-4 w-4 text-gray-600" />
+            <button
+              title="Kanban view"
+              onClick={() => onViewChange("kanban")}
+              className="p-1.5 rounded-md hover:bg-gray-100"
+            >
+              <Kanban
+                className={`h-4 w-4 ${
+                  view === "kanban" ? "text-primary" : "text-gray-600"
+                }`}
+              />
             </button>
 
-            <button className="p-1.5 rounded-md hover:bg-gray-100">
-              <List className="h-4 w-4 text-gray-600" />
+            <button
+              title="List view"
+              onClick={() => onViewChange("list")}
+              className="p-1.5 rounded-md hover:bg-gray-100"
+            >
+              <List
+                className={`h-4 w-4 ${
+                  view === "list" ? "text-primary" : "text-gray-600"
+                }`}
+              />
             </button>
           </div>
 

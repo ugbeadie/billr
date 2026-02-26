@@ -29,6 +29,7 @@ export default async function Dashboard() {
   return (
     <div>
       <Navbar />
+
       {board ? (
         <DashboardClient board={board} userId={session.user.id} />
       ) : (

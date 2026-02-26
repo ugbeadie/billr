@@ -28,7 +28,7 @@ interface ColumnConfig {
   icon: React.ReactNode;
 }
 
-const COLUMN_CONFIG: ColumnConfig[] = [
+export const COLUMN_CONFIG: ColumnConfig[] = [
   { color: "bg-blue-500", icon: <Star className="h-4 w-4" /> },
   { color: "bg-yellow-500", icon: <CheckCircle2 className="h-4 w-4" /> },
   { color: "bg-purple-500", icon: <Mic className="h-4 w-4" /> },
