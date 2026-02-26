@@ -1,3 +1,5 @@
+"use client";
+
 import { Column, Job } from "@/lib/types";
 import { Card } from "./ui/card";
 import { MapPin, ExternalLink } from "lucide-react";
@@ -8,11 +10,19 @@ interface JobTileProps {
   job: Job;
   columns: Column[];
   columnColor?: string;
+  isSelected: boolean;
+  toggleSelect: (id: string) => void;
 }
 
-export default function JobTile({ job, columnColor }: JobTileProps) {
+export default function JobTile({
+  job,
+  columnColor,
+  isSelected,
+  toggleSelect,
+}: JobTileProps) {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   function getColorValue(twColor?: string) {
     const map: Record<string, string> = {
@@ -57,28 +67,40 @@ export default function JobTile({ job, columnColor }: JobTileProps) {
         return "bg-gray-100 text-gray-700";
     }
   }
-
   return (
     <div className="mb-2 min-w-0">
       <Card
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         onClick={() => {
           setSelectedJob(job);
           setOpen(true);
         }}
-        className="relative p-3 rounded-xl shadow-sm min-w-0 border-l-4 cursor-pointer"
+        className="relative px-3 py-2 rounded-xl shadow-sm min-w-0 border-l-3 cursor-pointer"
         style={{ borderLeftColor: columnHex }}
       >
-        {/* URL Icon */}
-        {job.url && (
-          <a
-            href={job.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="absolute top-3 right-3 transition-opacity hover:opacity-70"
-            style={{ color: columnHex }}
+        {/* Checkmark */}
+        {(hovered || isSelected) && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSelect(job.id);
+            }}
+            className="absolute top-3 right-3"
           >
-            <ExternalLink className="h-4 w-4" />
-          </a>
+            <div
+              className={`h-5 w-5 rounded-full border flex items-center justify-center text-xs ${
+                isSelected ? "text-white" : "border-gray-400 bg-white"
+              }`}
+              style={
+                isSelected
+                  ? { backgroundColor: columnHex, borderColor: columnHex }
+                  : {}
+              }
+            >
+              {isSelected && "✓"}
+            </div>
+          </button>
         )}
 
         <p className="text-sm font-medium text-muted-foreground">
@@ -116,12 +138,27 @@ export default function JobTile({ job, columnColor }: JobTileProps) {
         <div className="my-3 border-t" />
 
         {job.location && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5 shrink-0" />
-            <span className="break-words">{job.location}</span>
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5 shrink-0" />
+              <span className="break-words">{job.location}</span>
+            </div>
+
+            {job.url && (
+              <a
+                href={job.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                style={{ color: columnHex }}
+              >
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            )}
           </div>
         )}
       </Card>
+
       <JobDetailsModal
         job={selectedJob}
         open={open}

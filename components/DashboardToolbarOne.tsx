@@ -12,17 +12,20 @@ interface Props {
   columns: Column[];
 }
 
-export default function DashboardToolbar({ boardId, columns }: Props) {
+export default function DashboardToolbarOne({ boardId, columns }: Props) {
   const [open, setOpen] = useState(false);
 
   const appliedColumn = columns.find((c) => c.name.toLowerCase() === "applied");
 
   return (
     <>
-      <div className="flex items-center flex-nowrap gap-2 sm:gap-3 my-3 px-3 sm:px-4 border-b border-gray-200 pb-3 overflow-x-auto">
+      <div className="flex items-center flex-nowrap gap-2 sm:gap-3 my-2 px-3 sm:px-4 border-b border-gray-200 pb-2 overflow-x-auto">
         {/* Search */}
         <div className="w-32 sm:w-56 md:w-72 flex-shrink-0">
-          <Input placeholder="Search..." className="h-9 text-sm" />
+          <Input
+            placeholder="Search by company or position"
+            className="h-9 text-sm"
+          />
         </div>
 
         {/* Right Controls */}
