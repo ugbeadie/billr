@@ -28,7 +28,7 @@ The mission is simple:
 
 ## 🎯 Target Audience
 
-Billr is built for:
+Trackr is built for:
 
 - Students
 - Recent graduates
