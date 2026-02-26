@@ -7,9 +7,13 @@ export type Job = {
   location?: string | null;
   jobType?: string | null;
   url?: string | null;
+  jobMode?: string | null;
   description?: string | null;
   order: number;
   columnId: string;
+  appliedDate?: Date | string | null;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type Column = {

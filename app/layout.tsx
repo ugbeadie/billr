@@ -11,10 +11,19 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Trackr - Professional Invoice Generator",
+  title: {
+    default: "Trackr – Job Application Tracker",
+    template: "%s | Trackr",
+  },
   description:
-    "Create professional invoices in minutes. Simple invoicing for freelancers and small businesses.",
-  generator: "v0.app",
+    "Track job applications, manage interviews, monitor statuses, and stay organized throughout your job search journey.",
+  keywords: [
+    "job tracker",
+    "application tracker",
+    "kanban job board",
+    "job search manager",
+    "track applications",
+  ],
 };
 
 export default function RootLayout({
@@ -23,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={outfit.variable}>
+    <html lang="en" className={outfit.variable} suppressHydrationWarning>
       <body className="antialiased">
         {children}
         <Toaster position="top-right" richColors />

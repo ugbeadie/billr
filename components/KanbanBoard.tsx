@@ -53,11 +53,22 @@ const COLUMN_CONFIG: Array<ColumnConfig> = [
   },
 ];
 
-function DraggableJobTiles({ job, columns }: { job: Job; columns: Column[] }) {
+function DraggableJobTiles({
+  job,
+  columns,
+  columnColor,
+}: {
+  job: Job;
+  columns: Column[];
+  columnColor: string;
+}) {
   return (
-    <div>
-      <JobTile job={job} columns={columns} />
-    </div>
+    <JobTile
+      key={job.id}
+      job={job}
+      columns={columns}
+      columnColor={columnColor}
+    />
   );
 }
 
@@ -79,7 +90,7 @@ function DropToColumn({
   const sortedJobs = [...column.jobs].sort((a, b) => a.order - b.order);
   return (
     <>
-      <Card className="w-[320px] shrink-0 bg-gray-200 rounded-2xl p-2 flex flex-col h-125 shadow-sm border-0">
+      <Card className="w-[320px] shrink-0 bg-gray-100 rounded-xl p-2 flex flex-col h-125 shadow-sm border-0">
         <CardHeader
           className={`${config.color} text-white rounded-xl px-3 py-2 flex flex-row items-center justify-between space-y-0`}
         >
@@ -90,18 +101,19 @@ function DropToColumn({
             </CardTitle>
           </div>
 
-          <Settings className="w-4 h-4 cursor-pointer opacity-80 hover:opacity-100" />
+          {/* <Settings className="w-4 h-4 cursor-pointer opacity-80 hover:opacity-100" /> */}
         </CardHeader>
 
-        <CardContent className="flex-1 mt-3 p-0"></CardContent>
-
-        {sortedJobs.map((job) => (
-          <DraggableJobTiles
-            key={job.id}
-            job={{ ...job, columnId: column.id || column.id }}
-            columns={sortedColumns}
-          />
-        ))}
+        <CardContent className="flex-1 mt-2 p-0 overflow-y-auto">
+          {sortedJobs.map((job) => (
+            <DraggableJobTiles
+              key={job.id}
+              job={{ ...job, columnId: column.id || column.id }}
+              columns={sortedColumns}
+              columnColor={config.color}
+            />
+          ))}
+        </CardContent>
 
         <Button
           onClick={() => setOpen(true)}

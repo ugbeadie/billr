@@ -7,7 +7,7 @@ import { z } from "zod";
 import { initializeUserBoard } from "@/lib/board";
 import { db } from "@/db/drizzle";
 import { boards, columns, jobs, user as userTable } from "@/db/schema";
-import { eq, and, max } from "drizzle-orm";
+import { eq, and, min } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 const signUpSchema = z.object({
@@ -33,6 +33,7 @@ interface CreateJobData {
   location?: string;
   jobType?: string;
   url?: string;
+  jobMode?: string;
   description?: string;
   boardId: string;
   columnId: string;
@@ -125,6 +126,7 @@ export async function createJob(data: CreateJobData): Promise<void> {
     location,
     jobType,
     url,
+    jobMode,
     description,
     boardId,
     columnId,
@@ -149,12 +151,12 @@ export async function createJob(data: CreateJobData): Promise<void> {
   const status = column.name.toLowerCase();
 
   // Get max order in this column
-  const [maxOrderResult] = await db
-    .select({ maxOrder: max(jobs.order) })
+  const [minOrderResult] = await db
+    .select({ minOrder: min(jobs.order) })
     .from(jobs)
     .where(eq(jobs.columnId, columnId));
 
-  const nextOrder = (maxOrderResult?.maxOrder ?? -1) + 1;
+  const nextOrder = (minOrderResult?.minOrder ?? 0) - 1;
 
   // Insert new job
   const [newJob] = await db
@@ -167,12 +169,14 @@ export async function createJob(data: CreateJobData): Promise<void> {
       ...(location && { location }),
       ...(jobType && { jobType }),
       ...(url && { url }),
+      ...(jobMode && { jobMode }),
+
       ...(description && { description }),
       boardId,
       columnId,
       userId: session.user.id,
       order: nextOrder,
-      appliedDate: new Date(),
+      appliedDate: appliedDate ?? new Date(),
     })
     .returning();
 

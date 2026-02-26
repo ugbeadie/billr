@@ -30,7 +30,8 @@ export const session = pgTable(
     token: text("token").notNull().unique(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
-      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .defaultNow()
+      .$onUpdate(() => new Date())
       .notNull(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
@@ -148,6 +149,7 @@ export const jobs = pgTable("jobs", {
   location: text("location"),
   jobType: text("job_type"),
   url: text("url"),
+  jobMode: text("job_mode"),
   appliedDate: timestamp("applied_date", { withTimezone: true }),
   description: text("description"),
   columnId: text("column_id")

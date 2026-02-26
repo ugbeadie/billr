@@ -6,8 +6,7 @@ import { db } from "@/db/drizzle";
 import { boards } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import KanbanBoard from "@/components/KanbanBoard";
-import { Button } from "@/components/ui/button";
-import DashboardAddJobButton from "@/components/DashboardAddJobButton";
+import DashboardToolbar from "@/components/DashboardToolbar";
 
 export default async function Dashboard() {
   const session = await auth.api.getSession({
@@ -37,7 +36,7 @@ export default async function Dashboard() {
       <Navbar />
       {board ? (
         <>
-          <DashboardAddJobButton boardId={board.id} columns={board.columns} />
+          <DashboardToolbar boardId={board.id} columns={board.columns} />
 
           <KanbanBoard board={board} userId={session.user.id} />
         </>

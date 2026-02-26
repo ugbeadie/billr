@@ -25,7 +25,7 @@ export default async function Navbar() {
           className="flex items-center gap-2 text-xl font-semibold text-primary"
         >
           <Briefcase />
-          Job Tracker
+          Trackr
         </Link>
         <div className="flex items-center gap-4">
           {session?.user ? (
@@ -52,7 +52,10 @@ export default async function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent className="w-56" align="end">
+                <DropdownMenuContent
+                  className="w-56 bg-background z-100"
+                  align="end"
+                >
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
