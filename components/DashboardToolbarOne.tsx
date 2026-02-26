@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import CreateJobModal from "@/components/CreateJobModal";
 import type { Column } from "@/lib/types";
-import { ChevronDown, LayoutGrid, List, Plus } from "lucide-react";
+import { ChevronDown, Kanban, LayoutGrid, List, Plus } from "lucide-react";
 
 interface Props {
   boardId: string;
@@ -42,7 +42,7 @@ export default function DashboardToolbarOne({ boardId, columns }: Props) {
 
           <div className="flex items-center gap-1">
             <button className="p-1.5 rounded-md hover:bg-gray-100">
-              <LayoutGrid className="h-4 w-4 text-gray-600" />
+              <Kanban className="h-4 w-4 text-gray-600" />
             </button>
 
             <button className="p-1.5 rounded-md hover:bg-gray-100">
