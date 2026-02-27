@@ -50,7 +50,7 @@ export default function JobListView({ board }: { board: Board }) {
                 <div className="flex items-center gap-2 font-semibold">
                   <ChevronUp
                     className={clsx(
-                      "h-4 w-4 transition-transform",
+                      "h-6 w-6 transition-transform",
                       openColumns[column.id] === false && "rotate-180",
                     )}
                   />
@@ -87,10 +87,15 @@ export default function JobListView({ board }: { board: Board }) {
                         </div>
 
                         {/* rows */}
-                        {jobs.map((job) => (
+                        {jobs.map((job, rowIndex) => (
                           <div
                             key={job.id}
-                            className="grid grid-cols-[1fr_1.5fr_1fr_80px] gap-4 px-4 py-3 text-sm text-black items-center border-b last:border-b-0 hover:bg-gray-50"
+                            className={clsx(
+                              "grid grid-cols-[1fr_1.5fr_1fr_80px] gap-4 px-4 py-3 text-sm text-black items-center border-b last:border-b-0 hover:bg-gray-50",
+                              rowIndex % 2 === 0
+                                ? "bg-transparent"
+                                : "bg-gray-100",
+                            )}
                           >
                             <div className="font-medium">{job.company}</div>
                             <div>{job.position}</div>
