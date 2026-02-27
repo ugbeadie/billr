@@ -24,7 +24,6 @@ export default function DashboardToolbarTwo({
 }: Props) {
   return (
     <div className="flex justify-end items-center gap-3 my-2 px-4 border-b border-gray-200 pb-2 overflow-x-auto">
-      {/* Move jobs dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -42,7 +41,6 @@ export default function DashboardToolbarTwo({
         >
           {columns.map((col, i) => (
             <DropdownMenuItem key={col.id} className="flex items-center gap-2">
-              {/* Use icon from COLUMN_CONFIG */}
               {COLUMN_CONFIG[i % COLUMN_CONFIG.length].icon}
               {col.name}
             </DropdownMenuItem>
@@ -50,12 +48,10 @@ export default function DashboardToolbarTwo({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Delete jobs */}
       <Button className="bg-red-500 hover:bg-red-600 text-white h-9 gap-2 shadow-sm rounded-xl px-3">
         Delete Jobs
       </Button>
 
-      {/* Done */}
       <Button
         onClick={onDone}
         className="bg-purple-600 hover:bg-purple-700 text-white h-9 gap-2 shadow-sm rounded-xl px-3"

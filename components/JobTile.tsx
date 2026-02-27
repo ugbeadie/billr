@@ -139,17 +139,17 @@ export default function JobTile({
 
         {(job.location || job.url) && (
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            {/* Left side: location or placeholder */}
+            {/* location or placeholder */}
             {job.location ? (
               <div className="flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5 shrink-0" />
                 <span className="break-words">{job.location}</span>
               </div>
             ) : (
-              <div className="w-0" /> // invisible placeholder to push link to right
+              <div className="w-0" />
             )}
 
-            {/* Right side: link */}
+            {/* link */}
             {job.url && (
               <a
                 href={job.url}

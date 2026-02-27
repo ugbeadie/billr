@@ -190,7 +190,6 @@ export default function JobDetailsModal({
   );
 }
 
-/* Detail Item */
 function DetailItem({
   icon,
   label,

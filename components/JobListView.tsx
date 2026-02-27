@@ -78,7 +78,7 @@ export default function JobListView({ board }: { board: Board }) {
                   ) : (
                     <div className="overflow-x-auto">
                       <div className="min-w-[720px]">
-                        {/* table header */}
+                        {/* header */}
                         <div className="grid grid-cols-[1fr_1.5fr_1fr_80px] gap-4 px-4 py-2 text-xs font-medium text-muted-foreground border-b">
                           <div>COMPANY</div>
                           <div>POSITION</div>
