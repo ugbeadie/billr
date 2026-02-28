@@ -12,6 +12,8 @@ import {
 import { COLUMN_CONFIG } from "./KanbanBoard";
 import { updateJob } from "@/server/actions";
 import { toast } from "sonner";
+import { deleteMultipleJobs } from "@/server/actions";
+import { useRouter } from "next/navigation";
 
 interface ToolbarTwoProps {
   selectedJobs: string[];
@@ -24,6 +26,7 @@ export default function DashboardToolbarTwo({
   columns,
   onDone,
 }: ToolbarTwoProps) {
+  const router = useRouter();
   async function handleMove(columnId: string) {
     if (selectedJobs.length === 0) {
       toast.error("No jobs selected");
@@ -34,7 +37,7 @@ export default function DashboardToolbarTwo({
       await Promise.all(
         selectedJobs.map((jobId) =>
           updateJob(jobId, {
-            columnId, // no order → backend puts it at the end
+            columnId,
           }),
         ),
       );
@@ -44,6 +47,23 @@ export default function DashboardToolbarTwo({
     } catch (err) {
       console.error(err);
       toast.error("Failed to move jobs");
+    }
+  }
+
+  async function handleDelete() {
+    if (selectedJobs.length === 0) {
+      toast.error("No jobs selected");
+      return;
+    }
+
+    try {
+      await deleteMultipleJobs(selectedJobs);
+      toast.success("Jobs deleted");
+      onDone();
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete jobs");
     }
   }
 
@@ -77,7 +97,10 @@ export default function DashboardToolbarTwo({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Button className="bg-red-500 hover:bg-red-600 text-white h-9 gap-2 shadow-sm rounded-xl px-3">
+      <Button
+        onClick={handleDelete}
+        className="bg-red-500 hover:bg-red-600 text-white h-9 gap-2 shadow-sm rounded-xl px-3"
+      >
         Delete Jobs
       </Button>
 

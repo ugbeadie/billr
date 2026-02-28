@@ -2,7 +2,7 @@ export type Job = {
   id: string;
   company: string;
   position: string;
-  status: string;
+  status?: string | null;
   salary?: string | null;
   location?: string | null;
   jobType?: string | null;

@@ -14,6 +14,9 @@ import {
   Pencil,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { deleteJob } from "@/server/actions";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface JobDetailsModalProps {
   job: Job | null;
@@ -28,6 +31,21 @@ export default function JobDetailsModal({
   onClose,
   columnColor,
 }: JobDetailsModalProps) {
+  const router = useRouter();
+
+  async function handleDelete() {
+    if (!job) return;
+
+    try {
+      await deleteJob(job.id);
+      toast.success("Job deleted");
+      onClose();
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete job");
+    }
+  }
   if (!job) return null;
 
   function getColorValue(twColor?: string) {
@@ -68,6 +86,13 @@ export default function JobDetailsModal({
             </DialogTitle>
 
             <div className="flex items-center gap-3">
+              <button
+                onClick={handleDelete}
+                className="px-4 py-1.5 text-sm rounded-md bg-red-500 hover:bg-red-600 text-white flex items-center gap-1 shadow"
+              >
+                <X className="h-4 w-4" />
+                Delete
+              </button>
               <button
                 className="px-4 py-1.5 text-sm rounded-md text-white flex items-center gap-1 shadow"
                 style={{ backgroundColor: accent }}
