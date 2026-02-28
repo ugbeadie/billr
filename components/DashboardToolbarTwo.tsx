@@ -9,9 +9,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { COLUMN_CONFIG } from "./KanbanBoard"; // import your config with icons
+import { COLUMN_CONFIG } from "./KanbanBoard";
+import { updateJob } from "@/server/actions";
+import { toast } from "sonner";
 
-interface Props {
+interface ToolbarTwoProps {
   selectedJobs: string[];
   columns: Column[];
   onDone: () => void;
@@ -21,7 +23,30 @@ export default function DashboardToolbarTwo({
   selectedJobs,
   columns,
   onDone,
-}: Props) {
+}: ToolbarTwoProps) {
+  async function handleMove(columnId: string) {
+    if (selectedJobs.length === 0) {
+      toast.error("No jobs selected");
+      return;
+    }
+
+    try {
+      await Promise.all(
+        selectedJobs.map((jobId) =>
+          updateJob(jobId, {
+            columnId, // no order → backend puts it at the end
+          }),
+        ),
+      );
+
+      toast.success("Jobs moved");
+      onDone();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to move jobs");
+    }
+  }
+
   return (
     <div className="flex justify-end items-center gap-3 my-2 px-4 border-b border-gray-200 pb-2 overflow-x-auto">
       <DropdownMenu>
@@ -40,7 +65,11 @@ export default function DashboardToolbarTwo({
           className="w-48 bg-white shadow-md rounded-md p-1"
         >
           {columns.map((col, i) => (
-            <DropdownMenuItem key={col.id} className="flex items-center gap-2">
+            <DropdownMenuItem
+              key={col.id}
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={() => handleMove(col.id)}
+            >
               {COLUMN_CONFIG[i % COLUMN_CONFIG.length].icon}
               {col.name}
             </DropdownMenuItem>

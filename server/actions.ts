@@ -7,7 +7,7 @@ import { z } from "zod";
 import { initializeUserBoard } from "@/lib/board";
 import { db } from "@/db/drizzle";
 import { boards, columns, jobs, user as userTable } from "@/db/schema";
-import { eq, and, min } from "drizzle-orm";
+import { eq, and, min, asc, ne, gte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 const signUpSchema = z.object({
@@ -184,3 +184,178 @@ export async function createJob(data: CreateJobData): Promise<void> {
 
   return;
 }
+
+interface UpdateJobProps {
+  company?: string;
+  position?: string;
+  status?: string;
+  salary?: string | null;
+  location?: string | null;
+  jobType?: string | null;
+  url?: string | null;
+  jobMode?: string | null;
+  description?: string | null;
+  appliedDate?: Date | string | null;
+
+  columnId?: string;
+  order?: number;
+}
+
+export async function updateJob(id: string, input: UpdateJobProps) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    return { error: "Unauthorized" };
+  }
+
+  // Load job and verify ownership
+  const [job] = await db
+    .select()
+    .from(jobs)
+    .where(and(eq(jobs.id, id), eq(jobs.userId, session.user.id)))
+    .limit(1);
+
+  if (!job) {
+    return { error: "Job not found" };
+  }
+
+  const targetColumnId = input.columnId ?? job.columnId;
+  const targetIndex = typeof input.order === "number" ? input.order : undefined;
+
+  const isMovingColumn = targetColumnId !== job.columnId;
+
+  const baseUpdate = {
+    company: input.company,
+    position: input.position,
+    status: input.status,
+    salary: input.salary ?? undefined,
+    location: input.location ?? undefined,
+    jobType: input.jobType ?? undefined,
+    url: input.url ?? undefined,
+    jobMode: input.jobMode ?? undefined,
+    description: input.description ?? undefined,
+    appliedDate: input.appliedDate ? new Date(input.appliedDate) : undefined,
+  };
+
+  // Load siblings in target column (excluding this job)
+  const targetSiblings = await db
+    .select({
+      id: jobs.id,
+      order: jobs.order,
+    })
+    .from(jobs)
+    .where(and(eq(jobs.columnId, targetColumnId), ne(jobs.id, job.id)))
+    .orderBy(asc(jobs.order));
+
+  let newOrder = job.order;
+
+  // Insert at specific index
+  if (targetIndex !== undefined) {
+    const insertAt = Math.max(0, Math.min(targetIndex, targetSiblings.length));
+
+    for (let i = insertAt; i < targetSiblings.length; i++) {
+      await db
+        .update(jobs)
+        .set({ order: targetSiblings[i].order + 1 })
+        .where(eq(jobs.id, targetSiblings[i].id));
+    }
+
+    newOrder = insertAt === 0 ? 0 : targetSiblings[insertAt - 1].order + 1;
+  }
+
+  // Move to another column (append to end)
+  if (isMovingColumn && targetIndex === undefined) {
+    const last = targetSiblings.at(-1);
+    newOrder = last ? last.order + 1 : 0;
+  }
+
+  // Close gap in old column
+  if (isMovingColumn) {
+    const oldColumnJobs = await db
+      .select({
+        id: jobs.id,
+        order: jobs.order,
+      })
+      .from(jobs)
+      .where(
+        and(
+          eq(jobs.columnId, job.columnId),
+          gte(jobs.order, job.order),
+          ne(jobs.id, job.id),
+        ),
+      );
+
+    for (const j of oldColumnJobs) {
+      await db
+        .update(jobs)
+        .set({ order: j.order - 1 })
+        .where(eq(jobs.id, j.id));
+    }
+  }
+
+  // Update the job
+  await db
+    .update(jobs)
+    .set({
+      ...baseUpdate,
+      columnId: targetColumnId,
+      order: newOrder,
+    })
+    .where(eq(jobs.id, job.id));
+
+  revalidatePath("/dashboard");
+
+  return { success: true };
+}
+
+// export async function deleteJob(id: string) {
+//   const session = await getSession();
+
+//   if (!session?.user) {
+//     return { error: "Unauthorized" };
+//   }
+
+//   const [job] = await db
+//     .select({
+//       id: jobs.id,
+//       columnId: jobs.columnId,
+//       order: jobs.order,
+//       userId: jobs.userId,
+//     })
+//     .from(jobs)
+//     .where(and(eq(jobs.id, id), eq(jobs.userId, session.user.id)));
+
+//   if (!job) {
+//     return { error: "Job not found" };
+//   }
+
+//   await db.transaction(async (tx) => {
+//     await tx.delete(jobs).where(eq(jobs.id, id));
+
+//     const remaining = await tx
+//       .select({
+//         id: jobs.id,
+//         order: jobs.order,
+//       })
+//       .from(jobs)
+//       .where(
+//         and(
+//           eq(jobs.columnId, job.columnId),
+//           gte(jobs.order, job.order),
+//         ),
+//       );
+
+//     for (const j of remaining) {
+//       await tx
+//         .update(jobs)
+//         .set({ order: j.order - 1 })
+//         .where(eq(jobs.id, j.id));
+//     }
+//   });
+
+//   revalidatePath("/dashboard");
+
+//   return { success: true };
+// }
