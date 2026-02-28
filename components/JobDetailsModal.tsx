@@ -13,6 +13,7 @@ import {
   X,
   Pencil,
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface JobDetailsModalProps {
   job: Job | null;
@@ -38,7 +39,8 @@ export default function JobDetailsModal({
       "bg-red-500": "#ef4444",
       "bg-gray-500": "#6b7280",
     };
-    return twColor ? map[twColor] : "#f97316";
+
+    return twColor ? (map[twColor] ?? "#f97316") : "#f97316";
   }
 
   const accent = getColorValue(columnColor);
@@ -46,15 +48,25 @@ export default function JobDetailsModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-3xl w-[95vw] p-0 rounded-2xl overflow-y-auto max-h-[90vh] bg-[#f5f5f5]"
+        className="max-w-3xl w-[95vw] p-0 rounded-2xl overflow-hidden bg-[#f5f5f5]"
         style={{ borderTop: `4px solid ${accent}` }}
       >
-        <div className="p-3 md:px-6 md:pb-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{
+            type: "spring",
+            stiffness: 260,
+            damping: 22,
+          }}
+          className="p-3 md:px-6 md:pb-6 max-h-[90vh] overflow-y-auto"
+        >
           {/* Header */}
           <div className="flex justify-between items-center">
             <DialogTitle className="text-lg font-semibold">
               Job Details
             </DialogTitle>
+
             <div className="flex items-center gap-3">
               <button
                 className="px-4 py-1.5 text-sm rounded-md text-white flex items-center gap-1 shadow"
@@ -63,6 +75,7 @@ export default function JobDetailsModal({
                 <Pencil className="h-4 w-4" />
                 Edit
               </button>
+
               <button
                 onClick={onClose}
                 className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
@@ -75,7 +88,7 @@ export default function JobDetailsModal({
           <div className="border-t my-3" />
 
           <div className="flex flex-col md:flex-row gap-6 items-stretch">
-            {/* Left Column */}
+            {/* Left column */}
             <div className="flex flex-col gap-8 md:w-48 w-full">
               <div className="flex flex-col items-center text-center">
                 <div
@@ -84,7 +97,9 @@ export default function JobDetailsModal({
                 >
                   {job.company?.charAt(0).toUpperCase()}
                 </div>
+
                 <p className="mt-2 font-medium">{job.company}</p>
+
                 {job.status && (
                   <span
                     className="mt-2 text-xs px-3 py-1 rounded-full text-white"
@@ -93,6 +108,7 @@ export default function JobDetailsModal({
                     {job.status}
                   </span>
                 )}
+
                 {job.url ? (
                   <a
                     href={job.url}
@@ -122,6 +138,7 @@ export default function JobDetailsModal({
                     Applied On
                   </p>
                 </span>
+
                 <p className="mt-1 text-black text-sm">
                   {job.appliedDate
                     ? new Date(job.appliedDate).toLocaleDateString()
@@ -130,7 +147,7 @@ export default function JobDetailsModal({
               </div>
             </div>
 
-            {/* Right Column */}
+            {/* Right column */}
             <div className="flex-1 flex flex-col gap-6 md:gap-2">
               <h2 className="text-md text-center md:text-start">
                 {job.position}
@@ -147,6 +164,7 @@ export default function JobDetailsModal({
                   label="Location"
                   value={job.location || "Not specified"}
                 />
+
                 <DetailItem
                   icon={
                     <DollarSign className="h-5 w-5" style={{ color: accent }} />
@@ -154,11 +172,13 @@ export default function JobDetailsModal({
                   label="Salary"
                   value={job.salary || "Not specified"}
                 />
+
                 <DetailItem
                   icon={<Clock className="h-5 w-5" style={{ color: accent }} />}
                   label="Job Type"
                   value={job.jobType || "Not specified"}
                 />
+
                 <DetailItem
                   icon={
                     <Briefcase className="h-5 w-5" style={{ color: accent }} />
@@ -168,7 +188,7 @@ export default function JobDetailsModal({
                 />
               </div>
 
-              {/* Notes Card */}
+              {/* Notes */}
               <div
                 className="bg-white border rounded-lg p-5 flex-1"
                 style={{ borderLeft: `2px solid ${accent}` }}
@@ -177,6 +197,7 @@ export default function JobDetailsModal({
                   <FileText className="h-5 w-5" style={{ color: accent }} />
                   <p className="font-medium">Notes</p>
                 </div>
+
                 <p className="text-sm text-black whitespace-pre-wrap flex-1">
                   {job.description ||
                     "No notes added for this job application."}
@@ -184,7 +205,7 @@ export default function JobDetailsModal({
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </DialogContent>
     </Dialog>
   );

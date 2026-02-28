@@ -29,6 +29,7 @@ import { useState, useEffect } from "react";
 import { createJob } from "@/server/actions";
 import { toast } from "sonner";
 import type { Column } from "@/lib/types";
+import { motion } from "framer-motion";
 
 interface CreateJobModalProps {
   columns: Column[];
@@ -47,6 +48,7 @@ export default function CreateJobModal({
 }: CreateJobModalProps) {
   const [loading, setLoading] = useState(false);
   const today = new Date().toISOString().split("T")[0];
+
   const [selectedColumnId, setSelectedColumnId] =
     useState<string>(defaultColumnId);
 
@@ -124,12 +126,22 @@ export default function CreateJobModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-full rounded-2xl p-0">
-        <div className="max-h-[95vh] overflow-y-auto p-6">
+      <DialogContent className="max-w-4xl w-full rounded-2xl p-0 overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{
+            type: "spring",
+            stiffness: 260,
+            damping: 22,
+          }}
+          className="max-h-[95vh] overflow-y-auto p-6"
+        >
           <DialogHeader className="flex flex-row justify-between">
             <DialogTitle className="text-2xl font-semibold">
               Add a New Job
             </DialogTitle>
+
             <button
               onClick={() => onOpenChange(false)}
               className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
@@ -186,6 +198,7 @@ export default function CreateJobModal({
                   </SelectTrigger>
                   <SelectContent className="bg-background border shadow-md z-[100]">
                     {columns
+                      .slice()
                       .sort((a, b) => a.order - b.order)
                       .map((column) => (
                         <SelectItem key={column.id} value={column.id}>
@@ -195,6 +208,7 @@ export default function CreateJobModal({
                   </SelectContent>
                 </Select>
               </div>
+
               {/* Salary */}
               <div>
                 <Label>Salary</Label>
@@ -264,7 +278,7 @@ export default function CreateJobModal({
                 </div>
               </div>
 
-              {/* JOB MODE  */}
+              {/* Job Mode */}
               <div>
                 <Label>Job Mode</Label>
                 <Select
@@ -331,7 +345,7 @@ export default function CreateJobModal({
               </Button>
             </div>
           </form>
-        </div>
+        </motion.div>
       </DialogContent>
     </Dialog>
   );

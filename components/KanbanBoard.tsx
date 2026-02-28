@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import CreateJobModal from "./CreateJobModal";
 import JobTile from "./JobTile";
+import { AnimatePresence, motion } from "framer-motion";
 
 type KanbanBoardProps = {
   board: Board;
@@ -146,16 +147,26 @@ function DropToColumn({
       </CardHeader>
 
       <CardContent className="flex-1 mt-2 p-0 overflow-y-auto">
-        {sortedJobs.map((job) => (
-          <DraggableJobTiles
-            key={job.id}
-            job={{ ...job, columnId: column.id }}
-            columns={sortedColumns}
-            columnColor={config.color}
-            isSelected={selectedJobs.includes(job.id)}
-            toggleSelect={toggleJob}
-          />
-        ))}
+        <AnimatePresence>
+          {sortedJobs.map((job) => (
+            <motion.div
+              key={job.id}
+              layout
+              initial={{ opacity: 0, y: 12, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            >
+              <DraggableJobTiles
+                job={{ ...job, columnId: column.id }}
+                columns={sortedColumns}
+                columnColor={config.color}
+                isSelected={selectedJobs.includes(job.id)}
+                toggleSelect={toggleJob}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </CardContent>
 
       <Button
