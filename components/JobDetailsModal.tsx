@@ -49,7 +49,7 @@ export default function JobDetailsModal({
         className="max-w-3xl w-[95vw] p-0 rounded-2xl overflow-y-auto max-h-[90vh] bg-[#f5f5f5]"
         style={{ borderTop: `4px solid ${accent}` }}
       >
-        <div className="p-6">
+        <div className="p-3 md:px-6 md:pb-6">
           {/* Header */}
           <div className="flex justify-between items-center">
             <DialogTitle className="text-lg font-semibold">
@@ -155,14 +155,14 @@ export default function JobDetailsModal({
                   value={job.salary || "Not specified"}
                 />
                 <DetailItem
-                  icon={
-                    <Briefcase className="h-5 w-5" style={{ color: accent }} />
-                  }
+                  icon={<Clock className="h-5 w-5" style={{ color: accent }} />}
                   label="Job Type"
                   value={job.jobType || "Not specified"}
                 />
                 <DetailItem
-                  icon={<Clock className="h-5 w-5" style={{ color: accent }} />}
+                  icon={
+                    <Briefcase className="h-5 w-5" style={{ color: accent }} />
+                  }
                   label="Job Mode"
                   value={job.jobMode || "Not specified"}
                 />
@@ -190,7 +190,6 @@ export default function JobDetailsModal({
   );
 }
 
-/* Detail Item */
 function DetailItem({
   icon,
   label,

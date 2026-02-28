@@ -1,6 +1,5 @@
 "use client";
 
-//TODO: UNDERSTAND AND REFACTOR CODE
 import {
   CheckCircle2,
   FileText,
