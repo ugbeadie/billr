@@ -144,7 +144,6 @@ export const jobs = pgTable("jobs", {
 
   company: text("company").notNull(),
   position: text("position").notNull(),
-  status: text("status").default("applied").notNull(),
   salary: text("salary"),
   location: text("location"),
   jobType: text("job_type"),

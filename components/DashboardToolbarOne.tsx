@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-interface Props {
+interface ToolbarOneProps {
   boardId: string;
   columns: Column[];
   view: "kanban" | "list";
@@ -26,7 +26,7 @@ export default function DashboardToolbarOne({
   view,
   onViewChange,
   onAddJob,
-}: Props) {
+}: ToolbarOneProps) {
   return (
     <div className="flex items-center flex-nowrap gap-2 sm:gap-3 my-2 px-3 sm:px-4 border-b border-gray-200 pb-2 overflow-x-auto">
       {/* Search */}

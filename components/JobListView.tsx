@@ -149,6 +149,7 @@ export default function JobListView({ board }: { board: Board }) {
         open={!!selectedJob}
         onClose={() => setSelectedJob(null)}
         columnColor={selectedColumnColor}
+        columns={columns}
       />
     </>
   );
