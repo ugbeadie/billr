@@ -19,6 +19,7 @@ export default function JobTile({
   columnColor,
   isSelected,
   toggleSelect,
+  columns,
 }: JobTileProps) {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [open, setOpen] = useState(false);
@@ -170,6 +171,7 @@ export default function JobTile({
         open={open}
         onClose={() => setOpen(false)}
         columnColor={columnColor}
+        columns={columns}
       />
     </div>
   );

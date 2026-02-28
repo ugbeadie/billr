@@ -1,28 +1,20 @@
 "use client";
 
-import { Job } from "@/lib/types";
+import { Column, Job } from "@/lib/types";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import {
-  MapPin,
-  DollarSign,
-  Briefcase,
-  Clock,
-  FileText,
-  CalendarCheck,
-  ExternalLink,
-  X,
-  Pencil,
-} from "lucide-react";
+import { ExternalLink, X, Pencil } from "lucide-react";
 import { motion } from "framer-motion";
-import { deleteJob } from "@/server/actions";
+import { deleteJob, updateJob } from "@/server/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useState, useEffect } from "react";
 
 interface JobDetailsModalProps {
   job: Job | null;
   open: boolean;
   onClose: () => void;
   columnColor?: string;
+  columns: Column[];
 }
 
 export default function JobDetailsModal({
@@ -30,23 +22,16 @@ export default function JobDetailsModal({
   open,
   onClose,
   columnColor,
+  columns,
 }: JobDetailsModalProps) {
   const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<Job | null>(null);
 
-  async function handleDelete() {
-    if (!job) return;
-
-    try {
-      await deleteJob(job.id);
-      toast.success("Job deleted");
-      onClose();
-      router.refresh();
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to delete job");
-    }
-  }
-  if (!job) return null;
+  useEffect(() => {
+    setFormData(job ? { ...job } : null);
+    setIsEditing(false);
+  }, [job]);
 
   function getColorValue(twColor?: string) {
     const map: Record<string, string> = {
@@ -57,11 +42,50 @@ export default function JobDetailsModal({
       "bg-red-500": "#ef4444",
       "bg-gray-500": "#6b7280",
     };
-
     return twColor ? (map[twColor] ?? "#f97316") : "#f97316";
   }
 
+  if (!job || !formData) return null;
+
   const accent = getColorValue(columnColor);
+  const status =
+    columns.find((col) => col.id === job.columnId)?.name || "Unknown";
+
+  async function handleDelete() {
+    try {
+      await deleteJob(job!.id);
+      toast.success("Job deleted");
+      onClose();
+      router.refresh();
+    } catch {
+      toast.error("Failed to delete job");
+    }
+  }
+
+  async function handleSave() {
+    if (!formData) return;
+    try {
+      await updateJob(job!.id, {
+        company: formData.company,
+        position: formData.position,
+        salary: formData.salary ?? null,
+        location: formData.location ?? null,
+        jobType: formData.jobType ?? null,
+        url: formData.url ?? null,
+        jobMode: formData.jobMode ?? null,
+        description: formData.description ?? null,
+        appliedDate: formData.appliedDate ?? null,
+        columnId: formData.columnId, // updated column
+      });
+
+      toast.success("Job updated");
+      setIsEditing(false);
+      onClose();
+      router.refresh();
+    } catch {
+      toast.error("Failed to update job");
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -72,34 +96,52 @@ export default function JobDetailsModal({
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{
-            type: "spring",
-            stiffness: 260,
-            damping: 22,
-          }}
+          transition={{ type: "spring", stiffness: 260, damping: 22 }}
           className="p-3 md:px-6 md:pb-6 max-h-[90vh] overflow-y-auto"
         >
           {/* Header */}
           <div className="flex justify-between items-center">
             <DialogTitle className="text-lg font-semibold">
-              Job Details
+              {isEditing ? "Edit Job Details" : "Job Details"}
             </DialogTitle>
 
             <div className="flex items-center gap-3">
-              <button
-                onClick={handleDelete}
-                className="px-4 py-1.5 text-sm rounded-md bg-red-500 hover:bg-red-600 text-white flex items-center gap-1 shadow"
-              >
-                <X className="h-4 w-4" />
-                Delete
-              </button>
-              <button
-                className="px-4 py-1.5 text-sm rounded-md text-white flex items-center gap-1 shadow"
-                style={{ backgroundColor: accent }}
-              >
-                <Pencil className="h-4 w-4" />
-                Edit
-              </button>
+              {isEditing ? (
+                <>
+                  <button
+                    onClick={handleSave}
+                    className="px-4 py-1.5 text-sm rounded-md bg-green-600 text-white shadow"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => {
+                      setFormData({ ...job });
+                      setIsEditing(false);
+                    }}
+                    className="px-4 py-1.5 text-sm rounded-md bg-gray-400 text-white shadow"
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={handleDelete}
+                    className="px-4 py-1.5 text-sm rounded-md bg-red-500 text-white shadow"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="px-4 py-1.5 text-sm rounded-md text-white shadow"
+                    style={{ backgroundColor: accent }}
+                  >
+                    <Pencil className="h-4 w-4 inline mr-1" />
+                    Edit
+                  </button>
+                </>
+              )}
 
               <button
                 onClick={onClose}
@@ -113,28 +155,62 @@ export default function JobDetailsModal({
           <div className="border-t my-3" />
 
           <div className="flex flex-col md:flex-row gap-6 items-stretch">
-            {/* Left column */}
+            {/* LEFT COLUMN */}
             <div className="flex flex-col gap-8 md:w-48 w-full">
               <div className="flex flex-col items-center text-center">
                 <div
                   className="h-16 w-16 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-md"
                   style={{ backgroundColor: accent }}
                 >
-                  {job.company?.charAt(0).toUpperCase()}
+                  {formData.company?.charAt(0).toUpperCase()}
                 </div>
 
-                <p className="mt-2 font-medium">{job.company}</p>
+                {isEditing ? (
+                  <input
+                    value={formData.company}
+                    onChange={(e) =>
+                      setFormData({ ...formData, company: e.target.value })
+                    }
+                    className="mt-2 border rounded-md px-2 py-1 text-sm w-full"
+                  />
+                ) : (
+                  <p className="mt-2 font-medium">{job.company}</p>
+                )}
 
-                {job.status && (
+                {/* status */}
+                {isEditing ? (
+                  <select
+                    value={formData.columnId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, columnId: e.target.value })
+                    }
+                    className="mt-2 border rounded-md px-2 py-1 text-sm w-full"
+                  >
+                    {columns.map((col) => (
+                      <option key={col.id} value={col.id}>
+                        {col.name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
                   <span
-                    className="mt-2 text-xs px-3 py-1 rounded-full text-white"
+                    className="mt-2 text-xs px-2 py-1 rounded-full text-white"
                     style={{ backgroundColor: accent }}
                   >
-                    {job.status}
+                    {status}
                   </span>
                 )}
 
-                {job.url ? (
+                {isEditing ? (
+                  <input
+                    value={formData.url ?? ""}
+                    onChange={(e) =>
+                      setFormData({ ...formData, url: e.target.value })
+                    }
+                    placeholder="Job URL"
+                    className="mt-4 border rounded-md px-2 py-1 text-sm w-full"
+                  />
+                ) : job.url ? (
                   <a
                     href={job.url}
                     target="_blank"
@@ -151,82 +227,141 @@ export default function JobDetailsModal({
               </div>
 
               <div
-                className="bg-white border rounded-lg p-5 flex flex-col items-center justify-center text-center flex-1"
+                className="bg-white border rounded-lg p-5 text-center"
                 style={{ borderLeft: `2px solid ${accent}` }}
               >
-                <span className="flex gap-1 items-center justify-center">
-                  <CalendarCheck
-                    className="h-5 w-5 mb-1"
-                    style={{ color: accent }}
-                  />
-                  <p className="text-sm font-medium text-gray-600">
-                    Applied On
-                  </p>
-                </span>
+                <p className="text-sm font-medium text-gray-600">Applied On</p>
 
-                <p className="mt-1 text-black text-sm">
-                  {job.appliedDate
-                    ? new Date(job.appliedDate).toLocaleDateString()
-                    : "Not specified"}
-                </p>
+                {isEditing ? (
+                  <input
+                    type="date"
+                    value={
+                      formData.appliedDate
+                        ? new Date(formData.appliedDate)
+                            .toISOString()
+                            .split("T")[0]
+                        : ""
+                    }
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        appliedDate: e.target.value,
+                      })
+                    }
+                    className="mt-2 border rounded-md px-2 py-1 text-sm"
+                  />
+                ) : job.appliedDate ? (
+                  <p className="mt-1 text-sm">
+                    {new Date(job.appliedDate).toLocaleDateString()}
+                  </p>
+                ) : (
+                  <p className="mt-1 text-sm text-gray-400">Not specified</p>
+                )}
               </div>
             </div>
 
-            {/* Right column */}
+            {/* RIGHT COLUMN */}
             <div className="flex-1 flex flex-col gap-6 md:gap-2">
-              <h2 className="text-md text-center md:text-start">
-                {job.position}
-              </h2>
+              {isEditing ? (
+                <input
+                  value={formData.position}
+                  onChange={(e) =>
+                    setFormData({ ...formData, position: e.target.value })
+                  }
+                  className="border rounded-md px-3 py-1 text-sm w-full"
+                />
+              ) : (
+                <h2 className="text-md">{job.position}</h2>
+              )}
 
               <div
                 className="bg-white border rounded-lg p-6 grid grid-cols-1 sm:grid-cols-2 gap-8"
                 style={{ borderLeft: `2px solid ${accent}` }}
               >
-                <DetailItem
-                  icon={
-                    <MapPin className="h-5 w-5" style={{ color: accent }} />
-                  }
-                  label="Location"
-                  value={job.location || "Not specified"}
-                />
-
-                <DetailItem
-                  icon={
-                    <DollarSign className="h-5 w-5" style={{ color: accent }} />
-                  }
-                  label="Salary"
-                  value={job.salary || "Not specified"}
-                />
-
-                <DetailItem
-                  icon={<Clock className="h-5 w-5" style={{ color: accent }} />}
-                  label="Job Type"
-                  value={job.jobType || "Not specified"}
-                />
-
-                <DetailItem
-                  icon={
-                    <Briefcase className="h-5 w-5" style={{ color: accent }} />
-                  }
-                  label="Job Mode"
-                  value={job.jobMode || "Not specified"}
-                />
+                {isEditing ? (
+                  <>
+                    <input
+                      placeholder="Location"
+                      value={formData.location ?? ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, location: e.target.value })
+                      }
+                      className="border rounded-md px-2 py-1 text-sm"
+                    />
+                    <input
+                      placeholder="Salary"
+                      value={formData.salary ?? ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, salary: e.target.value })
+                      }
+                      className="border rounded-md px-2 py-1 text-sm"
+                    />
+                    <select
+                      value={formData.jobType ?? ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          jobType: e.target.value || null,
+                        })
+                      }
+                      className="border rounded-md px-2 py-1 text-sm"
+                    >
+                      <option value="">Select type</option>
+                      <option value="full-time">Full-time</option>
+                      <option value="part-time">Part-time</option>
+                      <option value="contract">Contract</option>
+                      <option value="internship">Internship</option>
+                    </select>
+                    <select
+                      value={formData.jobMode ?? ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          jobMode: e.target.value || null,
+                        })
+                      }
+                      className="border rounded-md px-2 py-1 text-sm"
+                    >
+                      <option value="">Select mode</option>
+                      <option value="remote">Remote</option>
+                      <option value="hybrid">Hybrid</option>
+                      <option value="on-site">On-site</option>
+                    </select>
+                  </>
+                ) : (
+                  <>
+                    <DetailItem label="Location" value={job.location} />
+                    <DetailItem label="Salary" value={job.salary} />
+                    <DetailItem label="Job Type" value={job.jobType} />
+                    <DetailItem label="Job Mode" value={job.jobMode} />
+                  </>
+                )}
               </div>
 
-              {/* Notes */}
               <div
-                className="bg-white border rounded-lg p-5 flex-1"
+                className="bg-white border rounded-lg p-5"
                 style={{ borderLeft: `2px solid ${accent}` }}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <FileText className="h-5 w-5" style={{ color: accent }} />
-                  <p className="font-medium">Notes</p>
-                </div>
+                <p className="font-medium mb-2">Notes</p>
 
-                <p className="text-sm text-black whitespace-pre-wrap flex-1">
-                  {job.description ||
-                    "No notes added for this job application."}
-                </p>
+                {isEditing ? (
+                  <textarea
+                    value={formData.description ?? ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        description: e.target.value,
+                      })
+                    }
+                    rows={4}
+                    className="w-full border rounded-md px-3 py-2 text-sm"
+                  />
+                ) : (
+                  <p className="text-sm">
+                    {job.description ||
+                      "No notes added for this job application."}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -237,21 +372,16 @@ export default function JobDetailsModal({
 }
 
 function DetailItem({
-  icon,
   label,
   value,
 }: {
-  icon: React.ReactNode;
   label: string;
-  value: string;
+  value?: string | null;
 }) {
   return (
-    <div className="flex items-start gap-4">
-      <div className="mt-1">{icon}</div>
-      <div>
-        <p className="text-sm font-medium text-gray-600">{label}</p>
-        <p className="text-sm text-black mt-1">{value}</p>
-      </div>
+    <div>
+      <p className="text-sm font-medium text-gray-600">{label}</p>
+      <p className="text-sm mt-1">{value || "Not specified"}</p>
     </div>
   );
 }

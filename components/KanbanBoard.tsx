@@ -132,8 +132,15 @@ function DropToColumn({
         className={`${config.color} text-white rounded-xl px-3 py-2 flex flex-row items-center justify-between`}
       >
         <div className="flex items-center gap-2">
-          {config.icon}
-          <CardTitle className="text-sm font-semibold">{column.name}</CardTitle>
+          <div className="flex items-center gap-2">
+            {config.icon}
+            <CardTitle className="text-sm font-semibold">
+              {column.name}
+            </CardTitle>
+          </div>
+          <p className="text-sm font-semibold text-white">
+            ({sortedJobs.length})
+          </p>
         </div>
 
         {anyJobSelected && (
