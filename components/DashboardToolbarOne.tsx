@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDown, Kanban, List, Plus, Search } from "lucide-react";
@@ -18,14 +17,17 @@ interface ToolbarOneProps {
   view: "kanban" | "list";
   onViewChange: (v: "kanban" | "list") => void;
   onAddJob: () => void;
+
+  search: string;
+  onSearchChange: (value: string) => void;
 }
 
 export default function DashboardToolbarOne({
-  boardId,
-  columns,
   view,
   onViewChange,
   onAddJob,
+  search,
+  onSearchChange,
 }: ToolbarOneProps) {
   return (
     <div className="flex items-center flex-nowrap gap-2 sm:gap-3 my-2 px-3 sm:px-4 border-b border-gray-200 pb-2 overflow-x-auto">
@@ -33,12 +35,13 @@ export default function DashboardToolbarOne({
       <div className="w-32 sm:w-56 md:w-72 flex-shrink-0 relative">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search by company or position"
           className="h-9 text-sm pl-8"
         />
       </div>
 
-      {/* Right Controls */}
       <div className="ml-auto flex items-center gap-2 sm:gap-3 flex-shrink-0">
         {/* Sort by Dropdown */}
         <DropdownMenu>
@@ -62,8 +65,7 @@ export default function DashboardToolbarOne({
         </DropdownMenu>
 
         <div className="h-5 w-px bg-gray-200 hidden sm:block" />
-
-        {/* View toggle */}
+        {/* View Toggle */}
         <div className="flex items-center gap-1">
           <button
             title="Kanban view"
@@ -71,23 +73,28 @@ export default function DashboardToolbarOne({
             className="p-1.5 rounded-md hover:bg-gray-100"
           >
             <Kanban
-              className={`h-4 w-4 ${view === "kanban" ? "text-primary" : "text-gray-600"}`}
+              className={`h-4 w-4 ${
+                view === "kanban" ? "text-primary" : "text-gray-600"
+              }`}
             />
           </button>
+
           <button
             title="List view"
             onClick={() => onViewChange("list")}
             className="p-1.5 rounded-md hover:bg-gray-100"
           >
             <List
-              className={`h-4 w-4 ${view === "list" ? "text-primary" : "text-gray-600"}`}
+              className={`h-4 w-4 ${
+                view === "list" ? "text-primary" : "text-gray-600"
+              }`}
             />
           </button>
         </div>
 
         <div className="h-5 w-px bg-gray-200 hidden sm:block" />
 
-        {/* Add job */}
+        {/* Add Job */}
         <Button
           onClick={onAddJob}
           variant="outline"
