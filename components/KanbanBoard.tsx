@@ -131,7 +131,7 @@ function DropToColumn({
       <CardHeader
         className={`${config.color} text-white rounded-xl px-3 py-2 flex flex-row items-center justify-between`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <div className="flex items-center gap-2">
             {config.icon}
             <CardTitle className="text-sm font-semibold">
