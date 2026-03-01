@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import type { Board } from "@/lib/types";
-
 import KanbanBoard from "@/components/KanbanBoard";
 import DashboardToolbarOne from "@/components/DashboardToolbarOne";
 import DashboardToolbarTwo from "@/components/DashboardToolbarTwo";
@@ -17,10 +16,8 @@ interface Props {
 export default function DashboardClient({ board, userId }: Props) {
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
   const [view, setView] = useState<"kanban" | "list">("kanban");
-
   const [openCreateJob, setOpenCreateJob] = useState(false);
   const [defaultColumnId, setDefaultColumnId] = useState<string>("");
-
   const [search, setSearch] = useState("");
 
   function toggleJob(id: string) {
@@ -33,7 +30,6 @@ export default function DashboardClient({ board, userId }: Props) {
     setSelectedJobs([]);
   }
 
-  // 🔎 SEARCH ONLY
   const processedBoard = useMemo(() => {
     const lowerSearch = search.toLowerCase();
 
@@ -57,11 +53,6 @@ export default function DashboardClient({ board, userId }: Props) {
       }),
     };
   }, [board, search]);
-
-  const totalVisibleJobs = processedBoard.columns.reduce(
-    (acc, col) => acc + col.jobs.length,
-    0,
-  );
 
   return (
     <>
