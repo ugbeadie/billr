@@ -12,6 +12,7 @@ interface JobTileProps {
   columnColor?: string;
   isSelected: boolean;
   toggleSelect: (id: string) => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
 export default function JobTile({
@@ -20,6 +21,7 @@ export default function JobTile({
   isSelected,
   toggleSelect,
   columns,
+  dragHandleProps,
 }: JobTileProps) {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [open, setOpen] = useState(false);
@@ -71,6 +73,7 @@ export default function JobTile({
   return (
     <div className="mb-2 min-w-0">
       <Card
+        {...dragHandleProps}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={() => {

@@ -9,6 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import LogoutButton from "./LogoutButton";
@@ -44,8 +45,8 @@ export default async function Navbar() {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
-                className="w-56 bg-background z-100"
                 align="end"
+                className="w-64 rounded-xl border bg-white shadow-xl p-2"
               >
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
@@ -57,6 +58,7 @@ export default async function Navbar() {
                     </p>
                   </div>
                 </DropdownMenuLabel>
+                <DropdownMenuSeparator className="my-2 mx-2 bg-gray-200" />
                 <LogoutButton />
               </DropdownMenuContent>
             </DropdownMenu>
