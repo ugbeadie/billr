@@ -1,23 +1,34 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Board, Column, Job } from "@/lib/types";
-import {
-  Calendar,
-  CheckCircle2,
-  Mic,
-  Award,
-  XCircle,
-  Ghost,
-  Star,
-} from "lucide-react";
+import { CheckCircle2, Mic, Award, XCircle, Ghost, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import CreateJobModal from "./CreateJobModal";
 import JobTile from "./JobTile";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
+import {
+  closestCorners,
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  PointerSensor,
+  useDroppable,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  DragMoveEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { updateJob } from "@/server/actions";
 
-type KanbanBoardProps = {
+type Props = {
   board: Board;
   userId: string;
   selectedJobs: string[];
@@ -38,43 +49,199 @@ export const COLUMN_CONFIG: ColumnConfig[] = [
   { color: "bg-gray-500", icon: <Ghost className="h-4 w-4" /> },
 ];
 
-export default function KanbanBoard({
-  board,
-  userId,
-  selectedJobs,
-  toggleJob,
-}: KanbanBoardProps) {
-  const columns = board.columns || [];
-  const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
+export default function KanbanBoard({ board, selectedJobs, toggleJob }: Props) {
+  const [columns, setColumns] = useState<Column[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [placeholder, setPlaceholder] = useState<{
+    columnId: string;
+    index: number;
+  } | null>(null);
+  const [openColumnId, setOpenColumnId] = useState<string | null>(null); // ✅ Re-added modal state
 
-  const [openColumnId, setOpenColumnId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!board.columns) return;
+
+    const ordered = board.columns
+      .map((col) => ({
+        ...col,
+        jobs: [...col.jobs].sort((a, b) => a.order - b.order),
+      }))
+      .sort((a, b) => a.order - b.order);
+
+    setColumns(ordered);
+  }, [board.columns]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+  );
 
   const anyJobSelected = selectedJobs.length > 0;
 
+  async function moveJobs(
+    jobIds: string[],
+    targetColumnId: string,
+    targetIndex: number,
+  ) {
+    setColumns((prev) => {
+      const clone = prev.map((col) => ({ ...col, jobs: [...col.jobs] }));
+      const moving: Job[] = [];
+
+      clone.forEach((col) => {
+        col.jobs = col.jobs.filter((j) => {
+          if (jobIds.includes(j.id)) {
+            moving.push(j);
+            return false;
+          }
+          return true;
+        });
+      });
+
+      const target = clone.find((c) => c.id === targetColumnId);
+      if (!target) return prev;
+
+      target.jobs.splice(targetIndex, 0, ...moving);
+
+      target.jobs = target.jobs.map((j, i) => ({
+        ...j,
+        columnId: targetColumnId,
+        order: i * 100,
+      }));
+
+      return clone;
+    });
+
+    await Promise.all(
+      jobIds.map((id, i) =>
+        updateJob(id, { columnId: targetColumnId, order: targetIndex + i }),
+      ),
+    );
+  }
+
+  function handleDragStart(e: DragStartEvent) {
+    setActiveId(e.active.id as string);
+  }
+
+  function handleDragMove(event: DragMoveEvent) {
+    const { over } = event;
+    if (!over) {
+      setPlaceholder(null);
+      return;
+    }
+
+    for (const col of columns) {
+      const index = col.jobs.findIndex((j) => j.id === over.id);
+
+      if (col.id === over.id) {
+        setPlaceholder({ columnId: col.id, index: col.jobs.length });
+        return;
+      }
+
+      if (index !== -1) {
+        setPlaceholder({ columnId: col.id, index });
+        return;
+      }
+    }
+
+    setPlaceholder(null);
+  }
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    // Determine which jobs are being dragged
+    const draggingIds = selectedJobs.includes(active.id as string)
+      ? selectedJobs
+      : [active.id as string];
+
+    // Immediately clear placeholder and active ID
+    setPlaceholder(null);
+    setActiveId(null);
+
+    if (!over) return;
+
+    let targetColumn: Column | undefined;
+    let targetIndex = 0;
+
+    for (const col of columns) {
+      const index = col.jobs.findIndex((j) => j.id === over.id);
+
+      if (col.id === over.id) {
+        targetColumn = col;
+        targetIndex = col.jobs.length;
+        break;
+      }
+
+      if (index !== -1) {
+        targetColumn = col;
+        targetIndex = index;
+        break;
+      }
+    }
+
+    if (!targetColumn) return;
+
+    await moveJobs(draggingIds, targetColumn.id, targetIndex);
+  }
+
+  const activeJobs =
+    activeId && selectedJobs.includes(activeId)
+      ? columns
+          .flatMap((c) => c.jobs)
+          .filter((j) => selectedJobs.includes(j.id))
+      : columns.flatMap((c) => c.jobs).filter((j) => j.id === activeId);
+
   return (
     <>
-      <div className="flex gap-4 overflow-x-auto px-4">
-        {sortedColumns.map((column, index) => {
-          const config = COLUMN_CONFIG[index % COLUMN_CONFIG.length];
-
-          return (
-            <DropToColumn
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex gap-4 overflow-x-auto px-4">
+          {columns.map((column, index) => (
+            <ColumnComponent
               key={column.id}
               column={column}
-              config={config}
-              sortedColumns={sortedColumns}
+              columns={columns}
+              config={COLUMN_CONFIG[index % COLUMN_CONFIG.length]}
               selectedJobs={selectedJobs}
               toggleJob={toggleJob}
+              placeholder={placeholder}
+              anyJobSelected={anyJobSelected}
+              activeId={activeId}
               onAddJob={setOpenColumnId}
-              anyJobSelected={anyJobSelected} // pass it here
             />
-          );
-        })}
-      </div>
+          ))}
+        </div>
+
+        <DragOverlay dropAnimation={null}>
+          {activeJobs.length > 0 && (
+            <motion.div
+              initial={{ scale: 0.98, opacity: 0.9 }}
+              animate={{ scale: 1.05, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 350, damping: 30 }}
+              className="space-y-2 w-72"
+            >
+              {activeJobs.map((job) => (
+                <JobTile
+                  key={job.id}
+                  job={job}
+                  columns={columns}
+                  columnColor="bg-gray-500"
+                  isSelected
+                  toggleSelect={toggleJob}
+                />
+              ))}
+            </motion.div>
+          )}
+        </DragOverlay>
+      </DndContext>
 
       {openColumnId && (
         <CreateJobModal
-          columns={sortedColumns}
+          columns={columns}
           boardId={board.id}
           defaultColumnId={openColumnId}
           open={!!openColumnId}
@@ -87,93 +254,96 @@ export default function KanbanBoard({
   );
 }
 
-function DropToColumn({
+function ColumnComponent({
   column,
+  columns,
   config,
-  sortedColumns,
   selectedJobs,
   toggleJob,
-  onAddJob,
+  placeholder,
   anyJobSelected,
+  activeId,
+  onAddJob,
 }: {
   column: Column;
-  config: ColumnConfig;
-  sortedColumns: Column[];
+  columns: Column[];
+  config: { color: string; icon: React.ReactNode };
   selectedJobs: string[];
   toggleJob: (id: string) => void;
-  onAddJob: (columnId: string) => void;
+  placeholder: { columnId: string; index: number } | null;
   anyJobSelected: boolean;
+  activeId: string | null;
+  onAddJob: (columnId: string) => void; // ✅ Prop typing
 }) {
-  const sortedJobs = [...column.jobs].sort((a, b) => a.order - b.order);
+  const { setNodeRef } = useDroppable({ id: column.id });
 
-  // Check if all jobs in this column are selected
   const allSelectedInColumn =
-    sortedJobs.length > 0 &&
-    sortedJobs.every((job) => selectedJobs.includes(job.id));
+    column.jobs.length > 0 &&
+    column.jobs.every((job: Job) => selectedJobs.includes(job.id));
 
-  const handleSelectAllColumn = (e: React.MouseEvent) => {
+  function handleSelectAll(e: React.MouseEvent) {
     e.stopPropagation();
+
     if (allSelectedInColumn) {
-      // Deselect all jobs in this column
-      sortedJobs.forEach((job) => {
+      column.jobs.forEach((job: Job) => {
         if (selectedJobs.includes(job.id)) toggleJob(job.id);
       });
     } else {
-      // Select all jobs in this column
-      sortedJobs.forEach((job) => {
+      column.jobs.forEach((job: Job) => {
         if (!selectedJobs.includes(job.id)) toggleJob(job.id);
       });
     }
-  };
+  }
 
   return (
-    <Card className="w-75 shrink-0 bg-gray-100 rounded-xl p-2 flex flex-col h-125 shadow-sm border-0">
+    <Card className="w-72 shrink-0 bg-gray-100 rounded-xl p-2 flex flex-col h-[500px] shadow-sm border-0">
       <CardHeader
         className={`${config.color} text-white rounded-xl px-3 py-2 flex flex-row items-center justify-between`}
       >
-        <div className="flex items-center gap-1">
-          <div className="flex items-center gap-2">
-            {config.icon}
-            <CardTitle className="text-sm font-semibold">
-              {column.name}
-            </CardTitle>
-          </div>
-          <p className="text-sm font-semibold text-white">
-            ({sortedJobs.length})
-          </p>
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          {config.icon}
+          <CardTitle className="text-sm font-semibold whitespace-nowrap">
+            {column.name} ({column.jobs.length})
+          </CardTitle>
         </div>
 
         {anyJobSelected && (
           <button
-            onClick={handleSelectAllColumn}
-            className="h-5 w-5 rounded-full border flex items-center justify-center text-xs border-white bg-white text-black hover:bg-gray-200"
+            onClick={handleSelectAll}
+            className="ml-2 h-5 w-5 shrink-0 rounded-full border flex items-center justify-center text-xs border-white bg-white text-black hover:bg-gray-200"
           >
             {allSelectedInColumn && "✓"}
           </button>
         )}
       </CardHeader>
 
-      <CardContent className="flex-1 mt-2 p-0 overflow-y-auto">
-        <AnimatePresence>
-          {sortedJobs.map((job) => (
-            <motion.div
-              key={job.id}
-              layout
-              initial={{ opacity: 0, y: 12, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            >
-              <DraggableJobTiles
-                job={{ ...job, columnId: column.id }}
-                columns={sortedColumns}
+      <CardContent
+        ref={setNodeRef}
+        className="flex-1 mt-2 p-0 overflow-y-auto space-y-2"
+      >
+        <SortableContext
+          items={column.jobs.map((j: Job) => j.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {column.jobs.map((job: Job, index: number) => (
+            <React.Fragment key={job.id}>
+              {placeholder &&
+                activeId &&
+                placeholder.columnId === column.id &&
+                placeholder.index === index && (
+                  <div className="h-[72px] mb-2 opacity-0" />
+                )}
+
+              <DraggableJob
+                job={job}
                 columnColor={config.color}
                 isSelected={selectedJobs.includes(job.id)}
                 toggleSelect={toggleJob}
+                columns={columns}
               />
-            </motion.div>
+            </React.Fragment>
           ))}
-        </AnimatePresence>
+        </SortableContext>
       </CardContent>
 
       <Button
@@ -187,26 +357,47 @@ function DropToColumn({
   );
 }
 
-function DraggableJobTiles({
+function DraggableJob({
   job,
-  columns,
   columnColor,
   isSelected,
   toggleSelect,
+  columns,
 }: {
   job: Job;
-  columns: Column[];
   columnColor: string;
   isSelected: boolean;
   toggleSelect: (id: string) => void;
+  columns: Column[];
 }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: job.id });
+
   return (
-    <JobTile
-      job={job}
-      columns={columns}
-      columnColor={columnColor}
-      isSelected={isSelected}
-      toggleSelect={toggleSelect}
-    />
+    <motion.div
+      ref={setNodeRef}
+      layout
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.3 : 1,
+      }}
+      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+    >
+      <JobTile
+        job={job}
+        columnColor={columnColor}
+        isSelected={isSelected}
+        toggleSelect={toggleSelect}
+        columns={columns}
+        dragHandleProps={{ ...attributes, ...listeners }}
+      />
+    </motion.div>
   );
 }
