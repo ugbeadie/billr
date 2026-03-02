@@ -28,7 +28,6 @@ export default function JobDetailsModal({
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Job | null>(null);
 
-  // New Loading and Confirmation States
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
