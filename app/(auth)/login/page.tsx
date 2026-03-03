@@ -14,12 +14,11 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (!state) return;
-    if (state.errors) {
-      toast.error(
-        state.errors[0] || "Login failed. Please check your credentials.",
-      );
-    }
+    if (!state?.errors) return;
+
+    const firstError = Object.values(state.errors)[0]?.[0];
+
+    toast.error(firstError || "Login failed.");
   }, [state]);
 
   const signInWithGoogle = async () => {

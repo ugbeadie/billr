@@ -33,7 +33,16 @@ export default function Page() {
             <span className="font-bold text-xl text-heading">Trackr</span>
           </div>
 
-          <div className="hidden md:flex items-center gap-12">
+          <div className="hidden md:flex items-center gap-4">
+            <Link href="/login">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-transparent text-primary border border-primary/30 px-6 py-2 rounded-md font-medium hover:bg-card transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                Login
+              </motion.button>
+            </Link>
             <Link href="/register">
               <motion.button
                 whileHover={{ scale: 1.05 }}

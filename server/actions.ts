@@ -70,10 +70,15 @@ export async function signUp(
     if (!createdUser?.id) throw new Error("User not found after signup");
 
     await initializeUserBoard(createdUser.id);
-  } catch (err) {
-    const e = err as Error;
+  } catch (err: any) {
+    const message =
+      err?.body?.message ||
+      err?.response?.body?.message ||
+      err?.message ||
+      "Unable to create account";
+
     return {
-      errors: { email: [e.message || "Unable to create account"] },
+      errors: { email: [message] },
       values: { name: rawData.name, email: rawData.email },
     };
   }
@@ -99,10 +104,17 @@ export async function signIn(
 
   try {
     await auth.api.signInEmail({ body: result.data });
-  } catch (err) {
-    const e = err as Error;
+  } catch (err: any) {
+    console.log("Better Auth error:", err);
+
+    const message =
+      err?.body?.message ||
+      err?.response?.body?.message ||
+      err?.message ||
+      "Unable to sign in";
+
     return {
-      errors: { email: [e.message || "Unable to sign in"] },
+      errors: { email: [message] },
       values: { email: rawData.email },
     };
   }
