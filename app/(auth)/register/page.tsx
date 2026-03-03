@@ -15,12 +15,11 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (!state) return;
-    if (state.errors) {
-      toast.error(
-        state.errors[0] || "Registration failed. Please check your input.",
-      );
-    }
+    if (!state?.errors) return;
+
+    const firstError = Object.values(state.errors)[0]?.[0];
+
+    toast.error(firstError || "Login failed.");
   }, [state]);
 
   const signInWithGoogle = async () => {
