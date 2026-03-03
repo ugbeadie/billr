@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Trackrrrr Job Tracker Extension",
+  "version": "1.0",
+  "description": "Save job listings directly to your Job Tracker",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "https://trackrrrr.netlify.app/*",
+    "https://*.linkedin.com/*",
+    "https://*.indeed.com/*",
+    "https://*.glassdoor.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.linkedin.com/*",
+        "https://*.indeed.com/*",
+        "https://*.glassdoor.com/*"
+      ],
+      "js": ["content.js"]
+    }
+  ]
+}
