@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+
+    <!-- LOGIN REQUIRED SCREEN -->
+    <div id="loginScreen" class="hidden">
+      <h3>Please login to Eztrackr</h3>
+      <button id="loginBtn" class="primary full">Login</button>
+    </div>
+
+    <!-- PREVIEW SCREEN -->
+    <div id="previewScreen" class="hidden">
+      <h3>Save Job</h3>
+
+      <div class="preview-card">
+        <p id="previewCompany" class="company"></p>
+        <p id="previewPosition" class="position"></p>
+      </div>
+
+      <div class="button-row">
+        <button id="editBtn" class="secondary">✏ Edit</button>
+        <button id="quickSaveBtn" class="primary">Save</button>
+      </div>
+
+      <p id="status"></p>
+    </div>
+
+    <!-- EDIT SCREEN -->
+    <div id="editScreen" class="hidden">
+      <div class="header">
+        <button id="backBtn">←</button>
+        <h3>Edit Job</h3>
+      </div>
+
+      <label>Column</label>
+      <select id="columnInput"></select>
+
+      <label>Company Name</label>
+      <input id="companyInput" />
+
+      <label>Position</label>
+      <input id="positionInput" />
+
+      <label>Job Type</label>
+      <input id="jobTypeInput" />
+
+      <label>Location</label>
+      <input id="locationInput" />
+
+      <label>Description</label>
+      <textarea id="descriptionInput"></textarea>
+
+      <button id="finalSaveBtn" class="primary full">Save to Eztrackr</button>
+
+      <p id="editStatus"></p>
+    </div>
+
+    <script src="popup.js"></script>
+    <div id="toast" class="toast hidden"></div>
+  </body>
+</html>
