@@ -7,13 +7,22 @@ import DashboardToolbarOne from "@/components/DashboardToolbarOne";
 import DashboardToolbarTwo from "@/components/DashboardToolbarTwo";
 import JobListView from "@/components/JobListView";
 import CreateJobModal from "@/components/CreateJobModal";
+import JobStatsCards from "@/components/JobStatsCards";
+
+type Stats = {
+  total: number;
+  today: number;
+  week: number;
+  month: number;
+};
 
 interface Props {
   board: Board;
   userId: string;
+  stats: Stats;
 }
 
-export default function DashboardClient({ board, userId }: Props) {
+export default function DashboardClient({ board, userId, stats }: Props) {
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
   const [view, setView] = useState<"kanban" | "list">("kanban");
   const [openCreateJob, setOpenCreateJob] = useState(false);
@@ -99,6 +108,7 @@ export default function DashboardClient({ board, userId }: Props) {
         columns={board.columns}
         defaultColumnId={defaultColumnId}
       />
+      <JobStatsCards stats={stats} />
     </>
   );
 }

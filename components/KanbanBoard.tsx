@@ -153,7 +153,6 @@ export default function KanbanBoard({ board, selectedJobs, toggleJob }: Props) {
       ? selectedJobs
       : [active.id as string];
 
-    // Immediately clear placeholder and active ID
     setPlaceholder(null);
     setActiveId(null);
 

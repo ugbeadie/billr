@@ -2,7 +2,7 @@
 
 import { Column, Job } from "@/lib/types";
 import { Card } from "./ui/card";
-import { MapPin, ExternalLink } from "lucide-react";
+import { MapPin, ExternalLink, Calendar } from "lucide-react";
 import { useState } from "react";
 import JobDetailsModal from "./JobDetailsModal";
 
@@ -26,6 +26,16 @@ export default function JobTile({
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
+
+  function formatAppliedDate(value: Date | string) {
+    const date = typeof value === "string" ? new Date(value) : value;
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleDateString(undefined, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  }
 
   function getColorValue(twColor?: string) {
     const map: Record<string, string> = {
@@ -114,6 +124,13 @@ export default function JobTile({
         <h3 className="text-sm font-semibold mt-0.5 break-words pr-6">
           {job.position}
         </h3>
+
+        {job.appliedDate && (
+          <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Calendar className="h-3.5 w-3.5 shrink-0" />
+            <span>{formatAppliedDate(job.appliedDate)}</span>
+          </div>
+        )}
 
         {(job.jobType || job.jobMode) && (
           <div className="flex gap-2 mt-2 flex-wrap">
