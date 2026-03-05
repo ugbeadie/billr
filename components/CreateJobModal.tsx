@@ -146,7 +146,7 @@ export default function CreateJobModal({
               onClick={() => onOpenChange(false)}
               className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
             >
-              <X className="h-4 w-5 text-gray-600" />
+              <X className="h-4 w-5 text-primary" />
             </button>
           </DialogHeader>
 
@@ -341,7 +341,7 @@ export default function CreateJobModal({
                 disabled={loading}
                 className="bg-primary text-white rounded-xl px-6"
               >
-                {loading ? "Saving..." : "Save & Close"}
+                {loading ? "Saving..." : "Save"}
               </Button>
             </div>
           </form>

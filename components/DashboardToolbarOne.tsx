@@ -33,7 +33,7 @@ export default function DashboardToolbarOne({
     <div className="flex items-center flex-nowrap gap-2 sm:gap-3 my-2 px-3 sm:px-4 border-b border-gray-200 pb-2 overflow-x-auto">
       {/* Search */}
       <div className="w-32 sm:w-56 md:w-72 flex-shrink-0 relative">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <Search className="text-primary absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
@@ -110,8 +110,8 @@ export default function DashboardToolbarOne({
           variant="outline"
           className="h-9 gap-2 shadow-sm rounded-xl px-3"
         >
-          <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Add job</span>
+          <Plus className="h-4 w-4 text-primary" />
+          <span className="hidden text-primary sm:inline">Add job</span>
         </Button>
       </div>
     </div>

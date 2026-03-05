@@ -125,7 +125,7 @@ export default function JobDetailsModal({
                     <button
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="px-4 py-1.5 text-sm rounded-md bg-green-600 text-white shadow disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="px-4 py-1.5 text-sm rounded-md bg-primary text-white shadow disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {isSaving ? "Saving..." : "Save"}
                     </button>
@@ -164,7 +164,7 @@ export default function JobDetailsModal({
                   disabled={isSaving || isDeleting}
                   className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
                 >
-                  <X className="h-4 w-4 text-gray-600" />
+                  <X className="h-4 w-4 text-primary" />
                 </button>
               </div>
             </div>
