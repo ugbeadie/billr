@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { Button } from "./ui/button";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { Briefcase } from "lucide-react";
+import Image from "next/image";
 
 import {
   DropdownMenu,
@@ -19,16 +19,25 @@ export default async function Navbar() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+
   return (
     <nav className="border-b border-gray-200 bg-white">
-      <div className=" flex h-14 items-center px-4 justify-between">
+      <div className="flex h-14 items-center px-4 justify-between">
         <Link
           href="/"
           className="flex items-center gap-2 text-xl font-semibold text-primary"
         >
-          <Briefcase />
-          Trackr
+          <Image
+            src="/images/logo.png"
+            alt="Trackr logo"
+            width={24}
+            height={24}
+            className="object-contain"
+            priority
+          />
+          TRACKR
         </Link>
+
         <div className="flex items-center gap-4">
           {session?.user && <NavToggleButton />}
 
@@ -61,6 +70,7 @@ export default async function Navbar() {
                     </p>
                   </div>
                 </DropdownMenuLabel>
+
                 <DropdownMenuSeparator className="my-2 mx-2 bg-gray-200" />
                 <LogoutButton />
               </DropdownMenuContent>
