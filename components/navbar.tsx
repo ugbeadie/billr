@@ -13,6 +13,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import LogoutButton from "./LogoutButton";
+import NavToggleButton from "./NavToggleButton";
 
 export default async function Navbar() {
   const session = await auth.api.getSession({
@@ -29,6 +30,8 @@ export default async function Navbar() {
           Trackr
         </Link>
         <div className="flex items-center gap-4">
+          {session?.user && <NavToggleButton />}
+
           {session?.user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

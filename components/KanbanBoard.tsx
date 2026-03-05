@@ -56,7 +56,7 @@ export default function KanbanBoard({ board, selectedJobs, toggleJob }: Props) {
     columnId: string;
     index: number;
   } | null>(null);
-  const [openColumnId, setOpenColumnId] = useState<string | null>(null); // ✅ Re-added modal state
+  const [openColumnId, setOpenColumnId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!board.columns) return;
@@ -272,7 +272,7 @@ function ColumnComponent({
   placeholder: { columnId: string; index: number } | null;
   anyJobSelected: boolean;
   activeId: string | null;
-  onAddJob: (columnId: string) => void; // ✅ Prop typing
+  onAddJob: (columnId: string) => void;
 }) {
   const { setNodeRef } = useDroppable({ id: column.id });
 
@@ -302,7 +302,8 @@ function ColumnComponent({
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {config.icon}
           <CardTitle className="text-sm font-semibold whitespace-nowrap">
-            {column.name} ({column.jobs.length})
+            {column.name}{" "}
+            {column.jobs.length !== 0 && `(${column.jobs.length})`}
           </CardTitle>
         </div>
 
