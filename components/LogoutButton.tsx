@@ -13,8 +13,8 @@ export default function LogoutButton() {
       disabled={isPending}
       onSelect={(e) => e.preventDefault()} // 👈 prevent auto close
       onClick={() => {
-        startTransition(async () => {
-          await signOut();
+        startTransition(() => {
+          signOut();
         });
       }}
       className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
