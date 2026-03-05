@@ -1,6 +1,6 @@
 "use client";
 
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 interface Props {
   data: {
@@ -25,13 +25,42 @@ function getStatusColor(name: string) {
 export default function StatusChart({ data }: Props) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
+  function CustomTooltip({ active, payload }: any) {
+    if (!active || !payload || payload.length === 0) return null;
+
+    const item = payload[0];
+    const value = item.value;
+    const name = item.name;
+
+    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : "0";
+
+    const color = getStatusColor(name);
+
+    return (
+      <div className="bg-white border border-gray-200 shadow-md rounded-lg px-3 py-2 text-sm">
+        <div className="flex items-center gap-2">
+          <span
+            className="w-2.5 h-2.5 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+          <span className="font-medium text-gray-700 capitalize">{name}</span>
+        </div>
+
+        <div className="text-gray-500 mt-1">
+          {value} ({percentage}%)
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      {" "}
       <h2 className="text-lg font-semibold mb-6 text-gray-800">
-        Status breakdown
+        Status breakdown{" "}
       </h2>
-
       <div className="flex flex-col lg:flex-row items-center gap-6">
+        {/* Legend */}
         <div className="flex-1 space-y-3">
           {data.map((entry) => {
             const percentage =
@@ -50,7 +79,7 @@ export default function StatusChart({ data }: Props) {
                     style={{ backgroundColor: color }}
                   />
 
-                  <span className="font-medium text-gray-700">
+                  <span className="font-medium text-gray-700 capitalize">
                     {entry.name}
                   </span>
                 </div>
@@ -63,7 +92,7 @@ export default function StatusChart({ data }: Props) {
           })}
         </div>
 
-        {/* chart */}
+        {/* Chart */}
         <div className="w-56 h-56 relative">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -78,6 +107,8 @@ export default function StatusChart({ data }: Props) {
                   <Cell key={index} fill={getStatusColor(entry.name)} />
                 ))}
               </Pie>
+
+              <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
 

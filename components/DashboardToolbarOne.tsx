@@ -44,7 +44,7 @@ export default function DashboardToolbarOne({
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3 flex-shrink-0">
         {/* Sort by Dropdown */}
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
@@ -62,7 +62,7 @@ export default function DashboardToolbarOne({
             <DropdownMenuItem>Newest</DropdownMenuItem>
             <DropdownMenuItem>Oldest</DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
 
         <div className="h-5 w-px bg-gray-200 hidden sm:block" />
         {/* View Toggle */}
@@ -70,7 +70,12 @@ export default function DashboardToolbarOne({
           <button
             title="Kanban view"
             onClick={() => onViewChange("kanban")}
-            className="p-1.5 rounded-md hover:bg-gray-100"
+            className={`p-1.5 rounded-md transition
+      ${
+        view === "kanban"
+          ? "border border-primary bg-primary/5"
+          : "border border-transparent hover:bg-gray-100"
+      }`}
           >
             <Kanban
               className={`h-4 w-4 ${
@@ -82,7 +87,12 @@ export default function DashboardToolbarOne({
           <button
             title="List view"
             onClick={() => onViewChange("list")}
-            className="p-1.5 rounded-md hover:bg-gray-100"
+            className={`p-1.5 rounded-md transition
+      ${
+        view === "list"
+          ? "border border-primary bg-primary/5"
+          : "border border-transparent hover:bg-gray-100"
+      }`}
           >
             <List
               className={`h-4 w-4 ${

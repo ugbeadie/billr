@@ -1,6 +1,8 @@
 "use client";
 
 import { Info } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 interface Props {
   stats: {
@@ -77,15 +79,41 @@ function StatCard({
   textColor: string;
   tooltip: string;
 }) {
+  const [open, setOpen] = useState(false);
+
   return (
     <div
       className={`relative rounded-xl p-5 flex flex-col items-center justify-center text-center ${bgColor}`}
     >
+      {/* Tooltip trigger */}
       <div
-        className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 cursor-help"
-        title={tooltip}
+        className="absolute top-3 right-3"
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        tabIndex={0}
       >
-        <Info className="h-4 w-4" />
+        <Info className="h-4 w-4 text-gray-400 hover:text-gray-700 transition cursor-pointer" />
+
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 4 }}
+              transition={{ duration: 0.12, ease: "easeOut" }}
+              className="absolute right-0 bottom-7 z-50"
+            >
+              <div className="relative inline-block whitespace-nowrap rounded-lg bg-gray-900/95 px-3 py-2 text-xs text-white shadow-xl backdrop-blur">
+                {tooltip}
+
+                {/* arrow */}
+                <div className="absolute -bottom-1 right-3 h-2 w-2 rotate-45 bg-gray-900/95" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className={`text-3xl font-bold mb-1 ${textColor}`}>{value}</div>
