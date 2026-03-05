@@ -8,6 +8,7 @@ import DashboardToolbarTwo from "@/components/DashboardToolbarTwo";
 import JobListView from "@/components/JobListView";
 import CreateJobModal from "@/components/CreateJobModal";
 import JobStatsCards from "@/components/JobStatsCards";
+import Analytics from "@/components/Analytics"; // <-- NEW IMPORT
 
 type Stats = {
   total: number;
@@ -20,9 +21,24 @@ interface Props {
   board: Board;
   userId: string;
   stats: Stats;
+  analytics: {
+    totalInterviews: number;
+    responseRate: number;
+    offerRate: number;
+    rejectRate: number;
+    statusBreakdown: {
+      name: string;
+      value: number;
+    }[];
+  };
 }
 
-export default function DashboardClient({ board, userId, stats }: Props) {
+export default function DashboardClient({
+  board,
+  userId,
+  stats,
+  analytics,
+}: Props) {
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
   const [view, setView] = useState<"kanban" | "list">("kanban");
   const [openCreateJob, setOpenCreateJob] = useState(false);
@@ -108,7 +124,11 @@ export default function DashboardClient({ board, userId, stats }: Props) {
         columns={board.columns}
         defaultColumnId={defaultColumnId}
       />
-      <JobStatsCards stats={stats} />
+
+      <div className="mt-8 space-y-6">
+        <JobStatsCards stats={stats} />
+        <Analytics stats={analytics} />
+      </div>
     </>
   );
 }

@@ -6,6 +6,8 @@ import { boards } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import DashboardClient from "./DasboardClientWrapper";
 import { getJobStats } from "@/server/jobstats";
+import { getAnalytics } from "@/server/analyticsstats";
+
 export default async function Dashboard() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -15,6 +17,7 @@ export default async function Dashboard() {
     return <Navbar />;
   }
   const stats = await getJobStats();
+  const analytics = await getAnalytics();
 
   const board = await db.query.boards.findFirst({
     where: eq(boards.userId, session.user.id),
@@ -32,7 +35,12 @@ export default async function Dashboard() {
       <Navbar />
 
       {board ? (
-        <DashboardClient board={board} userId={session.user.id} stats={stats} />
+        <DashboardClient
+          board={board}
+          userId={session.user.id}
+          stats={stats}
+          analytics={analytics}
+        />
       ) : (
         <p>No board found</p>
       )}
