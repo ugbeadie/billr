@@ -375,3 +375,133 @@ export async function deleteMultipleJobs(ids: string[]) {
 
   return { success: true };
 }
+
+interface ExtractedJobData {
+  company?: string;
+  position?: string;
+  salary?: string;
+  location?: string;
+  jobType?: string;
+  jobMode?: string;
+}
+
+function normalizeJobType(value: string) {
+  const v = value.toLowerCase();
+  if (v.includes("full")) return "full-time";
+  if (v.includes("part")) return "part-time";
+  if (v.includes("intern")) return "internship";
+  if (v.includes("contract")) return "contract";
+  return "";
+}
+
+function normalizeJobMode(value: string) {
+  const v = value.toLowerCase();
+  if (v.includes("remote")) return "remote";
+  if (v.includes("hybrid")) return "hybrid";
+  if (v.includes("site")) return "onsite";
+  return "";
+}
+
+export async function extractJobDetailsFromDescription(
+  description: string,
+): Promise<ExtractedJobData> {
+  if (!description || description.length < 50)
+    throw new Error("Please paste the job description");
+
+  const apiKey = process.env.OPENROUTER_API_KEY;
+
+  if (!apiKey) throw new Error("OpenRouter API key missing");
+
+  const prompt = `
+Extract structured job data from the job description below.
+
+Return ONLY JSON.
+
+Fields:
+company
+position
+salary
+location
+jobType (full-time, part-time, internship, contract)
+jobMode (remote, onsite, hybrid)
+
+Rules:
+
+- Infer job type from wording like:
+  "Full time role", "Contract position", "Internship program"
+
+- Infer job mode from context:
+  "work from home" -> remote
+  "hybrid work model" -> hybrid
+  "office based" -> onsite
+
+- If both remote and hybrid appear choose remote.
+
+JOB DESCRIPTION:
+
+${description.slice(0, 12000)}
+`;
+
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openrouter/auto",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.2,
+      }),
+    },
+  );
+
+  if (!response.ok) throw new Error("AI extraction failed");
+
+  const data = await response.json();
+  const content = data.choices?.[0]?.message?.content || "";
+
+  let parsed: Record<string, string> = {};
+
+  try {
+    const match = content.match(/\{[\s\S]*\}/);
+    if (match) parsed = JSON.parse(match[0]);
+  } catch {
+    throw new Error("Failed to parse AI result");
+  }
+
+  return {
+    company: parsed.company || "",
+    position: parsed.position || "",
+    salary: parsed.salary || "",
+    location: parsed.location || "",
+    jobType: normalizeJobType(parsed.jobType || ""),
+    jobMode: normalizeJobMode(parsed.jobMode || ""),
+  };
+}
+
+export async function extractJobFromUrl(url: string) {
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent": "Mozilla/5.0",
+    },
+  });
+
+  const html = await res.text();
+
+  const clean = html
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .slice(0, 12000);
+
+  const data = await extractJobDetailsFromDescription(clean);
+
+  return {
+    ...data,
+    description: clean,
+  };
+}
