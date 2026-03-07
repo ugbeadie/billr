@@ -6,10 +6,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+
 import {
   Select,
   SelectContent,
@@ -17,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import {
   Building2,
   Briefcase,
@@ -24,9 +27,12 @@ import {
   MapPin,
   Link as LinkIcon,
   X,
+  Loader,
 } from "lucide-react";
+
 import { useState, useEffect } from "react";
-import { createJob } from "@/server/actions";
+import { createJob, extractJobFromUrl } from "@/server/actions";
+
 import { toast } from "sonner";
 import type { Column } from "@/lib/types";
 import { motion } from "framer-motion";
@@ -47,6 +53,9 @@ export default function CreateJobModal({
   defaultColumnId = "",
 }: CreateJobModalProps) {
   const [loading, setLoading] = useState(false);
+  const [extracting, setExtracting] = useState(false);
+  const [jobUrl, setJobUrl] = useState("");
+
   const today = new Date().toISOString().split("T")[0];
 
   const [selectedColumnId, setSelectedColumnId] =
@@ -65,15 +74,38 @@ export default function CreateJobModal({
   });
 
   useEffect(() => {
-    if (open) {
-      setSelectedColumnId(defaultColumnId);
-    }
+    if (open) setSelectedColumnId(defaultColumnId);
   }, [open, defaultColumnId]);
+
+  async function autoExtractFromUrl(url: string) {
+    if (!url.includes("http")) return;
+
+    setExtracting(true);
+
+    try {
+      const data = await extractJobFromUrl(url);
+
+      setFormData((prev) => ({
+        ...prev,
+        company: data.company || prev.company,
+        position: data.position || prev.position,
+        salary: data.salary || prev.salary,
+        location: data.location || prev.location,
+        jobType: data.jobType || prev.jobType,
+        jobMode: data.jobMode || prev.jobMode,
+        url,
+      }));
+
+      toast.success("Job extracted from URL");
+    } catch {
+      toast.error("URL extraction failed");
+    }
+
+    setExtracting(false);
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (loading) return;
 
     if (!selectedColumnId) {
       toast.error("Please select a column");
@@ -97,11 +129,7 @@ export default function CreateJobModal({
         columnId: selectedColumnId,
       });
 
-      toast.success("Job added successfully");
-
-      onOpenChange(false);
-
-      const today = new Date().toISOString().split("T")[0];
+      toast.success("Job added");
 
       setFormData({
         company: "",
@@ -115,13 +143,14 @@ export default function CreateJobModal({
         description: "",
       });
 
-      setSelectedColumnId("");
-    } catch (error) {
-      console.error("Failed to create job:", error);
+      setJobUrl("");
+
+      onOpenChange(false);
+    } catch {
       toast.error("Failed to add job");
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   return (
@@ -130,11 +159,7 @@ export default function CreateJobModal({
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{
-            type: "spring",
-            stiffness: 260,
-            damping: 22,
-          }}
+          transition={{ type: "spring", stiffness: 260, damping: 22 }}
           className="max-h-[95vh] overflow-y-auto p-6"
         >
           <DialogHeader className="flex flex-row justify-between">
@@ -150,13 +175,43 @@ export default function CreateJobModal({
             </button>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="mt-6">
+          {/* URL EXTRACTOR */}
+
+          <div className="mt-6 space-y-3">
+            <div className="relative">
+              <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+
+              <Input
+                className="pl-9"
+                placeholder="Paste job URL (LinkedIn, Greenhouse, Lever...)"
+                value={jobUrl}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setJobUrl(v);
+                  autoExtractFromUrl(v);
+                }}
+              />
+            </div>
+
+            {extracting && (
+              <div className="flex items-center gap-2 text-primary text-sm text-muted-foreground">
+                <Loader className="h-4 w-4 animate-spin" />
+                Extracting job details...
+              </div>
+            )}
+          </div>
+
+          {/* FORM */}
+
+          <form onSubmit={handleSubmit} className="mt-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Company */}
+              {/* Company Name */}
               <div>
                 <Label>Company Name *</Label>
+
                 <div className="relative">
                   <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+
                   <Input
                     className="pl-9"
                     placeholder="e.g. Google, Stripe, Flutterwave"
@@ -172,8 +227,10 @@ export default function CreateJobModal({
               {/* Position */}
               <div>
                 <Label>Position *</Label>
+
                 <div className="relative">
                   <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+
                   <Input
                     className="pl-9"
                     placeholder="e.g. Frontend Developer, Product Designer"
@@ -189,6 +246,7 @@ export default function CreateJobModal({
               {/* Column */}
               <div>
                 <Label>Column *</Label>
+
                 <Select
                   value={selectedColumnId}
                   onValueChange={setSelectedColumnId}
@@ -196,7 +254,8 @@ export default function CreateJobModal({
                   <SelectTrigger>
                     <SelectValue placeholder="Select column" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background border shadow-md z-[100]">
+
+                  <SelectContent>
                     {columns
                       .slice()
                       .sort((a, b) => a.order - b.order)
@@ -212,8 +271,10 @@ export default function CreateJobModal({
               {/* Salary */}
               <div>
                 <Label>Salary</Label>
+
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+
                   <Input
                     className="pl-9"
                     placeholder="e.g. $70,000 - $90,000 / ₦15M annually"
@@ -228,16 +289,18 @@ export default function CreateJobModal({
               {/* Job Type */}
               <div>
                 <Label>Job Type</Label>
+
                 <Select
                   value={formData.jobType}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, jobType: value })
+                  onValueChange={(v) =>
+                    setFormData({ ...formData, jobType: v })
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select job type" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background border shadow-md z-[100]">
+
+                  <SelectContent>
                     <SelectItem value="full-time">Full-time</SelectItem>
                     <SelectItem value="part-time">Part-time</SelectItem>
                     <SelectItem value="internship">Internship</SelectItem>
@@ -249,8 +312,10 @@ export default function CreateJobModal({
               {/* Location */}
               <div>
                 <Label>Location</Label>
+
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+
                   <Input
                     className="pl-9"
                     placeholder="e.g. Remote, Lagos, London"
@@ -262,11 +327,13 @@ export default function CreateJobModal({
                 </div>
               </div>
 
-              {/* URL */}
+              {/* Job URL */}
               <div>
                 <Label>Job URL</Label>
+
                 <div className="relative">
                   <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+
                   <Input
                     className="pl-9"
                     placeholder="https://company.com/careers/job-id"
@@ -281,16 +348,18 @@ export default function CreateJobModal({
               {/* Job Mode */}
               <div>
                 <Label>Job Mode</Label>
+
                 <Select
                   value={formData.jobMode}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, jobMode: value })
+                  onValueChange={(v) =>
+                    setFormData({ ...formData, jobMode: v })
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select job mode" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background border shadow-md z-[100]">
+
+                  <SelectContent>
                     <SelectItem value="remote">Remote</SelectItem>
                     <SelectItem value="onsite">On-site</SelectItem>
                     <SelectItem value="hybrid">Hybrid</SelectItem>
@@ -301,6 +370,7 @@ export default function CreateJobModal({
               {/* Applied Date */}
               <div>
                 <Label>Applied On</Label>
+
                 <Input
                   type="date"
                   value={formData.appliedDate}
@@ -311,9 +381,10 @@ export default function CreateJobModal({
               </div>
             </div>
 
-            {/* Description */}
+            {/* Description / Notes */}
             <div className="mt-6">
               <Label>Description / Notes</Label>
+
               <Textarea
                 className="min-h-[140px]"
                 placeholder="Add notes about the role, interview feedback, recruiter contact, next steps, etc..."
@@ -326,21 +397,11 @@ export default function CreateJobModal({
 
             {/* Footer */}
             <div className="flex justify-end gap-2 mt-8">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={loading}
-                className="rounded-xl px-6"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
 
-              <Button
-                type="submit"
-                disabled={loading}
-                className="bg-primary text-white rounded-xl px-6"
-              >
+              <Button type="submit" disabled={loading} className="text-white">
                 {loading ? "Saving..." : "Save"}
               </Button>
             </div>
