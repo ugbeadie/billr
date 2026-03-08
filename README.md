@@ -4,7 +4,7 @@
 
 Trackr is a modern SaaS job application tracking platform built to help job seekers organize applications, manage interviews, and land roles faster.
 
-This project includes a responsive marketing landing page and is designed to evolve into a full-featured job tracking platform with authentication, dashboards, analytics, and productivity tools.
+This project includes a responsive marketing landing page and is designed to evolve into a full-featured job tracking platform with authentication, dashboards, analytics, automation, and productivity tools.
 
 ---
 
@@ -18,6 +18,7 @@ Trackr simplifies job hunting by providing:
 - Kanban-style job board
 - Progress insights
 - Organized company notes
+- AI-powered job detail extraction
 - Secure authentication system
 
 The mission is simple:
@@ -49,6 +50,21 @@ If you're applying to jobs, Trackr is for you.
 - Organize applications visually with Kanban boards
 - Add notes for each opportunity
 
+### 🤖 AI Job Autofill
+
+Trackr includes an AI-powered job parser that saves time when adding applications.
+
+Users can simply paste a job description or job posting link and Trackr will automatically extract key details such as:
+
+- Company name
+- Position
+- Salary (if available)
+- Location
+- Job type (Full-time, Internship, etc.)
+- Work mode (Remote, Hybrid, Onsite)
+
+This allows users to add jobs in seconds instead of manually filling every field.
+
 ### 📅 Interview Management
 
 - Track interview stages
@@ -61,6 +77,7 @@ If you're applying to jobs, Trackr is for you.
 - Monitor success rates
 - Track application volume
 - Status breakdown insights
+- GitHub-style activity graph showing job search activity over time
 
 ### 🔐 Authentication (Core Feature)
 
@@ -83,9 +100,10 @@ Authentication will allow each user to:
 ## 🧠 How It Works
 
 1. Create your account
-2. Add a job application
+2. Add a job application or paste a job link for AI autofill
 3. Move it through stages
 4. Track interview and progress
+5. Analyze your job search through analytics
 
 ---
 
