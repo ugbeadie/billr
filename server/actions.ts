@@ -375,7 +375,6 @@ export async function deleteMultipleJobs(ids: string[]) {
 
   return { success: true };
 }
-
 interface ExtractedJobData {
   company?: string;
   position?: string;
@@ -402,15 +401,49 @@ function normalizeJobMode(value: string) {
   return "";
 }
 
+async function callAI(prompt: string) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+
+  const models = ["openai/gpt-4o-mini", "meta-llama/llama-3.1-8b-instruct"];
+
+  for (const model of models) {
+    try {
+      const response = await fetch(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.2,
+            max_tokens: 200,
+          }),
+        },
+      );
+
+      if (!response.ok) continue;
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+
+      if (content) return content;
+    } catch {
+      continue;
+    }
+  }
+
+  throw new Error("AI extraction failed on all models");
+}
+
 export async function extractJobDetailsFromDescription(
   description: string,
 ): Promise<ExtractedJobData> {
   if (!description || description.length < 50)
     throw new Error("Please paste the job description");
-
-  const apiKey = process.env.OPENROUTER_API_KEY;
-
-  if (!apiKey) throw new Error("OpenRouter API key missing");
 
   const prompt = `
 Extract structured job data from the job description below.
@@ -426,42 +459,16 @@ jobType (full-time, part-time, internship, contract)
 jobMode (remote, onsite, hybrid)
 
 Rules:
-
-- Infer job type from wording like:
-  "Full time role", "Contract position", "Internship program"
-
-- Infer job mode from context:
-  "work from home" -> remote
-  "hybrid work model" -> hybrid
-  "office based" -> onsite
-
+- Infer job type from wording.
+- Infer job mode from context.
 - If both remote and hybrid appear choose remote.
 
 JOB DESCRIPTION:
 
-${description.slice(0, 12000)}
+${description.slice(0, 2500)}
 `;
 
-  const response = await fetch(
-    "https://openrouter.ai/api/v1/chat/completions",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "openrouter/auto",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.2,
-      }),
-    },
-  );
-
-  if (!response.ok) throw new Error("AI extraction failed");
-
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content || "";
+  const content = await callAI(prompt);
 
   let parsed: Record<string, string> = {};
 
@@ -496,7 +503,7 @@ export async function extractJobFromUrl(url: string) {
     .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "")
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
-    .slice(0, 12000);
+    .slice(0, 2500);
 
   const data = await extractJobDetailsFromDescription(clean);
 
