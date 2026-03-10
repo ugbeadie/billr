@@ -255,7 +255,7 @@ export default function CreateJobModal({
                     <SelectValue placeholder="Select column" />
                   </SelectTrigger>
 
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     {columns
                       .slice()
                       .sort((a, b) => a.order - b.order)
@@ -300,7 +300,7 @@ export default function CreateJobModal({
                     <SelectValue placeholder="Select job type" />
                   </SelectTrigger>
 
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     <SelectItem value="full-time">Full-time</SelectItem>
                     <SelectItem value="part-time">Part-time</SelectItem>
                     <SelectItem value="internship">Internship</SelectItem>
@@ -359,7 +359,7 @@ export default function CreateJobModal({
                     <SelectValue placeholder="Select job mode" />
                   </SelectTrigger>
 
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     <SelectItem value="remote">Remote</SelectItem>
                     <SelectItem value="onsite">On-site</SelectItem>
                     <SelectItem value="hybrid">Hybrid</SelectItem>
