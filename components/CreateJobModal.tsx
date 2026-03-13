@@ -182,6 +182,7 @@ export default function CreateJobModal({
               <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 
               <Input
+                id="ai-parser"
                 className="pl-9"
                 placeholder="Paste job URL (LinkedIn, Greenhouse, Lever...)"
                 value={jobUrl}

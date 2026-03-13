@@ -34,6 +34,7 @@ export default function DashboardToolbarOne({
       <div className="w-32 sm:w-56 md:w-72 flex-shrink-0 relative">
         <Search className="text-primary absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
+          id="search-jobs"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search by company or position"
@@ -42,6 +43,14 @@ export default function DashboardToolbarOne({
       </div>
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        {/* <button
+          onClick={() => {
+            localStorage.removeItem("tourCompleted");
+            location.reload();
+          }}
+        >
+          Restart Tour
+        </button> */}
         {/* Sort by Dropdown */}
         {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -66,7 +75,7 @@ export default function DashboardToolbarOne({
         {/* <div className="h-5 w-px bg-gray-200 hidden sm:block" /> */}
 
         {/* View toggle */}
-        <div className="flex items-center gap-1">
+        <div id="view-toggle" className="flex items-center gap-1">
           <button
             title="Kanban view"
             onClick={() => onViewChange("kanban")}
@@ -106,6 +115,7 @@ export default function DashboardToolbarOne({
 
         {/* Add Job */}
         <Button
+          id="add-job-btn"
           onClick={onAddJob}
           variant="outline"
           className="h-9 gap-2 shadow-sm rounded-xl px-3"

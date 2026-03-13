@@ -198,7 +198,7 @@ export default function KanbanBoard({ board, selectedJobs, toggleJob }: Props) {
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto px-4">
+        <div id="kanban-board" className="flex gap-4 overflow-x-auto px-4">
           {columns.map((column, index) => (
             <ColumnComponent
               key={column.id}
@@ -325,6 +325,24 @@ function ColumnComponent({
           items={column.jobs.map((j: Job) => j.id)}
           strategy={verticalListSortingStrategy}
         >
+          {column.jobs.length === 0 && (
+            <div
+              id="job-tile"
+              className="
+        flex flex-col items-center justify-center
+        h-[90px] rounded-xl border-2 border-dashed
+        border-gray-300 bg-white/50
+        text-center px-3
+      "
+            >
+              <p className="text-xs text-gray-500">No jobs here yet</p>
+
+              <p className="text-xs text-gray-400 mt-1">
+                Add a job or drag one here
+              </p>
+            </div>
+          )}
+
           {column.jobs.map((job: Job, index: number) => (
             <React.Fragment key={job.id}>
               {placeholder &&
@@ -347,9 +365,9 @@ function ColumnComponent({
       </CardContent>
 
       <Button
+        className="tour-add-column mt-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-200 text-gray-600"
         onClick={() => onAddJob(column.id)}
         variant="secondary"
-        className="mt-3 rounded-xl text-sm font-medium bg-white hover:bg-gray-200 text-gray-600"
       >
         + Add job
       </Button>

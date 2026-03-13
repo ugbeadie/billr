@@ -19,6 +19,7 @@ export default function NavToggleButton() {
 
   return (
     <button
+      id="stats-section"
       onClick={handleClick}
       disabled={isPending}
       className="

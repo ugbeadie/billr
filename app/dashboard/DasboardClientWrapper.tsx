@@ -7,6 +7,7 @@ import DashboardToolbarOne from "@/components/DashboardToolbarOne";
 import DashboardToolbarTwo from "@/components/DashboardToolbarTwo";
 import JobListView from "@/components/JobListView";
 import CreateJobModal from "@/components/CreateJobModal";
+import AppTour from "@/components/AppTour";
 
 interface Props {
   board: Board;
@@ -56,6 +57,7 @@ export default function DashboardClient({ board, userId }: Props) {
 
   return (
     <>
+      <AppTour />
       {selectedJobs.length > 0 ? (
         <DashboardToolbarTwo
           selectedJobs={selectedJobs}

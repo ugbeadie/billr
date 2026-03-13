@@ -1,9 +1,8 @@
-import { auth } from "@/lib/auth";
+"use client";
+
 import { Button } from "./ui/button";
-import { headers } from "next/headers";
 import Link from "next/link";
 import Image from "next/image";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,11 +14,7 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import LogoutButton from "./LogoutButton";
 import NavToggleButton from "./NavToggleButton";
 
-export default async function Navbar() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
+export default function Navbar({ user }: { user?: any }) {
   return (
     <nav className="border-b border-gray-200 bg-white">
       <div className="flex h-14 items-center px-4 justify-between">
@@ -32,16 +27,15 @@ export default async function Navbar() {
             alt="Trackr logo"
             width={24}
             height={24}
-            className="object-contain"
             priority
           />
           TRACKR
         </Link>
 
         <div className="flex items-center gap-4">
-          {session?.user && <NavToggleButton />}
+          {user && <NavToggleButton />}
 
-          {session?.user && (
+          {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -50,7 +44,7 @@ export default async function Navbar() {
                 >
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-primary text-white">
-                      {session.user.name[0].toUpperCase()}
+                      {user.name[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -62,16 +56,15 @@ export default async function Navbar() {
               >
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {session.user.name}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {session.user.email}
+                    <p className="text-sm font-medium">{user.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {user.email}
                     </p>
                   </div>
                 </DropdownMenuLabel>
 
-                <DropdownMenuSeparator className="my-2 mx-2 bg-gray-200" />
+                <DropdownMenuSeparator />
+
                 <LogoutButton />
               </DropdownMenuContent>
             </DropdownMenu>
