@@ -25,7 +25,6 @@ export default function AppTour() {
 
   async function startTour() {
     await createDemoJob();
-
     await waitForJobTile();
 
     const driverObj = driver({
@@ -44,6 +43,14 @@ export default function AppTour() {
           },
         },
         {
+          element: ".tour-add-column",
+          popover: {
+            title: "Add Job to Column",
+            description:
+              "You can also add a job directly to a specific column here.",
+          },
+        },
+        {
           element: "#kanban-board",
           popover: {
             title: "Kanban Board",
@@ -56,6 +63,15 @@ export default function AppTour() {
             title: "Drag Jobs",
             description:
               "Drag and drop jobs between columns as your application progresses.",
+          },
+        },
+        {
+          // NEW STEP: multi-select and bulk actions
+          element: "#kanban-board",
+          popover: {
+            title: "Select Multiple Jobs",
+            description:
+              "You can select multiple jobs at once to drag them together or delete them in bulk.",
           },
         },
         {
