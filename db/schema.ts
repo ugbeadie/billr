@@ -165,6 +165,8 @@ export const jobs = pgTable("jobs", {
 
   order: integer("order").default(0).notNull(),
 
+  isDemo: boolean("is_demo").default(false).notNull(),
+
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

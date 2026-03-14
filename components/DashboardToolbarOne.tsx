@@ -43,14 +43,14 @@ export default function DashboardToolbarOne({
       </div>
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3 flex-shrink-0">
-        {/* <button
+        <button
           onClick={() => {
             localStorage.removeItem("tourCompleted");
             location.reload();
           }}
         >
           Restart Tour
-        </button> */}
+        </button>
         {/* Sort by Dropdown */}
         {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
