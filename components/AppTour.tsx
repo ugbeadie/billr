@@ -3,38 +3,29 @@
 import { useEffect } from "react";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import confetti from "canvas-confetti";
 import { deleteDemoJobs, createDemoJob } from "@/server/actions";
 
 export default function AppTour() {
   useEffect(() => {
     const completed = localStorage.getItem("tourCompleted");
-
-    if (!completed) {
-      startTour();
-    }
+    if (!completed) startTour();
   }, []);
 
   async function waitForJobTile() {
     return new Promise<void>((resolve) => {
       const check = () => {
         const job = document.querySelector(".job-tile");
-
-        if (job) {
-          resolve();
-        } else {
-          setTimeout(check, 200);
-        }
+        if (job) resolve();
+        else setTimeout(check, 200);
       };
-
       check();
     });
   }
 
   async function startTour() {
-    // create demo job
     await createDemoJob();
 
-    // wait for UI to render it
     await waitForJobTile();
 
     const driverObj = driver({
@@ -85,6 +76,12 @@ export default function AppTour() {
 
       onDestroyed: async () => {
         localStorage.setItem("tourCompleted", "true");
+
+        confetti({
+          particleCount: 120,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
 
         await deleteDemoJobs();
       },

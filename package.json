@@ -21,6 +21,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@react-email/components": "^1.0.7",
     "better-auth": "^1.4.18",
+    "canvas-confetti": "^1.9.4",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
