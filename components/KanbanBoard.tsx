@@ -27,6 +27,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { updateJob } from "@/server/actions";
+import { toast, Toaster } from "sonner";
+import confetti from "canvas-confetti";
 
 type Props = {
   board: Board;
@@ -148,7 +150,6 @@ export default function KanbanBoard({ board, selectedJobs, toggleJob }: Props) {
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
-    // Determine which jobs are being dragged
     const draggingIds = selectedJobs.includes(active.id as string)
       ? selectedJobs
       : [active.id as string];
@@ -180,6 +181,19 @@ export default function KanbanBoard({ board, selectedJobs, toggleJob }: Props) {
     if (!targetColumn) return;
 
     await moveJobs(draggingIds, targetColumn.id, targetIndex);
+
+    if (targetColumn.name.toLowerCase() === "interviewing") {
+      toast("Good luck with the interview! 🍀");
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    }
+
+    if (targetColumn.name.toLowerCase() === "offer") {
+      toast("Congratulations on your offer! 🥳");
+      confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+    }
+    if (targetColumn.name.toLowerCase() === "rejected") {
+      toast("Better luck next time! 👍🏽");
+    }
   }
 
   const activeJobs =
@@ -249,6 +263,8 @@ export default function KanbanBoard({ board, selectedJobs, toggleJob }: Props) {
           }}
         />
       )}
+
+      {/* <Toaster position="top-center" /> */}
     </>
   );
 }

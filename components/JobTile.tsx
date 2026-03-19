@@ -81,7 +81,7 @@ export default function JobTile({
     }
   }
   return (
-    <div className="mb-2 min-w-0">
+    <div className="job-tile mb-2 min-w-0">
       <Card
         {...dragHandleProps}
         onMouseEnter={() => setHovered(true)}

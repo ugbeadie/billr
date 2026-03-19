@@ -7,7 +7,7 @@ import { z } from "zod";
 import { initializeUserBoard } from "@/lib/board";
 import { db } from "@/db/drizzle";
 import { boards, columns, jobs, user as userTable } from "@/db/schema";
-import { eq, and, min, asc, ne, gte } from "drizzle-orm";
+import { eq, and, min, asc, ne, gte, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 const signUpSchema = z.object({
@@ -511,4 +511,63 @@ export async function extractJobFromUrl(url: string) {
     ...data,
     description: clean,
   };
+}
+
+export async function createDemoJob() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) return;
+
+  const board = await db.query.boards.findFirst({
+    where: eq(boards.userId, session.user.id),
+    with: { columns: true },
+  });
+
+  if (!board) return;
+
+  const appliedColumn = board.columns
+    .slice()
+    .sort((a, b) => a.order - b.order)[0];
+
+  if (!appliedColumn) return;
+
+  const existingDemo = await db.query.jobs.findFirst({
+    where: and(eq(jobs.userId, session.user.id), eq(jobs.isDemo, true)),
+  });
+
+  if (existingDemo) return;
+
+  await db.insert(jobs).values({
+    company: "Stripe",
+    position: "Frontend Engineer",
+    location: "Remote",
+    jobType: "full-time",
+    jobMode: "remote",
+    description:
+      "This is a demo job to show how the board works. Drag it between columns.",
+    boardId: board.id,
+    columnId: appliedColumn.id,
+    userId: session.user.id,
+    order: -9999,
+    isDemo: true,
+    appliedDate: new Date(),
+  });
+
+  revalidatePath("/dashboard");
+}
+
+export async function deleteDemoJobs() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) return;
+
+  await db
+    .delete(jobs)
+    .where(and(eq(jobs.userId, session.user.id), eq(jobs.isDemo, true)));
+
+  revalidatePath("/dashboard");
 }
