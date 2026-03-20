@@ -57,7 +57,7 @@ export default function DashboardClient({ board, userId }: Props) {
 
   return (
     <>
-      <AppTour />
+      <AppTour userId={userId} />
       {selectedJobs.length > 0 ? (
         <DashboardToolbarTwo
           selectedJobs={selectedJobs}

@@ -168,6 +168,7 @@ export default function CreateJobModal({
             </DialogTitle>
 
             <button
+              id="close-modal"
               onClick={() => onOpenChange(false)}
               className="p-2 rounded-full bg-gray-200 hover:bg-gray-300"
             >
@@ -182,7 +183,7 @@ export default function CreateJobModal({
               <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 
               <Input
-                id="ai-parser"
+                id="paste-url"
                 className="pl-9"
                 placeholder="Paste job URL (LinkedIn, Greenhouse, Lever...)"
                 value={jobUrl}

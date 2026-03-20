@@ -6,18 +6,21 @@ import "driver.js/dist/driver.css";
 import confetti from "canvas-confetti";
 import { deleteDemoJobs, createDemoJob } from "@/server/actions";
 
-export default function AppTour() {
+export default function AppTour({ userId }: { userId: string }) {
   useEffect(() => {
-    const completed = localStorage.getItem("tourCompleted");
-    if (!completed) startTour();
+    const key = `tourCompleted-${userId}`;
+    const completed = localStorage.getItem(key);
+
+    if (!completed) {
+      setTimeout(() => startTour(), 800);
+    }
   }, []);
 
-  async function waitForJobTile() {
+  async function waitForElement(selector: string) {
     return new Promise<void>((resolve) => {
       const check = () => {
-        const job = document.querySelector(".job-tile");
-        if (job) resolve();
-        else setTimeout(check, 200);
+        if (document.querySelector(selector)) resolve();
+        else setTimeout(check, 100);
       };
       check();
     });
@@ -25,7 +28,7 @@ export default function AppTour() {
 
   async function startTour() {
     await createDemoJob();
-    await waitForJobTile();
+    await waitForElement(".job-tile");
 
     const driverObj = driver({
       showProgress: true,
@@ -40,8 +43,34 @@ export default function AppTour() {
           popover: {
             title: "Add Job",
             description: "Click here to add a new job application.",
+            onNextClick: async () => {
+              const btn = document.querySelector(
+                "#add-job-btn",
+              ) as HTMLButtonElement;
+              btn?.click();
+              await waitForElement("#paste-url");
+              driverObj.moveNext();
+            },
           },
         },
+
+        {
+          element: "#paste-url",
+          popover: {
+            title: "Paste Job URL",
+            description:
+              "We will extract essential info from the URL to populate your form.",
+            onNextClick: async () => {
+              const closeBtn = document.querySelector(
+                "#close-modal",
+              ) as HTMLButtonElement;
+              closeBtn?.click();
+              await waitForElement("#kanban-board");
+              driverObj.moveNext();
+            },
+          },
+        },
+
         {
           element: ".tour-add-column",
           popover: {
@@ -50,6 +79,7 @@ export default function AppTour() {
               "You can also add a job directly to a specific column here.",
           },
         },
+
         {
           element: "#kanban-board",
           popover: {
@@ -57,6 +87,7 @@ export default function AppTour() {
             description: "This is where you manage your job applications.",
           },
         },
+
         {
           element: ".job-tile",
           popover: {
@@ -65,15 +96,16 @@ export default function AppTour() {
               "Drag and drop jobs between columns as your application progresses.",
           },
         },
+
         {
-          // NEW STEP: multi-select and bulk actions
           element: "#kanban-board",
           popover: {
             title: "Select Multiple Jobs",
             description:
-              "You can select multiple jobs at once to drag them together or delete them in bulk.",
+              "You can select multiple jobs to drag or delete them in bulk.",
           },
         },
+
         {
           element: ".job-tile",
           popover: {
@@ -81,6 +113,7 @@ export default function AppTour() {
             description: "Click a job card to open and edit its details.",
           },
         },
+
         {
           element: "#view-toggle",
           popover: {
@@ -91,7 +124,7 @@ export default function AppTour() {
       ],
 
       onDestroyed: async () => {
-        localStorage.setItem("tourCompleted", "true");
+        localStorage.setItem(`tourCompleted-${userId}`, "true");
 
         confetti({
           particleCount: 120,
