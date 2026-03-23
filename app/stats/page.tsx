@@ -23,7 +23,7 @@ export default async function StatsPage() {
 
   return (
     <div>
-      <Navbar />
+      <Navbar user={session.user} />
 
       <main className="mt-6 space-y-8">
         <JobStatsCards stats={stats} />
