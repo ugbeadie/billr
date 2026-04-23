@@ -28,7 +28,7 @@ export default async function StatsPage() {
       <main className="mt-6 space-y-8">
         <JobStatsCards stats={stats} />
         <Analytics stats={analytics} />
-        <JobActivityHeatmap data={activity} />
+        <JobActivityHeatmap data={activity} stats={stats} />
       </main>
     </div>
   );

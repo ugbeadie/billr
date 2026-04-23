@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -27,10 +28,19 @@ export default function Page() {
       <nav className="fixed top-0 w-full z-50 bg-primary-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary text-white">
-              <Briefcase className="w-5 h-5" />
-            </div>
-            <span className="font-bold text-xl text-heading">Trackr</span>
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-xl font-semibold text-primary"
+            >
+              <Image
+                src="/images/logo.png"
+                alt="Trackr logo"
+                width={24}
+                height={24}
+                priority
+              />
+              TRACKR
+            </Link>{" "}
           </div>
 
           <div className="hidden md:flex items-center gap-4">

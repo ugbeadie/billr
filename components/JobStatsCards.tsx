@@ -1,15 +1,24 @@
-import { TrendingUp, Users, Crown, Target } from "lucide-react";
+import {
+  TrendingUp,
+  Users,
+  Crown,
+  Target,
+  Sparkles,
+  Award,
+} from "lucide-react";
 
 type Stats = {
   total: number;
   today: number;
   week: number;
   month: number;
+  currentStreak: number;
+  longestStreak: number;
 };
 
 export default function JobStatsCards({ stats }: { stats: Stats }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 px-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 px-4">
       <StatCard
         title="Total Applications"
         value={stats.total}

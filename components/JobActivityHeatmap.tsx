@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Flame } from "lucide-react";
 
 type ActivityDay = {
   day: string;
@@ -37,7 +38,13 @@ function getColor(count: number) {
   return "bg-blue-600";
 }
 
-export default function JobActivityHeatmap({ data }: { data: ActivityDay[] }) {
+export default function JobActivityHeatmap({
+  data,
+  stats,
+}: {
+  data: ActivityDay[];
+  stats: { currentStreak: number; longestStreak: number };
+}) {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 
@@ -133,6 +140,27 @@ export default function JobActivityHeatmap({ data }: { data: ActivityDay[] }) {
 
         {/* HEATMAP */}
         <div className="flex-1 min-w-0">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <div className="rounded-3xl border border-orange-200 bg-orange-50 px-4 py-3 shadow-sm min-w-[160px]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-orange-400 flex items-center gap-1">
+                <Flame className="w-3.5 h-3.5 text-orange-500" />
+                Total day streak
+              </p>
+              <p className="mt-2 text-2xl font-semibold text-orange-600">
+                {`${stats.currentStreak} day${stats.currentStreak === 1 ? "" : "s"}`}
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-[#3a9aff]/30 bg-[#e7f6ff] px-4 py-3 shadow-sm min-w-[160px]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#3a9aff]">
+                Max streak
+              </p>
+              <p className="mt-2 text-2xl font-semibold text-[#3a9aff]">
+                {`${stats.longestStreak} day${stats.longestStreak === 1 ? "" : "s"}`}
+              </p>
+            </div>
+          </div>
+
           <div className="w-full overflow-x-auto pb-4">
             <div className="min-w-max flex flex-col gap-3 pr-2">
               {/* MONTH LABELS */}

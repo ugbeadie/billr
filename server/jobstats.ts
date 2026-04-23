@@ -25,6 +25,51 @@ function startOfMonth() {
   return d;
 }
 
+function daysBetween(previous: string, current: string) {
+  const prev = new Date(previous);
+  const curr = new Date(current);
+  return Math.round((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function computeStreaks(days: string[]) {
+  if (days.length === 0) {
+    return { currentStreak: 0, longestStreak: 0 };
+  }
+
+  const sortedDays = [...new Set(days)].sort();
+  let longestStreak = 0;
+  let currentStreak = 0;
+  let streak = 0;
+  let previousDay: string | null = null;
+
+  for (const day of sortedDays) {
+    if (previousDay && daysBetween(previousDay, day) === 1) {
+      streak += 1;
+    } else {
+      streak = 1;
+    }
+
+    longestStreak = Math.max(longestStreak, streak);
+    previousDay = day;
+  }
+
+  const today = startOfToday();
+  let consecutive = 0;
+  for (let i = 0; ; i++) {
+    const checkDate = new Date(today);
+    checkDate.setDate(checkDate.getDate() - i);
+    const isoDay = checkDate.toISOString().slice(0, 10);
+    if (days.includes(isoDay)) {
+      consecutive += 1;
+    } else {
+      break;
+    }
+  }
+
+  currentStreak = consecutive;
+  return { currentStreak, longestStreak };
+}
+
 export async function getJobStats() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -58,10 +103,24 @@ export async function getJobStats() {
     .from(jobs)
     .where(eq(jobs.userId, userId));
 
+  const dayRows = await db.execute<{ day: string | Date }>(sql`
+    select distinct date(${jobs.createdAt}) as day
+    from jobs
+    where ${jobs.userId} = ${userId}
+    order by day asc
+  `);
+
+  const days = dayRows.rows.map((row) =>
+    typeof row.day === "string" ? row.day : row.day.toISOString().slice(0, 10),
+  );
+  const { currentStreak, longestStreak } = computeStreaks(days);
+
   return {
     total: Number(result.total),
     today: Number(result.today),
     week: Number(result.week),
     month: Number(result.month),
+    currentStreak,
+    longestStreak,
   };
 }
