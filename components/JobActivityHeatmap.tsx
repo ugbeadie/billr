@@ -144,7 +144,7 @@ export default function JobActivityHeatmap({
             <div className="rounded-3xl border border-orange-200 bg-orange-50 px-4 py-3 shadow-sm min-w-[160px]">
               <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-orange-400 flex items-center gap-1">
                 <Flame className="w-3.5 h-3.5 text-orange-500" />
-                Total day streak
+                Current streak
               </p>
               <p className="mt-2 text-2xl font-semibold text-orange-600">
                 {`${stats.currentStreak} day${stats.currentStreak === 1 ? "" : "s"}`}

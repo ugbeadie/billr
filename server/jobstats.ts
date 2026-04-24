@@ -25,6 +25,13 @@ function startOfMonth() {
   return d;
 }
 
+function toLocalIsoDay(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function daysBetween(previous: string, current: string) {
   const prev = new Date(previous);
   const curr = new Date(current);
@@ -36,7 +43,8 @@ function computeStreaks(days: string[]) {
     return { currentStreak: 0, longestStreak: 0 };
   }
 
-  const sortedDays = [...new Set(days)].sort();
+  const daySet = new Set(days);
+  const sortedDays = [...daySet].sort();
   let longestStreak = 0;
   let currentStreak = 0;
   let streak = 0;
@@ -54,12 +62,21 @@ function computeStreaks(days: string[]) {
   }
 
   const today = startOfToday();
+  const todayIso = toLocalIsoDay(today);
+  const streakStart = new Date(today);
+
+  // GitHub-style current streak: if there is no activity today,
+  // allow the streak to continue through yesterday.
+  if (!daySet.has(todayIso)) {
+    streakStart.setDate(streakStart.getDate() - 1);
+  }
+
   let consecutive = 0;
   for (let i = 0; ; i++) {
-    const checkDate = new Date(today);
+    const checkDate = new Date(streakStart);
     checkDate.setDate(checkDate.getDate() - i);
-    const isoDay = checkDate.toISOString().slice(0, 10);
-    if (days.includes(isoDay)) {
+    const isoDay = toLocalIsoDay(checkDate);
+    if (daySet.has(isoDay)) {
       consecutive += 1;
     } else {
       break;
@@ -104,14 +121,15 @@ export async function getJobStats() {
     .where(eq(jobs.userId, userId));
 
   const dayRows = await db.execute<{ day: string | Date }>(sql`
-    select distinct date(${jobs.createdAt}) as day
+    select distinct date(coalesce(${jobs.appliedDate}, ${jobs.createdAt})) as day
     from jobs
     where ${jobs.userId} = ${userId}
+      and date(coalesce(${jobs.appliedDate}, ${jobs.createdAt})) <= current_date
     order by day asc
   `);
 
   const days = dayRows.rows.map((row) =>
-    typeof row.day === "string" ? row.day : row.day.toISOString().slice(0, 10),
+    typeof row.day === "string" ? row.day : toLocalIsoDay(row.day),
   );
   const { currentStreak, longestStreak } = computeStreaks(days);
 
