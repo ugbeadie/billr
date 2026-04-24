@@ -10,11 +10,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface ToolbarOneProps {
   boardId: string;
   columns: Column[];
+  userId: string;
   view: "kanban" | "list";
   onViewChange: (v: "kanban" | "list") => void;
   onAddJob: () => void;
@@ -23,23 +24,19 @@ interface ToolbarOneProps {
 }
 
 export default function DashboardToolbarOne({
+  userId,
   view,
   onViewChange,
   onAddJob,
   search,
   onSearchChange,
 }: ToolbarOneProps) {
-  const [showReplay, setShowReplay] = useState(false);
   const [isTourLoading, setIsTourLoading] = useState(false);
-  useEffect(() => {
-    const completed = localStorage.getItem("tourCompleted");
-    setShowReplay(!completed);
-  }, []);
 
   const handleReplayTour = async () => {
     setIsTourLoading(true);
-    localStorage.removeItem("tourCompleted");
-    await new Promise((r) => setTimeout(r, 500)); // optional small delay for UX
+    localStorage.removeItem(`tourCompleted-${userId}`);
+    await new Promise((r) => setTimeout(r, 500));
     location.reload();
   };
 

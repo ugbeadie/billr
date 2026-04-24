@@ -68,6 +68,7 @@ export default function DashboardClient({ board, userId }: Props) {
         <DashboardToolbarOne
           boardId={board.id}
           columns={board.columns}
+          userId={userId}
           view={view}
           onViewChange={setView}
           onAddJob={() => {
