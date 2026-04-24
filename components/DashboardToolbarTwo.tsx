@@ -53,7 +53,6 @@ export default function DashboardToolbarTwo({
       onDone();
       router.refresh();
     } catch (err) {
-      console.error(err);
       toast.error("Failed to move jobs");
     } finally {
       setIsMoving(false);
@@ -79,7 +78,6 @@ export default function DashboardToolbarTwo({
       onDone();
       router.refresh();
     } catch (err) {
-      console.error(err);
       toast.error("Failed to delete jobs");
     } finally {
       setIsDeleting(false);

@@ -25,9 +25,7 @@ export const auth = betterAuth({
             userEmail: user.email,
           }),
         });
-      } catch (error) {
-        console.error("Failed to send reset email:", error);
-      }
+      } catch (error) {}
     },
   },
 
@@ -47,16 +45,10 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          console.log("USER CREATE HOOK FIRED", user);
-
           try {
-            // Ensure we have a valid user ID
             const userId = user.id;
 
-            if (!userId || typeof userId !== "string") {
-              console.error("Invalid user ID in hook:", userId);
-              return;
-            }
+            if (!userId || typeof userId !== "string") return;
 
             // Verify user exists in database before initializing board
             const dbUser = await db
@@ -65,19 +57,10 @@ export const auth = betterAuth({
               .where(eq(userTable.id, userId))
               .limit(1);
 
-            if (!dbUser.length) {
-              console.error("User not found in database:", userId);
-              return;
-            }
+            if (!dbUser.length) return;
 
-            console.log(
-              "User found in database, initializing board for:",
-              userId,
-            );
             await initializeUserBoard(userId);
-            console.log("Board initialized successfully for:", userId);
           } catch (error) {
-            console.error("Error in user create hook:", error);
             throw error;
           }
         },

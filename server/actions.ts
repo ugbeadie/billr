@@ -105,8 +105,6 @@ export async function signIn(
   try {
     await auth.api.signInEmail({ body: result.data });
   } catch (err: any) {
-    console.log("Better Auth error:", err);
-
     const message =
       err?.body?.message ||
       err?.response?.body?.message ||

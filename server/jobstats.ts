@@ -65,7 +65,6 @@ function computeStreaks(days: string[]) {
   const todayIso = toLocalIsoDay(today);
   const streakStart = new Date(today);
 
-  // GitHub-style current streak: if there is no activity today,
   // allow the streak to continue through yesterday.
   if (!daySet.has(todayIso)) {
     streakStart.setDate(streakStart.getDate() - 1);
