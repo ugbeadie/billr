@@ -5,12 +5,6 @@ import { motion } from "framer-motion";
 import MockColumn from "./MockColumn";
 import { revealProps } from "./motion";
 
-/**
- * Not a centred band with a full-width button. Left-aligned across seven
- * columns, the button sized to its own text, and — instead of a decorative
- * card — the board exactly as it looks on day one, before you have added
- * anything. It is the honest version of "here is what you are signing up for".
- */
 export default function CtaSection() {
   return (
     <section className="relative overflow-hidden bg-[#E7F6FF]">

@@ -18,8 +18,6 @@ export default function Navbar({ user }: { user?: any }) {
   return (
     <nav className="sticky top-0 z-40 border-b border-[#E5E7EB] bg-white/85 backdrop-blur">
       <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
-        {/* Same wordmark as the marketing page: briefcase mark, lowercase
-            name, tight tracking. */}
         <Link
           href="/"
           className="flex shrink-0 items-center gap-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3A9AFF]/50"

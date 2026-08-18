@@ -87,7 +87,6 @@ export default function DashboardToolbarTwo({
   return (
     <>
       <div className="flex items-center gap-2 overflow-x-auto border-b border-[#E5E7EB] bg-[#E7F6FF] px-3 py-2.5 sm:gap-3 sm:px-4">
-        {/* Say what is selected — the bar appearing is not enough on its own */}
         <p className="shrink-0 text-sm font-medium text-[#111827]">
           <span className="tabular-nums">{selectedJobs.length}</span>
           <span className="hidden sm:inline">
@@ -151,7 +150,6 @@ export default function DashboardToolbarTwo({
             Delete
           </Button>
 
-          {/* Dismiss, so it stays quiet rather than competing for attention */}
           <Button
             onClick={onDone}
             disabled={isMoving || isDeleting}

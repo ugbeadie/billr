@@ -1,11 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-/**
- * The existing briefcase-and-magnifier mark, unchanged, beside "trackr" set in
- * Outfit at heavy weight and tight negative tracking. That tracking is the
- * wordmark's only signature — nothing else on the page is set this way.
- */
 export default function Wordmark({
   size = "sm",
   className,

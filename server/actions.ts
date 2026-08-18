@@ -22,9 +22,81 @@ const signInSchema = z.object({
 });
 
 type ActionState = {
+  /** Keyed by field name, plus "form" for errors that belong to no one field. */
   errors?: Record<string, string[]>;
   values?: { name?: string; email?: string };
 };
+
+/** Connection failures, however they reach us. */
+const NETWORK_CODES = new Set([
+  "UND_ERR_CONNECT_TIMEOUT",
+  "UND_ERR_HEADERS_TIMEOUT",
+  "UND_ERR_SOCKET",
+  "ECONNREFUSED",
+  "ECONNRESET",
+  "ENOTFOUND",
+  "ETIMEDOUT",
+  "EAI_AGAIN",
+]);
+
+/**
+ * Turns whatever Better Auth, Drizzle or the network threw into a sentence
+ * someone can act on, and logs the original so debugging survives.
+ *
+ * Without this, Drizzle's "Failed query: select ... params: ..." goes straight
+ * into the form, showing table and column names to whoever is signing up.
+ */
+function friendlyAuthError(err: unknown, action: "sign-in" | "sign-up") {
+  console.error(`[auth:${action}]`, err);
+
+  const e = err as {
+    code?: string;
+    message?: string;
+    status?: string;
+    body?: { code?: string; message?: string };
+    cause?: { code?: string };
+    sourceError?: { code?: string; message?: string };
+  };
+
+  const code = e?.body?.code ?? e?.code ?? "";
+  const causeCode = e?.cause?.code ?? e?.sourceError?.code ?? "";
+  const raw = e?.body?.message ?? e?.message ?? "";
+
+  if (
+    NETWORK_CODES.has(code) ||
+    NETWORK_CODES.has(causeCode) ||
+    raw.startsWith("Failed query") ||
+    raw.includes("fetch failed")
+  ) {
+    return "Can't reach the server right now. Check your connection and try again.";
+  }
+
+  switch (code) {
+    case "USER_ALREADY_EXISTS":
+    case "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL":
+      return "That email is already registered. Try signing in instead.";
+    case "INVALID_EMAIL_OR_PASSWORD":
+    case "INVALID_PASSWORD":
+    case "USER_NOT_FOUND":
+      return "Email or password is incorrect.";
+    case "CREDENTIAL_ACCOUNT_NOT_FOUND":
+      return 'This account was created with Google. Use "Continue with Google" instead.';
+    case "EMAIL_NOT_VERIFIED":
+      return "Verify your email address before signing in. Check your inbox.";
+    case "PASSWORD_TOO_SHORT":
+      return "Password must be at least 6 characters.";
+    case "PASSWORD_TOO_LONG":
+      return "That password is too long.";
+  }
+
+  // Postgres unique violation — the email is already taken.
+  if (code === "23505")
+    return "That email is already registered. Try signing in instead.";
+
+  return action === "sign-in"
+    ? "Something went wrong signing you in. Please try again."
+    : "Something went wrong creating your account. Please try again.";
+}
 
 interface CreateJobData {
   company: string;
@@ -70,15 +142,9 @@ export async function signUp(
     if (!createdUser?.id) throw new Error("User not found after signup");
 
     await initializeUserBoard(createdUser.id);
-  } catch (err: any) {
-    const message =
-      err?.body?.message ||
-      err?.response?.body?.message ||
-      err?.message ||
-      "Unable to create account";
-
+  } catch (err) {
     return {
-      errors: { email: [message] },
+      errors: { form: [friendlyAuthError(err, "sign-up")] },
       values: { name: rawData.name, email: rawData.email },
     };
   }
@@ -104,15 +170,9 @@ export async function signIn(
 
   try {
     await auth.api.signInEmail({ body: result.data });
-  } catch (err: any) {
-    const message =
-      err?.body?.message ||
-      err?.response?.body?.message ||
-      err?.message ||
-      "Unable to sign in";
-
+  } catch (err) {
     return {
-      errors: { email: [message] },
+      errors: { form: [friendlyAuthError(err, "sign-in")] },
       values: { email: rawData.email },
     };
   }

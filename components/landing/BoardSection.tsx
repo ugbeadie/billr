@@ -5,13 +5,7 @@ import MockColumn from "./MockColumn";
 import { BOARD } from "./data";
 import { revealProps } from "./motion";
 
-/**
- * The real six columns from lib/board.ts, not the four a marketing page would
- * invent. The overflow cases are deliberate: Applied holds twelve and scrolls
- * inside itself, Offer holds one, "Interswitch Group Limited / Senior Frontend
- * Engineer, Payments Platform" wraps rather than truncating, and several cards
- * have no salary at all.
- */
+/** Overflow cases are deliberate: twelve cards, one card, long names, no salary. */
 export default function BoardSection() {
   return (
     <section id="board" className="scroll-mt-16 bg-white py-20 lg:py-28">

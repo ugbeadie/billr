@@ -17,11 +17,6 @@ import {
   activityColor,
 } from "./data";
 
-/**
- * Not a uniform grid. The activity graph gets two thirds of the section
- * because it is the one people react to; the small stuff gets a text list at
- * the bottom right with no card and no icon, because it is small.
- */
 export default function TracksSection() {
   return (
     <section className="overflow-x-clip bg-[#F9FAFB] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
@@ -52,8 +47,6 @@ export default function TracksSection() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-
 function Tile({
   title,
   hint,
@@ -83,15 +76,10 @@ function Tile({
   );
 }
 
-/* ------------------------------------------------------------------ */
-
 const CELL = 13;
 const GAP = 3;
 
-/**
- * Donut geometry. STATUS_BREAKDOWN never changes, so the arcs are computed
- * once at module scope rather than accumulated during render.
- */
+/** Computed once at module scope — STATUS_BREAKDOWN never changes. */
 const DONUT_R = 52;
 const DONUT_C = 2 * Math.PI * DONUT_R;
 const DONUT_TOTAL = STATUS_BREAKDOWN.reduce((sum, s) => sum + s.value, 0);
@@ -218,8 +206,6 @@ function ActivityTile({ className }: { className?: string }) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-
 function StatusTile() {
   return (
     <Tile
@@ -282,8 +268,6 @@ function StatusTile() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-
 function AgendaTile() {
   return (
     <Tile
@@ -323,8 +307,6 @@ function AgendaTile() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-
 function NotesTile({ className }: { className?: string }) {
   return (
     <Tile
@@ -346,9 +328,6 @@ function NotesTile({ className }: { className?: string }) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-
-/** No card, no icon, no equal billing. These are the small ones. */
 function RestTile({ className }: { className?: string }) {
   return (
     <section

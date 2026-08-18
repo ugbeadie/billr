@@ -156,7 +156,7 @@ export default function JobTile({
           </div>
         )}
 
-        {(job.location || job.url) && <div className="my-3 border-t" />}
+        {(job.location || job.url) && <div className="my-2 border-t" />}
 
         {(job.location || job.url) && (
           <div className="flex items-center justify-between text-xs text-muted-foreground">

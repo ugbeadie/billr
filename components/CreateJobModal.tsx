@@ -185,7 +185,7 @@ export default function CreateJobModal({
               <Input
                 id="paste-url"
                 className="pl-9"
-                placeholder="Paste job URL (LinkedIn, Greenhouse, Lever...)"
+                placeholder="Paste job URL (LinkedIn, Indeed, Glassdoor...)"
                 value={jobUrl}
                 onChange={(e) => {
                   const v = e.target.value;

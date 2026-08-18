@@ -36,7 +36,6 @@ export default function DashboardToolbarOne({
 
   return (
     <div className="flex flex-nowrap items-center gap-2 overflow-x-auto border-b border-[#E5E7EB] px-3 py-2.5 sm:gap-3 sm:px-4">
-      {/* Search */}
       <div className="relative w-36 shrink-0 sm:w-64 md:w-80">
         <Search
           className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]"
@@ -75,7 +74,6 @@ export default function DashboardToolbarOne({
           )}
         </IconButton>
 
-        {/* View toggle — one segmented control rather than two loose buttons */}
         <div
           id="view-toggle"
           role="group"
@@ -99,7 +97,6 @@ export default function DashboardToolbarOne({
           </SegmentButton>
         </div>
 
-        {/* Add job — the primary action, so it reads like one */}
         <button
           id="add-job-btn"
           type="button"

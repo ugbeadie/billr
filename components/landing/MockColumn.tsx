@@ -4,11 +4,7 @@ import { cn } from "@/lib/utils";
 import MockJobCard from "./MockJobCard";
 import { STATUS, type MockJob, type StatusKey } from "./data";
 
-/**
- * A static twin of the column in KanbanBoard.tsx:313-391 — coloured header bar
- * with icon and count, grey canvas, "+ Add job" at the foot. Icons match
- * COLUMN_CONFIG at KanbanBoard.tsx:45-52.
- */
+/** Static twin of the column in KanbanBoard.tsx:313-391. */
 const ICONS: Record<StatusKey, typeof Star> = {
   wishlist: Star,
   applied: CheckCircle2,

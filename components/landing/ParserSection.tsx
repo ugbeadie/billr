@@ -26,12 +26,9 @@ const FIELD_ICONS = {
 } as const;
 
 /**
- * The centrepiece.
- *
- * Left: the posting as it exists on the web, on the dark stage. Right: Trackr,
- * on white. Six fields fill in sequence, and as each one lands the fragment it
- * came from lights up on the left with a matching number. The numbers run out
- * of order in the source on purpose — that scattering is what the parser undoes.
+ * As each field fills, the fragment it came from lights up with a matching
+ * number. Those numbers run out of order in the source on purpose — that
+ * scattering is what the parser undoes.
  */
 export default function ParserSection() {
   const motionOK = useMotionOK();
@@ -139,7 +136,6 @@ export default function ParserSection() {
           />
         </div>
 
-        {/* Clock and controls */}
         <div className="mt-8 flex flex-col gap-5 border-t border-white/10 pt-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-end gap-5">
             <div>
@@ -170,8 +166,6 @@ export default function ParserSection() {
     </section>
   );
 }
-
-/* ------------------------------------------------------------------ */
 
 function SourcePanel({ filled }: { filled: number }) {
   return (
@@ -221,8 +215,6 @@ function Tag({ n }: { n: number }) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-
 function FormPanel({
   pasted,
   reading,
@@ -242,7 +234,6 @@ function FormPanel({
       </div>
 
       <div className="px-5 py-5 sm:px-6 sm:py-6">
-        {/* The paste field */}
         <div className="relative">
           <LinkIcon
             className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9CA3AF]"
@@ -279,7 +270,6 @@ function FormPanel({
           )}
         </div>
 
-        {/* The six fields */}
         <div className="mt-5 grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
           {PARSER_FIELDS.map((field, i) => {
             const Icon = FIELD_ICONS[field.icon];
@@ -304,7 +294,6 @@ function FormPanel({
                     isSelect ? "pl-3" : "pl-9",
                   )}
                 >
-                  {/* Selects carry their chevron on the right; inputs an icon on the left. */}
                   <Icon
                     className={cn(
                       "pointer-events-none absolute h-4 w-4 transition-colors",

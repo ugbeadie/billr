@@ -8,12 +8,7 @@ import {
   type MockJob,
 } from "./data";
 
-/**
- * A static twin of JobTile.tsx:83-187 — same anatomy, same left status border,
- * same pill palettes, same order of information. No modal, no drag handle, no
- * state. Every optional row collapses cleanly, which is what lets the board
- * section show a card with no salary next to one with a range.
- */
+/** Static twin of JobTile.tsx:83-187. Every optional row collapses cleanly. */
 export default function MockJobCard({
   job,
   accent,

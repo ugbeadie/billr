@@ -25,7 +25,6 @@ export default function Hero() {
   return (
     <section className="relative overflow-hidden px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pb-24 lg:pt-36">
       <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-12 lg:gap-8">
-        {/* Copy */}
         <motion.div
           initial={motionOK ? { opacity: 0, y: 12 } : false}
           animate={{ opacity: 1, y: 0 }}
@@ -60,7 +59,6 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* The product */}
         <div className="lg:col-span-7">
           <div className="flex justify-center gap-4 lg:w-212 lg:justify-start">
             {/* Four cards in a box that holds three, so the column visibly
@@ -106,12 +104,7 @@ export default function Hero() {
   );
 }
 
-/**
- * The card lands in Interviewing once, on load. The dashed slot underneath is
- * the drop target from dnd-kit fading out behind it. It is the only thing that
- * moves up here, and it is doing a job: saying "these cards are draggable"
- * without a caption.
- */
+/** Says "these cards are draggable" without a caption. */
 function DroppedCard({
   job,
   motionOK,

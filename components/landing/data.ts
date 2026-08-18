@@ -1,13 +1,7 @@
 /**
- * Sample content for the marketing page.
- *
- * Everything here is deterministic — no Date.now(), no Math.random() — so the
- * server and client render byte-identical markup. Dates are pre-formatted to
- * match JobTile's output ("14 Aug 2026") rather than going through
- * toLocaleDateString, which is locale-dependent and would mismatch on hydrate.
- *
- * Colours mirror the running app: StatusChart.tsx:12-23 and
- * KanbanBoard.tsx:45-52.
+ * Deterministic on purpose — no Date.now(), no Math.random(), and dates
+ * pre-formatted rather than run through locale-dependent toLocaleDateString,
+ * so server and client render identical markup and hydration stays quiet.
  */
 
 export type MockJob = {
@@ -89,10 +83,6 @@ export function jobModeLabel(mode?: string) {
         ? "On-site"
         : "";
 }
-
-/* ------------------------------------------------------------------ *
- * Applications
- * ------------------------------------------------------------------ */
 
 export const BOARD: { status: StatusKey; jobs: MockJob[] }[] = [
   {
@@ -406,10 +396,6 @@ export const BOARD_BY_STATUS = Object.fromEntries(
   BOARD.map((c) => [c.status, c.jobs]),
 ) as Record<StatusKey, MockJob[]>;
 
-/* ------------------------------------------------------------------ *
- * The parser
- * ------------------------------------------------------------------ */
-
 export const PARSER_URL =
   "https://paystack.com/careers/senior-react-developer";
 
@@ -423,12 +409,7 @@ export const PARSER_FIELDS = [
   { label: "Job Mode", value: "Hybrid", icon: "select" },
 ] as const;
 
-/**
- * The posting, split into runs. `field` ties a run to the index of the form
- * field it produces — that tie is the whole point of the section. Note the
- * numbers run out of order in the source: the parser reorders scattered facts
- * into structure.
- */
+/** `field` ties a run to the form field it fills. Out of order on purpose. */
 export const PARSER_SOURCE: { text: string; field?: number }[] = [
   { text: "We're looking for a " },
   { text: "Senior React Developer", field: 1 },
@@ -455,17 +436,7 @@ export const PARSER_TIMELINE = {
   done: 2400,
 };
 
-/* ------------------------------------------------------------------ *
- * Activity graph
- * ------------------------------------------------------------------ */
-
-/**
- * A year of applications, shaped like a real search rather than noise: nothing
- * until March, a heavy stretch through the summer, a dip while interviews were
- * happening, then picking back up. The full calendar year is always drawn —
- * weeks that haven't happened yet render as empty cells, not as holes, so the
- * grid keeps its shape from January to December.
- */
+/** The full year is always drawn: future weeks are empty cells, not holes. */
 const WEEKS_ELAPSED = 34;
 
 const WEEK_SHAPE = [
@@ -521,10 +492,6 @@ export function activityColor(count: number) {
   if (count < 6) return "#60A5FA";
   return "#2563EB";
 }
-
-/* ------------------------------------------------------------------ *
- * The rest of the "what it tracks" section
- * ------------------------------------------------------------------ */
 
 export const STATUS_BREAKDOWN: { key: StatusKey; value: number }[] = [
   { key: "wishlist", value: 4 },
