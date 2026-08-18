@@ -235,7 +235,7 @@ export default function KanbanBoard({ board, selectedJobs, toggleJob }: Props) {
               initial={{ scale: 0.98, opacity: 0.9 }}
               animate={{ scale: 1.05, opacity: 1 }}
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
-              className="space-y-2 w-72"
+              className="space-y-2 w-68"
             >
               {activeJobs.map((job) => (
                 <JobTile
@@ -311,7 +311,7 @@ function ColumnComponent({
   }
 
   return (
-    <Card className="w-72 shrink-0 bg-gray-100 rounded-xl p-2 flex flex-col h-[500px] shadow-sm border-0">
+    <Card className="w-68 shrink-0 bg-gray-100 rounded-xl p-2 flex flex-col h-[500px] shadow-sm border-0">
       <CardHeader
         className={`${config.color} text-white rounded-xl px-3 py-2 flex flex-row items-center justify-between`}
       >
