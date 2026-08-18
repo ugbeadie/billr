@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s | Trackr",
   },
   description:
-    "Track job applications, manage interviews, monitor statuses, and stay organized throughout your job search journey.",
+    "Paste a job link and the form fills itself. Every application you send sits on one board, so you can see what stage it is at and who you are waiting on.",
   keywords: [
     "job tracker",
     "application tracker",

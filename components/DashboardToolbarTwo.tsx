@@ -86,86 +86,107 @@ export default function DashboardToolbarTwo({
 
   return (
     <>
-      <div className="flex justify-end items-center gap-3 my-2 px-4 border-b border-gray-200 pb-2 overflow-x-auto">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              disabled={isMoving || isDeleting}
-              className="gap-2 h-9 shadow-sm rounded-xl px-3 disabled:opacity-70"
-            >
-              {isMoving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Moving...
-                </>
-              ) : (
-                <>
-                  Move jobs
-                  <ChevronDown className="h-4 w-4" />
-                </>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
+      <div className="flex items-center gap-2 overflow-x-auto border-b border-[#E5E7EB] bg-[#E7F6FF] px-3 py-2.5 sm:gap-3 sm:px-4">
+        {/* Say what is selected — the bar appearing is not enough on its own */}
+        <p className="shrink-0 text-sm font-medium text-[#111827]">
+          <span className="tabular-nums">{selectedJobs.length}</span>
+          <span className="hidden sm:inline">
+            {" "}
+            job{selectedJobs.length === 1 ? "" : "s"} selected
+          </span>
+          <span className="sm:hidden"> selected</span>
+        </p>
 
-          <DropdownMenuContent
-            align="end"
-            className="w-48 bg-white shadow-md rounded-md p-1"
-          >
-            {columns.map((col, i) => (
-              <DropdownMenuItem
-                key={col.id}
-                className="flex items-center gap-2 cursor-pointer"
-                onClick={() => handleMove(col.id)}
+        <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                disabled={isMoving || isDeleting}
+                className="h-9 gap-2 rounded-lg border-[#E5E7EB] bg-white px-3 text-[#111827] shadow-sm hover:bg-[#F3F4F6] disabled:opacity-70"
               >
-                {COLUMN_CONFIG[i % COLUMN_CONFIG.length].icon}
-                {col.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                {isMoving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Moving...
+                  </>
+                ) : (
+                  <>
+                    Move to
+                    <ChevronDown className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
 
-        <Button
-          onClick={handleDeleteClick}
-          disabled={isMoving || isDeleting}
-          className="bg-red-500 hover:bg-red-600 text-white h-9 gap-2 shadow-sm rounded-xl px-3 disabled:opacity-70"
-        >
-          Delete Jobs
-        </Button>
+            <DropdownMenuContent
+              align="end"
+              sideOffset={8}
+              className="w-52 rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg"
+            >
+              {columns.map((col, i) => (
+                <DropdownMenuItem
+                  key={col.id}
+                  className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-sm"
+                  onClick={() => handleMove(col.id)}
+                >
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-white ${
+                      COLUMN_CONFIG[i % COLUMN_CONFIG.length].color
+                    }`}
+                  >
+                    {COLUMN_CONFIG[i % COLUMN_CONFIG.length].icon}
+                  </span>
+                  {col.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        <Button
-          onClick={onDone}
-          disabled={isMoving || isDeleting}
-          className="bg-purple-600 hover:bg-purple-700 text-white h-9 gap-2 shadow-sm rounded-xl px-3"
-        >
-          Done
-        </Button>
+          <Button
+            onClick={handleDeleteClick}
+            disabled={isMoving || isDeleting}
+            className="h-9 gap-2 rounded-lg bg-[#EF4444] px-3 text-white shadow-sm hover:bg-[#dc2626] disabled:opacity-70"
+          >
+            Delete
+          </Button>
+
+          {/* Dismiss, so it stays quiet rather than competing for attention */}
+          <Button
+            onClick={onDone}
+            disabled={isMoving || isDeleting}
+            variant="ghost"
+            className="h-9 rounded-lg px-3 text-[#6B7280] hover:bg-white hover:text-[#111827]"
+          >
+            Done
+          </Button>
+        </div>
       </div>
 
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <DialogContent className="sm:max-w-md bg-white p-6 rounded-xl">
-          <DialogTitle className="text-xl font-semibold text-gray-900">
-            Delete Multiple Jobs
+        <DialogContent className="rounded-xl border border-[#E5E7EB] bg-white p-6 sm:max-w-md">
+          <DialogTitle className="text-lg font-semibold text-[#111827]">
+            Delete {selectedJobs.length} application
+            {selectedJobs.length === 1 ? "" : "s"}?
           </DialogTitle>
-          <div className="mt-2 text-gray-500 text-sm">
-            Are you sure you want to delete the{" "}
-            <strong>{selectedJobs.length}</strong> selected job application
-            {selectedJobs.length !== 1 ? "s" : ""}? This action cannot be
-            undone.
+          <div className="mt-2 text-sm leading-relaxed text-[#6B7280]">
+            This removes them from the board along with their notes and dates.
+            It cannot be undone.
           </div>
-          <div className="flex justify-end gap-3 mt-6">
+          <div className="mt-6 flex justify-end gap-3">
             <button
               onClick={() => setShowDeleteConfirm(false)}
               disabled={isDeleting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-[#6B7280] transition-colors hover:bg-[#F3F4F6] hover:text-[#111827] disabled:cursor-not-allowed disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={confirmDelete}
               disabled={isDeleting}
-              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[85px]"
+              className="inline-flex min-w-[92px] items-center justify-center gap-2 rounded-lg bg-[#EF4444] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#dc2626] disabled:cursor-not-allowed disabled:opacity-50"
             >
+              {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
               {isDeleting ? "Deleting..." : "Delete"}
             </button>
           </div>

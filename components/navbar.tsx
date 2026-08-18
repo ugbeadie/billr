@@ -16,58 +16,80 @@ import NavToggleButton from "./NavToggleButton";
 
 export default function Navbar({ user }: { user?: any }) {
   return (
-    <nav className="border-b border-gray-200 bg-white">
-      <div className="flex h-14 items-center px-4 justify-between">
+    <nav className="sticky top-0 z-40 border-b border-[#E5E7EB] bg-white/85 backdrop-blur">
+      <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
+        {/* Same wordmark as the marketing page: briefcase mark, lowercase
+            name, tight tracking. */}
         <Link
           href="/"
-          className="flex items-center gap-2 text-xl font-semibold text-primary"
+          className="flex shrink-0 items-center gap-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3A9AFF]/50"
         >
           <Image
             src="/images/logo.png"
-            alt="Trackr logo"
+            alt=""
+            aria-hidden
             width={24}
             height={24}
             priority
+            className="h-6 w-6"
           />
-          TRACKR
+          <span className="text-xl font-bold leading-none tracking-[-0.045em] text-[#111827]">
+            trackr
+          </span>
+          <span className="sr-only">Trackr home</span>
         </Link>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-3">
           {user && <NavToggleButton />}
 
           {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
+            <>
+              <div className="hidden h-6 w-px bg-[#E5E7EB] sm:block" />
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    aria-label="Account menu"
+                    className="relative h-9 w-9 shrink-0 rounded-full p-0 hover:bg-[#F3F4F6] focus-visible:ring-2 focus-visible:ring-[#3A9AFF]/50"
+                  >
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-[#3A9AFF] text-sm font-medium text-white">
+                        {user.name[0].toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  align="end"
+                  sideOffset={8}
+                  className="w-64 rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg"
                 >
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-primary text-white">
-                      {user.name[0].toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-9 w-9 shrink-0">
+                        <AvatarFallback className="bg-[#3A9AFF] text-sm font-medium text-white">
+                          {user.name[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-[#111827]">
+                          {user.name}
+                        </p>
+                        <p className="truncate text-xs text-[#6B7280]">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
 
-              <DropdownMenuContent
-                align="end"
-                className="w-64 rounded-xl border bg-white shadow-xl p-2"
-              >
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-[#E5E7EB]" />
 
-                <DropdownMenuSeparator />
-
-                <LogoutButton />
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <LogoutButton />
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           )}
         </div>
       </div>
