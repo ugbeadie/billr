@@ -23,11 +23,12 @@ export default function NavToggleButton() {
       onClick={handleClick}
       disabled={isPending}
       className="
-        relative inline-flex items-center justify-center
-        gap-2 rounded-lg border
-        px-3 py-1.5 text-primary text-sm font-medium
-        transition hover:bg-gray-50
-        disabled:opacity-60 disabled:pointer-events-none
+        relative inline-flex h-9 items-center justify-center
+        gap-2 rounded-lg border border-[#E5E7EB] bg-white
+        px-3 text-sm font-medium text-[#3A9AFF]
+        transition-colors hover:border-[#3A9AFF]/40 hover:bg-[#E7F6FF]
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3A9AFF]/50
+        disabled:pointer-events-none disabled:opacity-60
       "
     >
       <span
@@ -38,12 +39,14 @@ export default function NavToggleButton() {
         {isStats ? (
           <>
             <ArrowLeft className="h-4 w-4" />
-            Go back home
+            <span className="hidden sm:inline">Go back home</span>
+            <span className="sm:hidden">Home</span>
           </>
         ) : (
           <>
             <BarChart3 className="h-4 w-4" />
-            Go to stats
+            <span className="hidden sm:inline">Go to stats</span>
+            <span className="sm:hidden">Stats</span>
           </>
         )}
       </span>
