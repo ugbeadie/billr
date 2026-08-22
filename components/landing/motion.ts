@@ -25,7 +25,6 @@ export function useMotionOK() {
   return !useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
-/** The one reveal used across the page. Nothing scales, nothing lifts. */
 export const reveal = {
   hidden: { opacity: 0, y: 12 },
   show: { opacity: 1, y: 0 },

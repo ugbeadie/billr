@@ -76,7 +76,6 @@ export default function ParserSection() {
     });
   }, [clear]);
 
-  /** Replay is an event handler, so it can reset straight away. */
   const replay = useCallback(() => {
     clear();
     setPasted(false);
@@ -203,7 +202,6 @@ function SourcePanel({ filled }: { filled: number }) {
   );
 }
 
-/** The number that ties a fragment on the left to a field on the right. */
 function Tag({ n }: { n: number }) {
   return (
     <span

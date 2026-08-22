@@ -453,7 +453,7 @@ export const ACTIVITY_WEEKS: number[][] = (() => {
 
   return Array.from({ length: 53 }, (_, w) =>
     Array.from({ length: 7 }, (_, d) => {
-      if (w >= WEEKS_ELAPSED) return 0; // hasn't happened yet — drawn empty
+      if (w >= WEEKS_ELAPSED) return 0;
       const weekend = d === 0 || d === 6;
       // Most days you send nothing. On a busy weekday it's one, sometimes two.
       const chance = (WEEK_SHAPE[w] / 5) * 0.28 * (weekend ? 0.3 : 1);

@@ -5,7 +5,6 @@ import MockColumn from "./MockColumn";
 import { BOARD } from "./data";
 import { revealProps } from "./motion";
 
-/** Overflow cases are deliberate: twelve cards, one card, long names, no salary. */
 export default function BoardSection() {
   return (
     <section id="board" className="scroll-mt-16 bg-white py-20 lg:py-28">

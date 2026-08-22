@@ -22,18 +22,20 @@ export default function MockColumn({
   scroll = true,
   showAdd = true,
   empty = false,
+  liftRoom = false,
   children,
   className,
 }: {
   status: StatusKey;
   jobs: MockJob[];
-  /** Header count — defaults to the number of cards actually rendered. */
   count?: number;
   height?: string;
   scroll?: boolean;
   showAdd?: boolean;
   /** Renders the zero state from KanbanBoard.tsx:344-360. */
   empty?: boolean;
+  /** Extends the clip box upward so a first card mid-drop can lift uncut. */
+  liftRoom?: boolean;
   /** Rendered above the cards — used for the hero's just-dropped card. */
   children?: ReactNode;
   className?: string;
@@ -63,7 +65,8 @@ export default function MockColumn({
 
       <div
         className={cn(
-          "mt-2 flex-1 space-y-2",
+          "flex-1 space-y-2",
+          liftRoom ? "-mt-3 pt-5" : "mt-2",
           // overflow-x-hidden explicitly, so the tilted card mid-drop can't
           // open a horizontal scrollbar inside the column.
           scroll ? "overflow-y-auto overflow-x-hidden" : "overflow-visible",

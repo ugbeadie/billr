@@ -8,7 +8,7 @@ import MockJobCard from "./MockJobCard";
 import { BOARD_BY_STATUS, STATUS } from "./data";
 import { useMotionOK } from "./motion";
 
-/** Tall enough for exactly three full cards, with no "+ Add job" foot. */
+/** Tall enough for exactly three full cards. */
 const COLUMN_H = "h-[500px]";
 
 export default function Hero() {
@@ -18,9 +18,7 @@ export default function Hero() {
   const interviewing = BOARD_BY_STATUS.interviewing;
   const offer = BOARD_BY_STATUS.offer;
 
-  // The dropped card sits second, not first: its 20px lift then overlaps the
-  // card above it instead of escaping the top of a column that clips.
-  const [first, dropped, ...rest] = interviewing;
+  const [dropped, ...rest] = interviewing;
 
   return (
     <section className="relative overflow-hidden px-4 pb-16 pt-28 sm:px-6 lg:px-8 lg:pb-24 lg:pt-36">
@@ -62,7 +60,7 @@ export default function Hero() {
         <div className="lg:col-span-7">
           <div className="flex justify-center gap-4 lg:w-212 lg:justify-start">
             {/* Four cards in a box that holds three, so the column visibly
-                continues past its own edge — the count says twelve. */}
+                continues past its own edge. */}
             <MockColumn
               status="applied"
               jobs={applied.slice(0, 4)}
@@ -78,8 +76,8 @@ export default function Hero() {
               count={interviewing.length}
               height={COLUMN_H}
               showAdd={false}
+              liftRoom={motionOK}
             >
-              <MockJobCard job={first} accent={STATUS.interviewing.hex} />
               <DroppedCard job={dropped} motionOK={motionOK} />
               {rest.map((job) => (
                 <MockJobCard
@@ -104,7 +102,6 @@ export default function Hero() {
   );
 }
 
-/** Says "these cards are draggable" without a caption. */
 function DroppedCard({
   job,
   motionOK,

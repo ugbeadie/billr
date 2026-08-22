@@ -29,7 +29,6 @@ export default function CtaSection() {
           </div>
         </motion.div>
 
-        {/* Day one. Nothing in it yet, which is the point. */}
         <div aria-hidden className="hidden lg:col-span-5 lg:flex lg:justify-end">
           <MockColumn
             status="applied"

@@ -79,7 +79,6 @@ function Tile({
 const CELL = 13;
 const GAP = 3;
 
-/** Computed once at module scope — STATUS_BREAKDOWN never changes. */
 const DONUT_R = 52;
 const DONUT_C = 2 * Math.PI * DONUT_R;
 const DONUT_TOTAL = STATUS_BREAKDOWN.reduce((sum, s) => sum + s.value, 0);
@@ -319,7 +318,6 @@ function NotesTile({ className }: { className?: string }) {
           {NOTE.company}
           <span className="font-normal text-[#6B7280]"> · {NOTE.position}</span>
         </p>
-        {/* break-words so the recruiter's email can't push the tile wide. */}
         <p className="mt-3 whitespace-pre-line break-words text-sm leading-relaxed text-[#4B5563]">
           {NOTE.body}
         </p>
