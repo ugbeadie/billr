@@ -207,22 +207,29 @@
   // The metadata line reads "Company - Location - 2 weeks ago - 30 applicants".
   // Drop the company and the noise and the first survivor is the location.
   const locationFromCard = (cardText, company) => {
-    const line = String(cardText || "")
+    // Every middot line is a candidate, not just the first: "Promoted by hirer
+    // - No response insights" can precede the line that holds the location.
+    const lines = String(cardText || "")
       .split("\n")
       .map(clean)
-      .find((candidate) => candidate.includes(SEP));
-    if (!line) return "";
+      .filter((candidate) => candidate.includes(SEP));
 
-    for (const part of line.split(SEP).map(clean)) {
-      if (!part) continue;
-      if (company && part.toLowerCase().includes(company.toLowerCase())) continue;
-      if (NOISE.test(part)) continue;
-      if (EMPLOYMENT.some(([pattern]) => pattern.test(part))) continue;
-      // "Remote" alone is a work mode, but "Lagos, Nigeria (Remote)" is a place.
-      if (WORKPLACE.some(([pattern]) => pattern.test(part)) && !part.includes(","))
-        continue;
-      if (/^\d/.test(part) || part.length > 80) continue;
-      return part;
+    for (const line of lines) {
+      for (const part of line.split(SEP).map(clean)) {
+        if (!part) continue;
+        if (company && part.toLowerCase().includes(company.toLowerCase()))
+          continue;
+        if (NOISE.test(part)) continue;
+        if (EMPLOYMENT.some(([pattern]) => pattern.test(part))) continue;
+        // "Remote" alone is a work mode, but "Lagos, Nigeria (Remote)" is a place.
+        if (
+          WORKPLACE.some(([pattern]) => pattern.test(part)) &&
+          !part.includes(",")
+        )
+          continue;
+        if (/^\d/.test(part) || part.length > 80) continue;
+        return part;
+      }
     }
     return "";
   };
@@ -257,6 +264,10 @@
         ".jobs-description-content__text",
         ".jobs-box__html-content",
         ".show-more-less-html__markup",
+        // Catch-alls for when LinkedIn renames the specific classes above.
+        '[class*="jobs-description__content"]',
+        '[class*="jobs-description"]',
+        '[class*="jobs-box__html-content"]',
       ],
       insights: [
         ".job-details-jobs-unified-top-card__job-insight",

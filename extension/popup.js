@@ -69,6 +69,14 @@ function populateColumns() {
     option.textContent = col.name;
     select.appendChild(option);
   });
+
+  // Saving a job from a posting means you applied to it, so preselect Applied
+  // rather than whichever column happens to sort first. Matches the server's
+  // own fallback, so the popup and the board always agree.
+  const applied = userColumns.find(
+    (col) => String(col.name || "").trim().toLowerCase() === "applied",
+  );
+  if (applied) select.value = applied.id;
 }
 
 function showToast(message, type = "success") {
