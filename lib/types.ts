@@ -9,6 +9,7 @@ export type Job = {
   url?: string | null;
   jobMode?: string | null;
   description?: string | null;
+  notes?: string | null;
   order: number;
   columnId: string;
   appliedDate?: Date | string | null;

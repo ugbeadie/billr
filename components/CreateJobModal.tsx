@@ -71,6 +71,7 @@ export default function CreateJobModal({
     jobMode: "",
     appliedDate: today,
     description: "",
+    notes: "",
   });
 
   useEffect(() => {
@@ -124,6 +125,7 @@ export default function CreateJobModal({
         url: formData.url || undefined,
         jobMode: formData.jobMode || undefined,
         description: formData.description || undefined,
+        notes: formData.notes || undefined,
         appliedDate: new Date(formData.appliedDate),
         boardId,
         columnId: selectedColumnId,
@@ -141,6 +143,7 @@ export default function CreateJobModal({
         jobMode: "",
         appliedDate: today,
         description: "",
+        notes: "",
       });
 
       setJobUrl("");
@@ -383,16 +386,17 @@ export default function CreateJobModal({
               </div>
             </div>
 
-            {/* Description / Notes */}
+            {/* Notes - the user's own writing. An imported job posting goes
+                to `description`, which the extension fills in. */}
             <div className="mt-6">
-              <Label>Description / Notes</Label>
+              <Label>Notes</Label>
 
               <Textarea
                 className="min-h-[140px]"
                 placeholder="Add notes about the role, interview feedback, recruiter contact, next steps, etc..."
-                value={formData.description}
+                value={formData.notes}
                 onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
+                  setFormData({ ...formData, notes: e.target.value })
                 }
               />
             </div>
