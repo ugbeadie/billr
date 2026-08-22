@@ -1,11 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Trackrrrr Job Tracker Extension",
+  "name": "Trackr - Job Tracker Extension",
   "version": "1.0",
   "description": "Save job listings directly to your Job Tracker",
   "permissions": ["activeTab", "scripting", "storage"],
   "host_permissions": [
-    "https://trackrrrr.netlify.app/*",
+    "https://trackr.ugbeadie.com/*",
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*",
     "https://www.linkedin.com/*",
     "https://www.indeed.com/*",
     "https://www.glassdoor.com/*"
