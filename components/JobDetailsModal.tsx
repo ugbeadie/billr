@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { deleteJob, updateJob } from "@/server/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface JobDetailsModalProps {
   job: Job | null;
@@ -32,6 +32,8 @@ export default function JobDetailsModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [descriptionClipped, setDescriptionClipped] = useState(false);
+  const descriptionRef = useRef<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
     setFormData(job ? { ...job } : null);
@@ -39,6 +41,17 @@ export default function JobDetailsModal({
     setShowDeleteConfirm(false);
     setDescriptionExpanded(false);
   }, [job]);
+
+  // The clamp is a height, so decide on measured overflow rather than a
+  // character count: a short description carrying many line breaks can run
+  // well past the clamp, and a character threshold would hide the toggle and
+  // strand the tail.
+  useEffect(() => {
+    if (descriptionExpanded) return;
+
+    const el = descriptionRef.current;
+    setDescriptionClipped(!!el && el.scrollHeight > el.clientHeight + 1);
+  }, [job, open, isEditing, descriptionExpanded]);
 
   function getColorValue(twColor?: string) {
     const map: Record<string, string> = {
@@ -407,10 +420,10 @@ export default function JobDetailsModal({
               <div className="flex items-center justify-between gap-3">
                 <p className="font-medium">Job description</p>
 
-                {!isEditing && (job.description?.length ?? 0) > 400 && (
+                {!isEditing && (descriptionExpanded || descriptionClipped) && (
                   <button
                     type="button"
-                    onClick={() => setDescriptionExpanded((open) => !open)}
+                    onClick={() => setDescriptionExpanded((shown) => !shown)}
                     className="text-sm font-medium text-gray-600 hover:text-gray-900"
                   >
                     {descriptionExpanded ? "Show less" : "Show more"}
@@ -434,6 +447,7 @@ export default function JobDetailsModal({
                 // now preserves; max-height beats line-clamp here because
                 // line-clamp forces display:-webkit-box.
                 <p
+                  ref={descriptionRef}
                   className={`mt-2 text-sm leading-relaxed text-gray-700 whitespace-pre-line overflow-hidden ${
                     descriptionExpanded ? "" : "max-h-40"
                   }`}
