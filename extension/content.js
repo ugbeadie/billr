@@ -13,6 +13,17 @@
 
   const clean = (value) => String(value || "").replace(/\s+/g, " ").trim();
 
+  // Like clean(), but keeps paragraph structure. Descriptions are the one field
+  // where line breaks carry meaning, and collapsing them leaves the app with a
+  // single unreadable wall of text it cannot re-break.
+  const cleanBlock = (value) =>
+    String(value || "")
+      .replace(/\r\n?/g, "\n")
+      .replace(/[ \t\u00a0]+/g, " ")
+      .replace(/[ \t]*\n[ \t]*/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
   // "Lagos, Nigeria - 2 weeks ago - 100 applicants" -> "Lagos, Nigeria"
   const firstSegment = (value) => clean(String(value || "").split(SEP)[0]);
 
@@ -22,7 +33,20 @@
     if (!html) return "";
     try {
       const doc = new DOMParser().parseFromString(String(html), "text/html");
-      return doc.body ? doc.body.textContent : "";
+      if (!doc.body) return String(html);
+
+      // textContent alone would run every block together; re-introduce the
+      // breaks the markup implied before flattening.
+      doc.body.querySelectorAll("br").forEach((br) => {
+        br.replaceWith("\n");
+      });
+      doc.body
+        .querySelectorAll("p, div, li, tr, h1, h2, h3, h4, h5, h6")
+        .forEach((block) => {
+          block.append("\n");
+        });
+
+      return doc.body.textContent || "";
     } catch {
       return String(html);
     }
@@ -56,6 +80,23 @@
     return "";
   };
 
+  // Same walk as pick(), but keeps the newlines innerText already provides.
+  const pickBlock = (selectors) => {
+    for (const selector of selectors || []) {
+      for (const el of queryAll(selector)) {
+        const raw =
+          el.content !== undefined
+            ? el.content
+            : el.innerText !== undefined
+              ? el.innerText
+              : el.textContent;
+        const text = cleanBlock(raw);
+        if (text) return text;
+      }
+    }
+    return "";
+  };
+
   // Every match joined - used for metadata pills, where the value we want may
   // be in any one of them.
   const pickAll = (selectors) => {
@@ -69,23 +110,29 @@
     return out.join(" " + SEP + " ");
   };
 
+  // Labels below are the exact values the app's own selects store - see the
+  // SelectItem lists in components/CreateJobModal.tsx. A <select> matches its
+  // value by exact string, so emitting "Full-time" here would leave the field
+  // showing the placeholder when the job is opened in the app.
+
   // Hybrid is checked before Remote: hybrid postings routinely say "remote".
   const WORKPLACE = [
-    [/\bhybrid\b/i, "Hybrid"],
-    [/\bremote\b/i, "Remote"],
-    [/\bon[\s-]?site\b/i, "On-site"],
-    [/\bin[\s-]?office\b/i, "On-site"],
+    [/\bhybrid\b/i, "hybrid"],
+    [/\bremote\b/i, "remote"],
+    [/\bon[\s-]?site\b/i, "onsite"],
+    [/\bin[\s-]?office\b/i, "onsite"],
   ];
 
+  // The app offers only these four. Near-synonyms are folded into the closest
+  // one rather than dropped, so the signal survives the round trip.
   const EMPLOYMENT = [
-    [/full[\s-]?time/i, "Full-time"],
-    [/part[\s-]?time/i, "Part-time"],
-    [/\bintern(ship)?\b/i, "Internship"],
-    [/\bapprentice(ship)?\b/i, "Apprenticeship"],
-    [/\bcontract(or)?\b/i, "Contract"],
-    [/\bfreelance\b/i, "Freelance"],
-    [/\btemporary\b/i, "Temporary"],
-    [/\bvolunteer\b/i, "Volunteer"],
+    [/full[\s-]?time/i, "full-time"],
+    [/part[\s-]?time/i, "part-time"],
+    [/\bintern(ship)?\b/i, "internship"],
+    [/\bapprentice(ship)?\b/i, "internship"],
+    [/\bcontract(or)?\b/i, "contract"],
+    [/\bfreelance\b/i, "contract"],
+    [/\btemporary\b/i, "contract"],
   ];
 
   const firstMatch = (haystack, table) => {
@@ -188,9 +235,9 @@
               .map((part) => (typeof part === "string" ? part : part.name))
               .join(", "),
           ),
-          description: clean(stripHtml(item.description)),
+          description: cleanBlock(stripHtml(item.description)),
           jobType: normalizeEmployment(item.employmentType),
-          jobMode: remote ? "Remote" : "",
+          jobMode: remote ? "remote" : "",
           salary: salaryFromJsonLd(item),
         };
       }
@@ -387,10 +434,10 @@
     // Falling back to <main>/<body> there would paste the entire site chrome
     // into the field, so only do that on unrecognised pages.
     const description = site
-      ? pick(site.description) || jsonLd.description || ""
+      ? pickBlock(site.description) || jsonLd.description || ""
       : jsonLd.description ||
-        pick(['meta[property="og:description"]', "article", "main"]) ||
-        clean(document.body && document.body.innerText);
+        pickBlock(['meta[property="og:description"]', "article", "main"]) ||
+        cleanBlock(document.body && document.body.innerText);
 
     const insights = site ? pickAll(site.insights) : "";
 
