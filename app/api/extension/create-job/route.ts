@@ -15,8 +15,16 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const { company, position, location, url, description, jobType, jobMode } =
-    body;
+  const {
+    company,
+    position,
+    location,
+    url,
+    description,
+    salary,
+    jobType,
+    jobMode,
+  } = body;
 
   if (!company || !position) {
     return NextResponse.json(
@@ -78,6 +86,7 @@ export async function POST(req: Request) {
     location,
     url,
     description,
+    salary,
     jobType,
     jobMode,
     boardId: board.id,

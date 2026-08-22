@@ -5,66 +5,194 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <!-- LOADING SCREEN -->
-    <div id="loadingScreen">
-      <div class="spinner"></div>
-      <p>Loading...</p>
-    </div>
-
-    <!-- LOGIN REQUIRED SCREEN -->
-    <div id="loginScreen" class="hidden">
-      <h3>Please login to Trackr</h3>
-      <button id="loginBtn" class="primary full">Login</button>
-    </div>
-
-    <!-- PREVIEW SCREEN -->
-    <div id="previewScreen" class="hidden">
-      <h3>Save Job</h3>
-
-      <div class="preview-card">
-        <p id="previewCompany" class="company"></p>
-        <p id="previewPosition" class="position"></p>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 21.6 3.5 8.4A5.2 5.2 0 0 1 12 2.9a5.2 5.2 0 0 1 8.5 5.5L12 21.6Z" />
+          </svg>
+        </span>
+        <span class="brand-name">trackr</span>
       </div>
 
-      <div class="button-row">
-        <button id="editBtn" class="secondary">✏ Edit</button>
-        <button id="quickSaveBtn" class="primary">Save</button>
+      <div class="topbar-actions">
+        <button id="settingsBtn" class="icon-btn" type="button" title="Settings">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 8.9 19a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 5 8.9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9.5a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z" />
+          </svg>
+        </button>
+
+        <button id="dashboardBtn" class="icon-btn" type="button" title="Open my dashboard">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <path d="M15 3h6v6" />
+            <path d="M10 14 21 3" />
+          </svg>
+        </button>
       </div>
+    </header>
 
-      <p id="status"></p>
-    </div>
+    <main class="body">
+      <!-- LOADING -->
+      <section id="loadingScreen" class="screen state">
+        <div class="spinner"></div>
+        <p class="muted">Reading this page...</p>
+      </section>
 
-    <!-- EDIT SCREEN -->
-    <div id="editScreen" class="hidden">
-      <div class="header">
-        <button id="backBtn">←</button>
-        <h3>Edit Job</h3>
-      </div>
+      <!-- LOGIN REQUIRED -->
+      <section id="loginScreen" class="screen state hidden">
+        <p class="state-title">You're signed out</p>
+        <p class="muted">Sign in to save jobs to your board.</p>
+        <button id="loginBtn" class="btn btn-primary btn-block" type="button">
+          Sign in to Trackr
+        </button>
+      </section>
 
-      <label>Column</label>
-      <select id="columnInput"></select>
+      <!-- PREVIEW -->
+      <section id="previewScreen" class="screen hidden">
+        <div id="previewBanner" class="banner banner-good">
+          <span class="banner-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </span>
+          <div>
+            <p class="banner-title">Job found</p>
+            <p class="banner-sub">One-click save to your board</p>
+          </div>
+        </div>
 
-      <label>Company Name</label>
-      <input id="companyInput" />
+        <div class="job-card">
+          <p id="previewCompany" class="job-company"></p>
+          <p id="previewPosition" class="job-position"></p>
+        </div>
 
-      <label>Position</label>
-      <input id="positionInput" />
+        <div class="action-row">
+          <button id="editBtn" class="btn btn-ghost btn-icon" type="button" title="Edit details">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+          </button>
+          <button id="quickSaveBtn" class="btn btn-primary btn-grow" type="button">
+            Save
+          </button>
+        </div>
+      </section>
 
-      <label>Job Type</label>
-      <input id="jobTypeInput" />
+      <!-- EDIT -->
+      <section id="editScreen" class="screen hidden">
+        <div class="sub-head">
+          <button id="backBtn" class="icon-btn icon-btn-dark" type="button" title="Back">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <h2>Save job</h2>
+        </div>
 
-      <label>Location</label>
-      <input id="locationInput" />
+        <div class="field">
+          <label for="columnInput">Column</label>
+          <select id="columnInput"></select>
+        </div>
 
-      <label>Description</label>
-      <textarea id="descriptionInput"></textarea>
+        <div class="field">
+          <label for="companyInput">Company name</label>
+          <input id="companyInput" type="text" placeholder="Company" />
+        </div>
 
-      <button id="finalSaveBtn" class="primary full">Save to Trackr</button>
+        <div class="field">
+          <label for="positionInput">Position</label>
+          <input id="positionInput" type="text" placeholder="Job title" />
+        </div>
 
-      <p id="editStatus"></p>
-    </div>
+        <div class="field">
+          <label for="salaryInput">Salary</label>
+          <input id="salaryInput" type="text" placeholder="Salary" />
+        </div>
+
+        <div class="field">
+          <label for="jobTypeInput">Job type</label>
+          <select id="jobTypeInput">
+            <option value="">Select option...</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
+            <option value="Temporary">Temporary</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Apprenticeship">Apprenticeship</option>
+            <option value="Volunteer">Volunteer</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="locationInput">Location</label>
+          <input id="locationInput" type="text" placeholder="Location" />
+        </div>
+
+        <button id="showMoreBtn" class="link-btn" type="button" aria-expanded="false">
+          <span id="showMoreLabel">Show more</span>
+          <svg id="showMoreChevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+
+        <div id="moreFields" class="hidden">
+          <div class="field">
+            <label for="jobModeInput">Work mode</label>
+            <select id="jobModeInput">
+              <option value="">Select option...</option>
+              <option value="On-site">On-site</option>
+              <option value="Remote">Remote</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="urlInput">Job link</label>
+            <input id="urlInput" type="text" placeholder="https://" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="descriptionInput">Description</label>
+          <textarea id="descriptionInput" placeholder="Job description"></textarea>
+        </div>
+
+        <button id="finalSaveBtn" class="btn btn-primary btn-block" type="button">
+          Save to Trackr
+        </button>
+      </section>
+
+      <!-- SETTINGS -->
+      <section id="settingsScreen" class="screen hidden">
+        <div class="sub-head">
+          <button id="settingsBackBtn" class="icon-btn icon-btn-dark" type="button" title="Back">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <h2>Settings</h2>
+        </div>
+
+        <div class="field">
+          <label for="defaultColumnInput">Default column</label>
+          <p class="muted field-help">
+            New jobs are saved to this column unless you change it.
+          </p>
+          <select id="defaultColumnInput"></select>
+        </div>
+
+        <p id="settingsEmpty" class="muted hidden">
+          Sign in to choose a default column.
+        </p>
+      </section>
+    </main>
+
+    <div id="toast" class="toast hidden"></div>
 
     <script src="popup.js"></script>
-    <div id="toast" class="toast hidden"></div>
   </body>
 </html>

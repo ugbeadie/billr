@@ -7,60 +7,72 @@ const API_ORIGINS = {
 // manifest.json host_permissions or the fetch is blocked.
 const API_BASE = API_ORIGINS.local;
 
+const DEFAULT_COLUMN_KEY = "defaultColumnId";
+const SCREENS = [
+  "loadingScreen",
+  "loginScreen",
+  "previewScreen",
+  "editScreen",
+  "settingsScreen",
+];
+
 let scrapedData = null;
 let userColumns = [];
 let boardId = null;
+let screenBeforeSettings = "previewScreen";
 
-const loadingScreen = document.getElementById("loadingScreen");
-const loginScreen = document.getElementById("loginScreen");
-const previewScreen = document.getElementById("previewScreen");
-const editScreen = document.getElementById("editScreen");
+const $ = (id) => document.getElementById(id);
 
-async function init() {
-  try {
-    const res = await fetch(`${API_BASE}/api/extension/user-data`, {
-      credentials: "include",
-      signal: AbortSignal.timeout(10000),
-    });
+function showScreen(id) {
+  SCREENS.forEach((name) => $(name).classList.toggle("hidden", name !== id));
+}
 
-    if (res.status === 401) {
-      showLogin();
-      return;
+/* ---------------------------------------------------------------- storage */
+
+// chrome.storage callbacks can fail with the extension context invalidated
+// mid-flight, so every read resolves to a value rather than rejecting.
+function readDefaultColumnId() {
+  return new Promise((resolve) => {
+    try {
+      chrome.storage.sync.get([DEFAULT_COLUMN_KEY], (result) => {
+        if (chrome.runtime.lastError) return resolve(null);
+        resolve((result && result[DEFAULT_COLUMN_KEY]) || null);
+      });
+    } catch {
+      resolve(null);
     }
-
-    const data = await res.json();
-    userColumns = data.columns || [];
-    boardId = data.boardId;
-
-    populateColumns();
-  } catch (err) {
-    showLogin();
-    return;
-  }
-
-  // Scraping must never block the popup from rendering — fillForm degrades to
-  // empty fields the user can edit by hand.
-  try {
-    await scrapePage();
-  } catch (err) {
-    fillForm(null);
-  }
-
-  showPreview();
+  });
 }
 
-function showLogin() {
-  loadingScreen.classList.add("hidden");
-  loginScreen.classList.remove("hidden");
+function writeDefaultColumnId(id) {
+  return new Promise((resolve) => {
+    try {
+      chrome.storage.sync.set({ [DEFAULT_COLUMN_KEY]: id }, () => {
+        void chrome.runtime.lastError;
+        resolve();
+      });
+    } catch {
+      resolve();
+    }
+  });
 }
 
-function showPreview() {
-  loadingScreen.classList.add("hidden");
-  previewScreen.classList.remove("hidden");
+/* ---------------------------------------------------------------- columns */
+
+// Stored default wins; otherwise Applied, which is what the server falls back
+// to as well, so the popup and the board never disagree.
+function resolveDefaultColumn(storedId) {
+  return (
+    userColumns.find((col) => col.id === storedId) ||
+    userColumns.find(
+      (col) => String(col.name || "").trim().toLowerCase() === "applied",
+    ) ||
+    userColumns[0] ||
+    null
+  );
 }
 
-function populateColumns() {
-  const select = document.getElementById("columnInput");
+function fillColumnSelect(select, selectedId) {
   select.innerHTML = "";
 
   userColumns.forEach((col) => {
@@ -70,29 +82,70 @@ function populateColumns() {
     select.appendChild(option);
   });
 
-  // Saving a job from a posting means you applied to it, so preselect Applied
-  // rather than whichever column happens to sort first. Matches the server's
-  // own fallback, so the popup and the board always agree.
-  const applied = userColumns.find(
-    (col) => String(col.name || "").trim().toLowerCase() === "applied",
-  );
-  if (applied) select.value = applied.id;
+  if (selectedId) select.value = selectedId;
 }
 
-function showToast(message, type = "success") {
-  const toast = document.getElementById("toast");
+// The primary button names its destination, so a quick save is never a
+// surprise. dataset.label keeps the text restorable after a failed save.
+function updateSaveLabel() {
+  const selected = userColumns.find((col) => col.id === $("columnInput").value);
+  const button = $("quickSaveBtn");
 
-  toast.textContent = message;
-
-  toast.style.background = type === "error" ? "#dc2626" : "#111827";
-
-  toast.classList.remove("hidden");
-  toast.classList.add("show");
-
-  setTimeout(() => {
-    toast.classList.remove("show");
-  }, 2500);
+  button.textContent = selected ? `Save to ${selected.name}` : "Save";
+  button.dataset.label = button.textContent;
 }
+
+/* ------------------------------------------------------------------- init */
+
+async function init() {
+  let storedDefault = null;
+
+  try {
+    const [res, stored] = await Promise.all([
+      fetch(`${API_BASE}/api/extension/user-data`, {
+        credentials: "include",
+        signal: AbortSignal.timeout(10000),
+      }),
+      readDefaultColumnId(),
+    ]);
+
+    storedDefault = stored;
+
+    if (res.status === 401) {
+      showScreen("loginScreen");
+      return;
+    }
+
+    const data = await res.json();
+    userColumns = data.columns || [];
+    boardId = data.boardId;
+  } catch {
+    showScreen("loginScreen");
+    return;
+  }
+
+  const fallback = resolveDefaultColumn(storedDefault);
+
+  fillColumnSelect($("columnInput"), fallback && fallback.id);
+  fillColumnSelect($("defaultColumnInput"), fallback && fallback.id);
+  updateSaveLabel();
+
+  $("defaultColumnInput").classList.toggle("hidden", userColumns.length === 0);
+  $("settingsEmpty").classList.toggle("hidden", userColumns.length > 0);
+
+  // Scraping must never block the popup from rendering - fillForm degrades to
+  // empty fields the user can edit by hand.
+  try {
+    await scrapePage();
+  } catch {
+    fillForm(null);
+  }
+
+  showScreen("previewScreen");
+}
+
+/* ---------------------------------------------------------------- scraping */
+
 async function scrapePage() {
   const [tab] = await chrome.tabs.query({
     active: true,
@@ -151,6 +204,16 @@ function requestJobData(tabId) {
   });
 }
 
+// Selects only accept values they actually offer; an unrecognised scrape falls
+// back to the empty "Select option..." entry rather than silently doing nothing.
+function setSelectValue(select, value) {
+  const wanted = String(value || "").toLowerCase();
+  const match = Array.from(select.options).find(
+    (option) => option.value.toLowerCase() === wanted,
+  );
+  select.value = match ? match.value : "";
+}
+
 function fillForm(data) {
   // Visible in the popup's own devtools (right-click the popup > Inspect), so a
   // bad scrape can be diagnosed without guessing at selectors.
@@ -161,61 +224,72 @@ function fillForm(data) {
     position: data?.position || "",
     location: data?.location || "",
     description: data?.description || "",
+    salary: data?.salary || "",
     jobType: data?.jobType || "",
     jobMode: data?.jobMode || "",
     url: data?.url || "",
   };
 
-  document.getElementById("previewCompany").innerText =
-    scrapedData.company || "Unknown company";
-  document.getElementById("previewPosition").innerText =
-    scrapedData.position || "Couldn't read this page — tap Edit to fill it in";
+  const found = Boolean(scrapedData.company || scrapedData.position);
+  const banner = $("previewBanner");
 
-  document.getElementById("companyInput").value = scrapedData.company;
-  document.getElementById("positionInput").value = scrapedData.position;
-  document.getElementById("locationInput").value = scrapedData.location;
-  document.getElementById("descriptionInput").value = scrapedData.description;
-  document.getElementById("jobTypeInput").value = scrapedData.jobType;
+  banner.className = found ? "banner banner-good" : "banner banner-warn";
+  banner.querySelector(".banner-title").textContent = found
+    ? "Job found"
+    : "Couldn't read this page";
+  banner.querySelector(".banner-sub").textContent = found
+    ? "One-click save to your board"
+    : "Tap the pencil to fill it in yourself";
+
+  $("previewCompany").textContent = scrapedData.company || "Unknown company";
+  $("previewPosition").textContent = scrapedData.position || "No title found";
+
+  $("companyInput").value = scrapedData.company;
+  $("positionInput").value = scrapedData.position;
+  $("locationInput").value = scrapedData.location;
+  $("descriptionInput").value = scrapedData.description;
+  $("salaryInput").value = scrapedData.salary;
+  $("urlInput").value = scrapedData.url;
+
+  setSelectValue($("jobTypeInput"), scrapedData.jobType);
+  setSelectValue($("jobModeInput"), scrapedData.jobMode);
 }
 
-document.getElementById("editBtn").onclick = () => {
-  previewScreen.classList.add("hidden");
-  editScreen.classList.remove("hidden");
-};
+/* --------------------------------------------------------------- feedback */
 
-document.getElementById("backBtn").onclick = () => {
-  editScreen.classList.add("hidden");
-  previewScreen.classList.remove("hidden");
-};
+function showToast(message, type = "success") {
+  const toast = $("toast");
 
-document.getElementById("loginBtn").onclick = () => {
-  chrome.tabs.create({ url: `${API_BASE}/login` });
-};
+  toast.textContent = message;
+  toast.style.background = type === "error" ? "#dc2626" : "#111827";
+  toast.classList.remove("hidden");
+  toast.classList.add("show");
 
-document.getElementById("quickSaveBtn").onclick = async () => {
-  // Send the same column the Edit screen is showing, so a quick save and an
-  // edited save can't disagree about where the job lands.
-  await saveJob({
-    ...scrapedData,
-    boardId,
-    columnId: document.getElementById("columnInput").value,
+  setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
+const SAVE_BUTTONS = ["quickSaveBtn", "finalSaveBtn"];
+
+function showSavingState() {
+  SAVE_BUTTONS.forEach((id) => {
+    const button = $(id);
+    if (!button.dataset.label) button.dataset.label = button.textContent;
+    button.textContent = "Saving...";
+    button.disabled = true;
   });
-};
+}
 
-document.getElementById("finalSaveBtn").onclick = async () => {
-  const updatedData = {
-    ...scrapedData,
-    boardId,
-    columnId: document.getElementById("columnInput").value,
-    company: document.getElementById("companyInput").value,
-    position: document.getElementById("positionInput").value,
-    jobType: document.getElementById("jobTypeInput").value,
-    location: document.getElementById("locationInput").value,
-    description: document.getElementById("descriptionInput").value,
-  };
+// Every failure path calls this: leaving the buttons reading "Saving..." but
+// still clickable is what lets a retry insert the same job twice.
+function resetSavingState() {
+  SAVE_BUTTONS.forEach((id) => {
+    const button = $(id);
+    if (button.dataset.label) button.textContent = button.dataset.label;
+    button.disabled = false;
+  });
+}
 
-  await saveJob(updatedData);
-};
+/* ----------------------------------------------------------------- saving */
 
 async function saveJob(data) {
   showSavingState();
@@ -245,40 +319,81 @@ async function saveJob(data) {
     const result = await res.json().catch(() => ({}));
     const columnName =
       result.columnName ||
-      userColumns.find((c) => c.id === data.columnId)?.name ||
+      userColumns.find((col) => col.id === data.columnId)?.name ||
       "your board";
 
     showToast(`Saved to ${columnName}`);
 
-    setTimeout(() => {
-      window.close();
-    }, 1200);
+    setTimeout(() => window.close(), 1200);
   } catch {
     showToast("Network error", "error");
     resetSavingState();
   }
 }
 
-const SAVE_BUTTONS = ["quickSaveBtn", "finalSaveBtn"];
-const originalLabels = {};
-
-function showSavingState() {
-  SAVE_BUTTONS.forEach((id) => {
-    const btn = document.getElementById(id);
-    if (originalLabels[id] === undefined) originalLabels[id] = btn.innerText;
-    btn.innerText = "Saving...";
-    btn.disabled = true;
-  });
+function collectFormData() {
+  return {
+    ...scrapedData,
+    boardId,
+    columnId: $("columnInput").value,
+    company: $("companyInput").value,
+    position: $("positionInput").value,
+    salary: $("salaryInput").value,
+    jobType: $("jobTypeInput").value,
+    jobMode: $("jobModeInput").value,
+    location: $("locationInput").value,
+    description: $("descriptionInput").value,
+    url: $("urlInput").value,
+  };
 }
 
-// Every failure path calls this: leaving the buttons reading "Saving..." but
-// still clickable is what lets a retry insert the same job twice.
-function resetSavingState() {
-  SAVE_BUTTONS.forEach((id) => {
-    const btn = document.getElementById(id);
-    if (originalLabels[id] !== undefined) btn.innerText = originalLabels[id];
-    btn.disabled = false;
-  });
-}
+/* ------------------------------------------------------------------ wiring */
+
+$("editBtn").onclick = () => showScreen("editScreen");
+$("backBtn").onclick = () => showScreen("previewScreen");
+
+$("settingsBtn").onclick = () => {
+  screenBeforeSettings = SCREENS.find(
+    (name) => name !== "settingsScreen" && !$(name).classList.contains("hidden"),
+  ) || "previewScreen";
+  showScreen("settingsScreen");
+};
+
+$("settingsBackBtn").onclick = () => showScreen(screenBeforeSettings);
+
+$("dashboardBtn").onclick = () => {
+  chrome.tabs.create({ url: `${API_BASE}/dashboard` });
+};
+
+$("showMoreBtn").onclick = () => {
+  const expanded = $("showMoreBtn").getAttribute("aria-expanded") === "true";
+
+  $("showMoreBtn").setAttribute("aria-expanded", String(!expanded));
+  $("moreFields").classList.toggle("hidden", expanded);
+  $("showMoreLabel").textContent = expanded ? "Show more" : "Show less";
+};
+
+$("columnInput").onchange = updateSaveLabel;
+
+$("defaultColumnInput").onchange = async () => {
+  const id = $("defaultColumnInput").value;
+
+  await writeDefaultColumnId(id);
+
+  // Reflect the new default in the edit form straight away, so the next save
+  // goes where settings says it will.
+  $("columnInput").value = id;
+  updateSaveLabel();
+
+  const selected = userColumns.find((col) => col.id === id);
+  showToast(selected ? `Default set to ${selected.name}` : "Default saved");
+};
+
+$("loginBtn").onclick = () => {
+  chrome.tabs.create({ url: `${API_BASE}/login` });
+};
+
+$("quickSaveBtn").onclick = () => saveJob(collectFormData());
+$("finalSaveBtn").onclick = () => saveJob(collectFormData());
 
 init();

@@ -102,6 +102,47 @@
     return firstMatch(raw.replace(/_/g, " "), EMPLOYMENT);
   };
 
+  // Currency symbols kept as escapes so this file stays pure ASCII.
+  const SALARY_RE = new RegExp(
+    "(?:[\\u0024\\u00a3\\u20ac\\u20a6\\u00a5]|\\b(?:USD|EUR|GBP|NGN|CAD|AUD|INR)\\b)" +
+      "\\s?\\d[\\d,.]*(?:\\s?[kK])?" +
+      "(?:\\s?(?:-|\\u2013|\\u2014|to)\\s?[\\u0024\\u00a3\\u20ac\\u20a6\\u00a5]?\\d[\\d,.]*(?:\\s?[kK])?)?" +
+      "(?:\\s?/\\s?(?:yr|year|hr|hour|mo|month|wk|week))?",
+    "i",
+  );
+
+  const UNIT_SUFFIX = {
+    year: "/yr",
+    month: "/mo",
+    week: "/wk",
+    day: "/day",
+    hour: "/hr",
+  };
+
+  const salaryFromJsonLd = (item) => {
+    const base = item.baseSalary;
+    if (!base || typeof base !== "object") return "";
+
+    const value = base.value || {};
+    const currency = base.currency || value.currency || "";
+    const min = value.minValue != null ? value.minValue : value.value;
+    const max = value.maxValue;
+    if (min == null && max == null) return "";
+
+    const format = (amount) => {
+      const number = Number(amount);
+      return Number.isFinite(number) ? number.toLocaleString("en-US") : "";
+    };
+
+    const range =
+      min != null && max != null && String(min) !== String(max)
+        ? `${format(min)} - ${format(max)}`
+        : format(min != null ? min : max);
+
+    const suffix = UNIT_SUFFIX[String(value.unitText || "").toLowerCase()] || "";
+    return clean(`${currency} ${range}${suffix}`);
+  };
+
   // Most job boards embed a schema.org JobPosting. It's far more stable than
   // scraping class names, so it backs up every field.
   const fromJsonLd = () => {
@@ -150,6 +191,7 @@
           description: clean(stripHtml(item.description)),
           jobType: normalizeEmployment(item.employmentType),
           jobMode: remote ? "Remote" : "",
+          salary: salaryFromJsonLd(item),
         };
       }
     }
@@ -365,11 +407,15 @@
       firstMatch(jobLocation, WORKPLACE) ||
       "";
 
+    const salaryMatch = SALARY_RE.exec(cardText || "");
+    const salary = jsonLd.salary || (salaryMatch ? clean(salaryMatch[0]) : "");
+
     return {
       position,
       company,
       location: jobLocation,
       description: String(description).slice(0, 5000),
+      salary,
       jobType,
       jobMode,
       url: location.href,
@@ -389,6 +435,7 @@
         company: "",
         location: "",
         description: "",
+        salary: "",
         jobType: "",
         jobMode: "",
         url: location.href,
