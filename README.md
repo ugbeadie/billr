@@ -119,22 +119,36 @@ needs special handling.
    Your board is set up automatically with WishList, Applied, Interviewing,
    Offer, Rejected and Ghosted columns.
 
-2. **Load the extension.** Open `chrome://extensions`, turn on **Developer
-   mode** (top right), click **Load unpacked**, and select the `extension/`
-   folder from this repo.
+2. **Download this project.** On the
+   [repository page](https://github.com/ugbeadie/billr), click the green
+   **Code** button, then **Download ZIP**. Unzip it — you'll get a folder
+   named something like `billr-main`.
 
-3. **Pin it.** Chrome hides new extensions behind the puzzle-piece icon in the
-   toolbar — click it and pin **Trackr** so the icon is visible.
+   Prefer the terminal? `git clone https://github.com/ugbeadie/billr.git`
 
-4. **Open a job posting** — any job board or company careers page.
+3. **Open Chrome's extensions page.** Go to `chrome://extensions`, and switch
+   on **Developer mode** using the toggle in the top-right corner.
 
-5. **Click the Trackr icon.** You'll see the role and company, and a
+4. **Click "Load unpacked"** (top-left, appears once Developer mode is on) and
+   select the folder named **`extension`** that sits inside the project folder
+   you just unzipped — so `billr-main/extension`.
+
+   > Pick the `extension` folder itself. Don't select the project folder, and
+   > don't open `extension` and select the files inside it.
+
+5. **Pin it.** Chrome tucks new extensions behind the puzzle-piece icon in the
+   toolbar — click it, find **Trackr**, and hit the pin so the icon stays
+   visible.
+
+6. **Open a job posting** — any job board or company careers page.
+
+7. **Click the Trackr icon.** You'll see the role and company, and a
    **Save to Applied** button.
 
-6. **Save it**, or click the pencil to edit the column, salary, job type, work
+8. **Save it**, or click the pencil to edit the column, salary, job type, work
    mode and description first.
 
-7. **Check your board** — the external-link icon in the extension header opens
+9. **Check your board** — the external-link icon in the extension header opens
    your dashboard, where the job is waiting in the column you chose.
 
 ### Notes
