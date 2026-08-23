@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { deleteJob, updateJob } from "@/server/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface JobDetailsModalProps {
   job: Job | null;
@@ -31,12 +31,27 @@ export default function JobDetailsModal({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [descriptionClipped, setDescriptionClipped] = useState(false);
+  const descriptionRef = useRef<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
     setFormData(job ? { ...job } : null);
     setIsEditing(false);
     setShowDeleteConfirm(false);
+    setDescriptionExpanded(false);
   }, [job]);
+
+  // The clamp is a height, so decide on measured overflow rather than a
+  // character count: a short description carrying many line breaks can run
+  // well past the clamp, and a character threshold would hide the toggle and
+  // strand the tail.
+  useEffect(() => {
+    if (descriptionExpanded) return;
+
+    const el = descriptionRef.current;
+    setDescriptionClipped(!!el && el.scrollHeight > el.clientHeight + 1);
+  }, [job, open, isEditing, descriptionExpanded]);
 
   function getColorValue(twColor?: string) {
     const map: Record<string, string> = {
@@ -84,6 +99,7 @@ export default function JobDetailsModal({
         url: formData.url ?? null,
         jobMode: formData.jobMode ?? null,
         description: formData.description ?? null,
+        notes: formData.notes ?? null,
         appliedDate: formData.appliedDate ?? null,
         columnId: formData.columnId,
       });
@@ -353,7 +369,10 @@ export default function JobDetailsModal({
                         <option value="">Select mode</option>
                         <option value="remote">Remote</option>
                         <option value="hybrid">Hybrid</option>
-                        <option value="on-site">On-site</option>
+                        {/* "onsite" to match CreateJobModal and the extension;
+                            "on-site" here never round-tripped back into this
+                            select. */}
+                        <option value="onsite">On-site</option>
                       </select>
                     </>
                   ) : (
@@ -374,25 +393,72 @@ export default function JobDetailsModal({
 
                   {isEditing ? (
                     <textarea
-                      value={formData.description ?? ""}
+                      value={formData.notes ?? ""}
                       disabled={isSaving}
                       onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
+                        setFormData({ ...formData, notes: e.target.value })
                       }
                       rows={4}
+                      placeholder="Your own notes about this application"
                       className="w-full border rounded-md px-3 py-2 text-sm disabled:bg-gray-100"
                     />
                   ) : (
-                    <p className="text-sm">
-                      {job.description ||
-                        "No notes added for this job application."}
+                    <p className="text-sm whitespace-pre-line">
+                      {job.notes || "No notes added for this job application."}
                     </p>
                   )}
                 </div>
               </div>
+            </div>
+
+            {/* JOB DESCRIPTION - full width below both columns. It runs to
+                thousands of characters, so it can't share the detail grid. */}
+            <div
+              className="mt-6 bg-white border rounded-lg p-5"
+              style={{ borderLeft: `2px solid ${accent}` }}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-medium">Job description</p>
+
+                {!isEditing && (descriptionExpanded || descriptionClipped) && (
+                  <button
+                    type="button"
+                    onClick={() => setDescriptionExpanded((shown) => !shown)}
+                    className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                  >
+                    {descriptionExpanded ? "Show less" : "Show more"}
+                  </button>
+                )}
+              </div>
+
+              {isEditing ? (
+                <textarea
+                  value={formData.description ?? ""}
+                  disabled={isSaving}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  rows={10}
+                  placeholder="The job posting itself"
+                  className="mt-2 w-full border rounded-md px-3 py-2 text-sm disabled:bg-gray-100"
+                />
+              ) : job.description ? (
+                // whitespace-pre-line keeps the paragraph breaks the extension
+                // now preserves; max-height beats line-clamp here because
+                // line-clamp forces display:-webkit-box.
+                <p
+                  ref={descriptionRef}
+                  className={`mt-2 text-sm leading-relaxed text-gray-700 whitespace-pre-line overflow-hidden ${
+                    descriptionExpanded ? "" : "max-h-40"
+                  }`}
+                >
+                  {job.description}
+                </p>
+              ) : (
+                <p className="mt-2 text-sm text-gray-400">
+                  No description saved for this job.
+                </p>
+              )}
             </div>
           </motion.div>
         </DialogContent>

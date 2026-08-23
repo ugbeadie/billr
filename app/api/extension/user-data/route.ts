@@ -22,8 +22,11 @@ export async function GET() {
     return NextResponse.json({ authenticated: true, columns: [] });
   }
 
+  // Ordered so the popup's dropdown matches the board left-to-right; without
+  // this the driver returns rows in arbitrary order.
   const userColumns = await db.query.columns.findMany({
     where: eq(columns.boardId, board.id),
+    orderBy: (cols, { asc }) => [asc(cols.order)],
   });
 
   return NextResponse.json({

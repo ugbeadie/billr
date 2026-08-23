@@ -150,7 +150,11 @@ export const jobs = pgTable("jobs", {
   url: text("url"),
   jobMode: text("job_mode"),
   appliedDate: timestamp("applied_date", { withTimezone: true }),
+  // description holds the imported job posting (scraped by the extension or
+  // pasted in); notes is the user's own writing. Keeping them apart stops an
+  // import from overwriting whatever the user typed.
   description: text("description"),
+  notes: text("notes"),
   columnId: text("column_id")
     .notNull()
     .references(() => columns.id, { onDelete: "cascade" }),

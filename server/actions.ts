@@ -107,6 +107,7 @@ interface CreateJobData {
   url?: string;
   jobMode?: string;
   description?: string;
+  notes?: string;
   boardId: string;
   columnId: string;
   appliedDate?: Date;
@@ -198,6 +199,7 @@ export async function createJob(data: CreateJobData): Promise<void> {
     url,
     jobMode,
     description,
+    notes,
     boardId,
     columnId,
     appliedDate,
@@ -235,6 +237,7 @@ export async function createJob(data: CreateJobData): Promise<void> {
     ...(url && { url }),
     ...(jobMode && { jobMode }),
     ...(description && { description }),
+    ...(notes && { notes }),
 
     boardId,
     columnId,
@@ -244,6 +247,7 @@ export async function createJob(data: CreateJobData): Promise<void> {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 }
 
 interface UpdateJobProps {
@@ -255,6 +259,7 @@ interface UpdateJobProps {
   url?: string | null;
   jobMode?: string | null;
   description?: string | null;
+  notes?: string | null;
   appliedDate?: Date | string | null;
 
   columnId?: string;
@@ -295,6 +300,7 @@ export async function updateJob(id: string, input: UpdateJobProps) {
     url: input.url ?? undefined,
     jobMode: input.jobMode ?? undefined,
     description: input.description ?? undefined,
+    notes: input.notes ?? undefined,
     appliedDate: input.appliedDate ? new Date(input.appliedDate) : undefined,
   };
 
@@ -365,6 +371,7 @@ export async function updateJob(id: string, input: UpdateJobProps) {
     .where(eq(jobs.id, job.id));
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 
   return { success: true };
 }
@@ -412,6 +419,7 @@ export async function deleteJob(id: string) {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 
   return { success: true };
 }
@@ -430,6 +438,7 @@ export async function deleteMultipleJobs(ids: string[]) {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 
   return { success: true };
 }
@@ -603,7 +612,7 @@ export async function createDemoJob() {
     location: "Remote",
     jobType: "full-time",
     jobMode: "remote",
-    description:
+    notes:
       "This is a demo job to show how the board works. Drag it between columns.",
     boardId: board.id,
     columnId: appliedColumn.id,
@@ -614,6 +623,7 @@ export async function createDemoJob() {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 }
 
 export async function deleteDemoJobs() {
@@ -628,4 +638,5 @@ export async function deleteDemoJobs() {
     .where(and(eq(jobs.userId, session.user.id), eq(jobs.isDemo, true)));
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 }
