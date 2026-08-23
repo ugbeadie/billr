@@ -290,6 +290,36 @@
     return best;
   };
 
+  // Indeed appends a screen-reader-only " - job post" inside the heading, and
+  // Glassdoor does the same on some layouts. The span is clipped rather than
+  // display:none, so innerText picks it up and it rides along into the title.
+  const TITLE_NOISE = /\s*[-\u2013\u2014]\s*job\s*post(ing)?s?\s*$/i;
+
+  // Trailing site branding on a page title, e.g. "... | LinkedIn".
+  const SITE_SUFFIX =
+    /\s*[|\u2013\u2014-]\s*(linkedin|indeed(\.com)?|glassdoor|ziprecruiter|simplyhired|monster|dice|lever|greenhouse|workday)\s*$/i;
+
+  // LinkedIn's public pages title themselves "Company hiring Role in Location".
+  const HIRING = /^.*?\bhiring\b\s+(.+?)\s+\bin\b\s+\S.*$/i;
+
+  // og:title and document.title describe the PAGE, not the job: LinkedIn
+  // renders "Role | Company | LinkedIn". Peel the branding off, then keep the
+  // leading segment, which is the role.
+  const fromPageTitle = (value) => {
+    let text = clean(value);
+
+    let previous;
+    do {
+      previous = text;
+      text = text.replace(SITE_SUFFIX, "");
+    } while (text !== previous);
+
+    const hiring = text.match(HIRING);
+    if (hiring) return clean(hiring[1]);
+
+    return text.includes("|") ? clean(text.split("|")[0]) : text;
+  };
+
   const NOISE =
     /\b(ago|applicants?|promoted|viewed|alumni|responses?|reposted|easy apply|actively reviewing|be an early applicant)\b/i;
 
@@ -410,9 +440,20 @@
     const prefer = (key, fallbackValue, generic) =>
       (site && pick(site[key])) || fallbackValue || pick(generic);
 
-    const position =
-      prefer("position", jsonLd.position, ['meta[property="og:title"]', "h1"]) ||
-      clean(document.title);
+    // Site selectors, JSON-LD and a real <h1> name the job directly. og:title
+    // and document.title name the PAGE, so they get the branding stripped
+    // rather than being tacked onto the same fallback chain.
+    const directTitle =
+      (site && pick(site.position)) || jsonLd.position || pick(["h1"]);
+
+    const position = clean(
+      String(
+        directTitle ||
+          fromPageTitle(
+            pick(['meta[property="og:title"]']) || document.title,
+          ),
+      ).replace(TITLE_NOISE, ""),
+    );
 
     const company = prefer("company", jsonLd.company, [
       'meta[property="og:site_name"]',
