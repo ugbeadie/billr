@@ -5,7 +5,7 @@ const API_ORIGINS = {
 
 // Switch to .local to develop against `pnpm dev`. Both origins must stay in
 // manifest.json host_permissions or the fetch is blocked.
-const API_BASE = API_ORIGINS.local;
+const API_BASE = API_ORIGINS.live;
 
 const DEFAULT_COLUMN_KEY = "defaultColumnId";
 const SCREENS = [
