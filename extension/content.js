@@ -441,10 +441,14 @@
         ]),
       ) || locationFromCard(cardText, company);
 
-    // On a recognised site, falling back to <main>/<body> would paste the whole
-    // page chrome into the field.
+    // og:description is scoped to the posting, so it is a safe last resort when
+    // the selectors miss. <main>/<body> are not: on a recognised site they
+    // would paste the whole page chrome into the field.
     const description = site
-      ? pickBlock(site.description) || jsonLd.description || ""
+      ? pickBlock(site.description) ||
+        jsonLd.description ||
+        pickBlock(['meta[property="og:description"]']) ||
+        ""
       : jsonLd.description ||
         pickBlock(['meta[property="og:description"]', "article", "main"]) ||
         cleanBlock(document.body && document.body.innerText);
