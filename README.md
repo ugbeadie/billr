@@ -4,7 +4,7 @@
 
 Trackr is a modern SaaS job application tracking platform built to help job seekers organize applications, manage interviews, and land roles faster.
 
-This project includes a responsive marketing landing page and is designed to evolve into a full-featured job tracking platform with authentication, dashboards, analytics, automation, and productivity tools.
+Trackr is live at [trackr.ugbeadie.com](https://trackr.ugbeadie.com) with authentication, a drag-and-drop Kanban board, analytics, AI-powered job extraction, and a Chrome extension that saves postings from job boards and company career pages in one click.
 
 ---
 
@@ -19,6 +19,7 @@ Trackr simplifies job hunting by providing:
 - Progress insights
 - Organized company notes
 - AI-powered job detail extraction
+- One-click saving from job boards and company career pages via the browser extension
 - Secure authentication system
 
 The mission is simple:
@@ -94,6 +95,57 @@ Authentication will allow each user to:
 - Manage their own applications
 - Track personal interview progress
 - Securely store job search data
+
+---
+
+## 🧩 Browser Extension
+
+Save a job straight from a posting — no copy-and-paste. The extension reads the
+role, company, location, salary, job type and description from the page and
+files it on your board in one click.
+
+Works across job boards and company career pages, not just the big three.
+
+Most sites publish `JobPosting` structured data, and the extension reads it
+directly — that covers Greenhouse, Lever, Workable, Ashby, SmartRecruiters,
+Workday and the majority of company-hosted careers pages. Where a site doesn't,
+it falls back to Open Graph tags and page heuristics. **LinkedIn**, **Indeed**
+and **Glassdoor** additionally have hand-tuned extraction, since their markup
+needs special handling.
+
+### Try it (about 2 minutes, no Chrome developer account needed)
+
+1. **Create an account** at [trackr.ugbeadie.com](https://trackr.ugbeadie.com).
+   Your board is set up automatically with WishList, Applied, Interviewing,
+   Offer, Rejected and Ghosted columns.
+
+2. **Load the extension.** Open `chrome://extensions`, turn on **Developer
+   mode** (top right), click **Load unpacked**, and select the `extension/`
+   folder from this repo.
+
+3. **Pin it.** Chrome hides new extensions behind the puzzle-piece icon in the
+   toolbar — click it and pin **Trackr** so the icon is visible.
+
+4. **Open a job posting** — any job board or company careers page.
+
+5. **Click the Trackr icon.** You'll see the role and company, and a
+   **Save to Applied** button.
+
+6. **Save it**, or click the pencil to edit the column, salary, job type, work
+   mode and description first.
+
+7. **Check your board** — the external-link icon in the extension header opens
+   your dashboard, where the job is waiting in the column you chose.
+
+### Notes
+
+- You must be signed in at trackr.ugbeadie.com first; the extension uses your
+  existing session. If you aren't, the popup offers a sign-in button.
+- No page refresh is needed after installing — the extension injects its reader
+  on demand, so tabs you already had open still work.
+- On a page it can't read (a new tab, `chrome://` pages), the popup says so and
+  offers a blank form to fill in by hand.
+- The gear icon sets which column new jobs default to.
 
 ---
 
