@@ -3,7 +3,7 @@ const API_ORIGINS = {
   live: "https://trackr.ugbeadie.com",
 };
 
-// Flip to API_ORIGINS.live before shipping. Both origins must stay listed in
+// Switch to .local to develop against `pnpm dev`. Both origins must stay in
 // manifest.json host_permissions or the fetch is blocked.
 const API_BASE = API_ORIGINS.local;
 
@@ -29,8 +29,7 @@ function showScreen(id) {
 
 /* ---------------------------------------------------------------- storage */
 
-// chrome.storage callbacks can fail with the extension context invalidated
-// mid-flight, so every read resolves to a value rather than rejecting.
+// The extension context can be invalidated mid-flight, so these always resolve.
 function readDefaultColumnId() {
   return new Promise((resolve) => {
     try {
@@ -59,8 +58,7 @@ function writeDefaultColumnId(id) {
 
 /* ---------------------------------------------------------------- columns */
 
-// Stored default wins; otherwise Applied, which is what the server falls back
-// to as well, so the popup and the board never disagree.
+// Falls back to Applied, matching the server, so the two never disagree.
 function resolveDefaultColumn(storedId) {
   return (
     userColumns.find((col) => col.id === storedId) ||
@@ -85,8 +83,7 @@ function fillColumnSelect(select, selectedId) {
   if (selectedId) select.value = selectedId;
 }
 
-// The primary button names its destination, so a quick save is never a
-// surprise. dataset.label keeps the text restorable after a failed save.
+// dataset.label keeps the text restorable after a failed save.
 function updateSaveLabel() {
   const selected = userColumns.find((col) => col.id === $("columnInput").value);
   const button = $("quickSaveBtn");
@@ -133,8 +130,7 @@ async function init() {
   $("defaultColumnInput").classList.toggle("hidden", userColumns.length === 0);
   $("settingsEmpty").classList.toggle("hidden", userColumns.length > 0);
 
-  // Scraping must never block the popup from rendering - fillForm degrades to
-  // empty fields the user can edit by hand.
+  // Scraping must never block rendering; fillForm degrades to empty fields.
   try {
     await scrapePage();
   } catch {
@@ -159,8 +155,7 @@ async function scrapePage() {
 
   let response = await requestJobData(tab.id);
 
-  // The content script isn't in tabs that were already open when the extension
-  // was installed or reloaded. activeTab + scripting let us inject it on demand.
+  // Tabs open before install have no content script; inject it on demand.
   if (!response) {
     try {
       await chrome.scripting.executeScript({
@@ -204,8 +199,7 @@ function requestJobData(tabId) {
   });
 }
 
-// Selects only accept values they actually offer; an unrecognised scrape falls
-// back to the empty "Select option..." entry rather than silently doing nothing.
+// An unrecognised scrape falls back to the empty option, not a silent no-op.
 function setSelectValue(select, value) {
   const wanted = String(value || "").toLowerCase();
   const match = Array.from(select.options).find(
@@ -215,8 +209,7 @@ function setSelectValue(select, value) {
 }
 
 function fillForm(data) {
-  // Visible in the popup's own devtools (right-click the popup > Inspect), so a
-  // bad scrape can be diagnosed without guessing at selectors.
+  // Right-click the popup > Inspect to see what was actually scraped.
   console.debug("[Trackr] scraped:", data);
 
   scrapedData = {
@@ -279,8 +272,7 @@ function showSavingState() {
   });
 }
 
-// Every failure path calls this: leaving the buttons reading "Saving..." but
-// still clickable is what lets a retry insert the same job twice.
+// Every failure path calls this, or a retry inserts the same job twice.
 function resetSavingState() {
   SAVE_BUTTONS.forEach((id) => {
     const button = $(id);
@@ -314,8 +306,7 @@ async function saveJob(data) {
       return;
     }
 
-    // The server decides the final column, so report what it actually did
-    // instead of echoing the local selection back at the user.
+    // Report where the server actually put it, not the local selection.
     const result = await res.json().catch(() => ({}));
     const columnName =
       result.columnName ||
@@ -380,8 +371,7 @@ $("defaultColumnInput").onchange = async () => {
 
   await writeDefaultColumnId(id);
 
-  // Reflect the new default in the edit form straight away, so the next save
-  // goes where settings says it will.
+  // Reflect it in the edit form so the next save agrees with settings.
   $("columnInput").value = id;
   updateSaveLabel();
 

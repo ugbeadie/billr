@@ -1,8 +1,6 @@
 (() => {
-  // popup.js re-injects this file when a tab has no live listener. A plain
-  // "already injected" flag would survive an extension reload while the
-  // listener it guards does not, so drop any previous listener and register a
-  // live one instead of bailing out.
+  // An "already injected" flag would outlive the listener it guards across an
+  // extension reload, so replace the listener rather than bailing out.
   if (window.__trackrListener) {
     try {
       chrome.runtime.onMessage.removeListener(window.__trackrListener);
@@ -13,9 +11,7 @@
 
   const clean = (value) => String(value || "").replace(/\s+/g, " ").trim();
 
-  // Like clean(), but keeps paragraph structure. Descriptions are the one field
-  // where line breaks carry meaning, and collapsing them leaves the app with a
-  // single unreadable wall of text it cannot re-break.
+  // Descriptions are the one field where line breaks carry meaning.
   const cleanBlock = (value) =>
     String(value || "")
       .replace(/\r\n?/g, "\n")
@@ -24,19 +20,15 @@
       .replace(/\n{3,}/g, "\n\n")
       .trim();
 
-  // "Lagos, Nigeria - 2 weeks ago - 100 applicants" -> "Lagos, Nigeria"
   const firstSegment = (value) => clean(String(value || "").split(SEP)[0]);
 
-  // JSON-LD descriptions are usually HTML. DOMParser gives an inert document,
-  // so nothing loads or executes while we pull the text out.
+  // DOMParser gives an inert document: nothing loads or executes.
   const stripHtml = (html) => {
     if (!html) return "";
     try {
       const doc = new DOMParser().parseFromString(String(html), "text/html");
       if (!doc.body) return String(html);
 
-      // textContent alone would run every block together; re-introduce the
-      // breaks the markup implied before flattening.
       doc.body.querySelectorAll("br").forEach((br) => {
         br.replaceWith("\n");
       });
@@ -53,8 +45,7 @@
   };
 
   const nodeText = (el) => {
-    // .content covers <meta>; innerText deliberately beats textContent so
-    // hidden boilerplate isn't mistaken for real content.
+    // innerText beats textContent so hidden boilerplate isn't picked up.
     const raw = el.content !== undefined ? el.content : el.innerText;
     return clean(raw !== undefined ? raw : el.textContent);
   };
@@ -67,9 +58,8 @@
     }
   };
 
-  // Reads every match, not just the first: pages like LinkedIn put a
-  // screen-reader-hidden <h1> ahead of the real one, and innerText is "" for a
-  // hidden element, so first-match-wins silently yields nothing.
+  // Every match, not just the first: LinkedIn puts a hidden <h1> ahead of the
+  // real one and innerText is "" for it.
   const pick = (selectors) => {
     for (const selector of selectors || []) {
       for (const el of queryAll(selector)) {
@@ -80,7 +70,6 @@
     return "";
   };
 
-  // Same walk as pick(), but keeps the newlines innerText already provides.
   const pickBlock = (selectors) => {
     for (const selector of selectors || []) {
       for (const el of queryAll(selector)) {
@@ -97,8 +86,6 @@
     return "";
   };
 
-  // Every match joined - used for metadata pills, where the value we want may
-  // be in any one of them.
   const pickAll = (selectors) => {
     const out = [];
     for (const selector of selectors || []) {
@@ -110,10 +97,8 @@
     return out.join(" " + SEP + " ");
   };
 
-  // Labels below are the exact values the app's own selects store - see the
-  // SelectItem lists in components/CreateJobModal.tsx. A <select> matches its
-  // value by exact string, so emitting "Full-time" here would leave the field
-  // showing the placeholder when the job is opened in the app.
+  // These labels must stay identical to the SelectItem values in
+  // components/CreateJobModal.tsx - a <select> matches by exact string.
 
   // Hybrid is checked before Remote: hybrid postings routinely say "remote".
   const WORKPLACE = [
@@ -123,8 +108,7 @@
     [/\bin[\s-]?office\b/i, "onsite"],
   ];
 
-  // The app offers only these four. Near-synonyms are folded into the closest
-  // one rather than dropped, so the signal survives the round trip.
+  // Only four are offered by the app, so near-synonyms fold into the closest.
   const EMPLOYMENT = [
     [/full[\s-]?time/i, "full-time"],
     [/part[\s-]?time/i, "part-time"],
@@ -143,7 +127,6 @@
     return "";
   };
 
-  // schema.org uses FULL_TIME / PART_TIME / CONTRACTOR enums.
   const normalizeEmployment = (value) => {
     const raw = Array.isArray(value) ? value.join(" ") : String(value || "");
     return firstMatch(raw.replace(/_/g, " "), EMPLOYMENT);
@@ -190,8 +173,8 @@
     return clean(`${currency} ${range}${suffix}`);
   };
 
-  // Most job boards embed a schema.org JobPosting. It's far more stable than
-  // scraping class names, so it backs up every field.
+  // schema.org JobPosting: far more stable than class names, so it backs up
+  // every field and is what makes unknown job boards work.
   const fromJsonLd = () => {
     for (const node of queryAll('script[type="application/ld+json"]')) {
       let parsed;
@@ -246,17 +229,14 @@
     return null;
   };
 
-  // Class names on LinkedIn churn constantly. As a backstop, locate the heading
-  // that produced the title and read the surrounding block's raw text - the
-  // company, location, posted date and pills all live there regardless of what
-  // the classes are called this week.
+  // Class-name-free backstop: find the heading, then read the surrounding
+  // block's raw text, where the metadata and pills live whatever the classes.
   const cardTextAround = (title) => {
     let heading = null;
     for (const candidate of queryAll("h1, h2")) {
       const text = nodeText(candidate);
       if (!text) continue;
-      // Exact equality is too strict: the heading often carries a verified
-      // badge or trailing markup that the title selector trimmed off.
+      // Not exact equality: headings carry badges the title selector trimmed.
       if (
         !title ||
         text === title ||
@@ -269,9 +249,8 @@
     }
     if (!heading) return "";
 
-    // Keep climbing until the block holds BOTH the metadata line and the
-    // type/mode pills - they sit in sibling containers below the heading, so
-    // stopping at the first ancestor bigger than the title misses them.
+    // Climb until the block holds both the metadata line and the pills; they
+    // sit in siblings below the heading.
     let node = heading;
     let best = "";
     for (let depth = 0; depth < 8 && node.parentElement; depth++) {
@@ -290,21 +269,17 @@
     return best;
   };
 
-  // Indeed appends a screen-reader-only " - job post" inside the heading, and
-  // Glassdoor does the same on some layouts. The span is clipped rather than
-  // display:none, so innerText picks it up and it rides along into the title.
+  // Indeed and Glassdoor put a screen-reader-only " - job post" in the heading.
+  // It is clipped, not display:none, so innerText picks it up.
   const TITLE_NOISE = /\s*[-\u2013\u2014]\s*job\s*post(ing)?s?\s*$/i;
 
-  // Trailing site branding on a page title, e.g. "... | LinkedIn".
   const SITE_SUFFIX =
     /\s*[|\u2013\u2014-]\s*(linkedin|indeed(\.com)?|glassdoor|ziprecruiter|simplyhired|monster|dice|lever|greenhouse|workday)\s*$/i;
 
   // LinkedIn's public pages title themselves "Company hiring Role in Location".
   const HIRING = /^.*?\bhiring\b\s+(.+?)\s+\bin\b\s+\S.*$/i;
 
-  // og:title and document.title describe the PAGE, not the job: LinkedIn
-  // renders "Role | Company | LinkedIn". Peel the branding off, then keep the
-  // leading segment, which is the role.
+  // Page titles carry branding: LinkedIn renders "Role | Company | LinkedIn".
   const fromPageTitle = (value) => {
     let text = clean(value);
 
@@ -323,11 +298,10 @@
   const NOISE =
     /\b(ago|applicants?|promoted|viewed|alumni|responses?|reposted|easy apply|actively reviewing|be an early applicant)\b/i;
 
-  // The metadata line reads "Company - Location - 2 weeks ago - 30 applicants".
-  // Drop the company and the noise and the first survivor is the location.
+  // From "Company - Location - 2 weeks ago - 30 applicants", the first segment
+  // that is neither the company nor noise is the location.
   const locationFromCard = (cardText, company) => {
-    // Every middot line is a candidate, not just the first: "Promoted by hirer
-    // - No response insights" can precede the line that holds the location.
+    // Every middot line is a candidate: "Promoted by hirer" can come first.
     const lines = String(cardText || "")
       .split("\n")
       .map(clean)
@@ -383,7 +357,6 @@
         ".jobs-description-content__text",
         ".jobs-box__html-content",
         ".show-more-less-html__markup",
-        // Catch-alls for when LinkedIn renames the specific classes above.
         '[class*="jobs-description__content"]',
         '[class*="jobs-description"]',
         '[class*="jobs-box__html-content"]',
@@ -434,15 +407,12 @@
     const site = SITES.find((entry) => entry.match.test(location.hostname));
     const jsonLd = fromJsonLd() || {};
 
-    // Curated selectors describe the pane actually on screen. LinkedIn's job
-    // collections view can embed JSON-LD for a different posting than the one
-    // displayed, so the DOM wins wherever we have selectors for the host.
+    // The DOM wins where we have selectors: LinkedIn's collections view can
+    // embed JSON-LD for a different posting than the one on screen.
     const prefer = (key, fallbackValue, generic) =>
       (site && pick(site[key])) || fallbackValue || pick(generic);
 
-    // Site selectors, JSON-LD and a real <h1> name the job directly. og:title
-    // and document.title name the PAGE, so they get the branding stripped
-    // rather than being tacked onto the same fallback chain.
+    // Selectors, JSON-LD and a real <h1> name the job; page titles don't.
     const directTitle =
       (site && pick(site.position)) || jsonLd.position || pick(["h1"]);
 
@@ -471,9 +441,8 @@
         ]),
       ) || locationFromCard(cardText, company);
 
-    // On a recognised job site an empty description means our selectors missed.
-    // Falling back to <main>/<body> there would paste the entire site chrome
-    // into the field, so only do that on unrecognised pages.
+    // On a recognised site, falling back to <main>/<body> would paste the whole
+    // page chrome into the field.
     const description = site
       ? pickBlock(site.description) || jsonLd.description || ""
       : jsonLd.description ||
@@ -516,8 +485,7 @@
     try {
       sendResponse(extractJob());
     } catch {
-      // Always answer - a silent listener strands the popup for 2s and then
-      // shows the manual-entry fallback for no reason.
+      // Always answer: silence strands the popup until its timeout.
       sendResponse({
         position: "",
         company: "",

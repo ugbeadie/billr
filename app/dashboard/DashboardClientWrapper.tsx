@@ -8,6 +8,7 @@ import DashboardToolbarTwo from "@/components/DashboardToolbarTwo";
 import JobListView from "@/components/JobListView";
 import CreateJobModal from "@/components/CreateJobModal";
 import AppTour from "@/components/AppTour";
+import RefreshOnFocus from "@/components/RefreshOnFocus";
 
 interface Props {
   board: Board;
@@ -57,6 +58,7 @@ export default function DashboardClient({ board, userId }: Props) {
 
   return (
     <>
+      <RefreshOnFocus />
       <AppTour userId={userId} />
       {selectedJobs.length > 0 ? (
         <DashboardToolbarTwo

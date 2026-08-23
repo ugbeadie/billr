@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { db } from "@/db/drizzle";
 import { boards } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import DashboardClient from "./DasboardClientWrapper";
+import DashboardClient from "./DashboardClientWrapper";
 
 export default async function Dashboard() {
   const session = await auth.api.getSession({

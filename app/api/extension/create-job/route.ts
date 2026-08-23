@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db/drizzle";
@@ -96,8 +97,12 @@ export async function POST(req: Request) {
     appliedDate: new Date(),
   });
 
-  // Return where it actually landed so the popup can report the truth instead
-  // of echoing back the user's selection.
+  // Every server action does this too; without it the board can serve a cached
+  // payload that predates this job.
+  revalidatePath("/dashboard");
+  revalidatePath("/stats");
+
+  // Return where it landed, so the popup reports the truth.
   return NextResponse.json({
     success: true,
     columnId: targetColumn.id,

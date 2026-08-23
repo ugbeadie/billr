@@ -187,6 +187,7 @@ export async function createJob(data: CreateJobData): Promise<void> {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 }
 
 interface UpdateJobProps {
@@ -310,6 +311,7 @@ export async function updateJob(id: string, input: UpdateJobProps) {
     .where(eq(jobs.id, job.id));
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 
   return { success: true };
 }
@@ -357,6 +359,7 @@ export async function deleteJob(id: string) {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 
   return { success: true };
 }
@@ -375,6 +378,7 @@ export async function deleteMultipleJobs(ids: string[]) {
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 
   return { success: true };
 }
@@ -559,6 +563,7 @@ export async function createDemoJob() {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 }
 
 export async function deleteDemoJobs() {
@@ -573,4 +578,5 @@ export async function deleteDemoJobs() {
     .where(and(eq(jobs.userId, session.user.id), eq(jobs.isDemo, true)));
 
   revalidatePath("/dashboard");
+  revalidatePath("/stats");
 }
