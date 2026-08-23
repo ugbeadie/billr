@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { deleteJob, updateJob } from "@/server/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 interface JobDetailsModalProps {
   job: Job | null;
@@ -33,7 +33,8 @@ export default function JobDetailsModal({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [descriptionClipped, setDescriptionClipped] = useState(false);
-  const descriptionRef = useRef<HTMLParagraphElement | null>(null);
+  const [descriptionEl, setDescriptionEl] =
+    useState<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
     setFormData(job ? { ...job } : null);
@@ -42,16 +43,29 @@ export default function JobDetailsModal({
     setDescriptionExpanded(false);
   }, [job]);
 
-  // The clamp is a height, so decide on measured overflow rather than a
-  // character count: a short description carrying many line breaks can run
-  // well past the clamp, and a character threshold would hide the toggle and
-  // strand the tail.
+  // The clamp is a height, so the toggle has to key off measured overflow, not
+  // a character count - a short description full of line breaks still runs past
+  // it. The element is held in state rather than a ref so this re-runs when the
+  // paragraph actually mounts, and a ResizeObserver catches the dialog
+  // animating in, fonts loading and the window resizing.
   useEffect(() => {
-    if (descriptionExpanded) return;
+    if (!descriptionEl) {
+      setDescriptionClipped(false);
+      return;
+    }
 
-    const el = descriptionRef.current;
-    setDescriptionClipped(!!el && el.scrollHeight > el.clientHeight + 1);
-  }, [job, open, isEditing, descriptionExpanded]);
+    const measure = () =>
+      setDescriptionClipped(
+        descriptionEl.scrollHeight > descriptionEl.clientHeight + 1,
+      );
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(descriptionEl);
+
+    return () => observer.disconnect();
+  }, [descriptionEl, descriptionExpanded, job]);
 
   function getColorValue(twColor?: string) {
     const map: Record<string, string> = {
@@ -447,7 +461,7 @@ export default function JobDetailsModal({
                 // now preserves; max-height beats line-clamp here because
                 // line-clamp forces display:-webkit-box.
                 <p
-                  ref={descriptionRef}
+                  ref={setDescriptionEl}
                   className={`mt-2 text-sm leading-relaxed text-gray-700 whitespace-pre-line overflow-hidden ${
                     descriptionExpanded ? "" : "max-h-40"
                   }`}
