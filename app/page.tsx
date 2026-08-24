@@ -1,6 +1,7 @@
 import MotionProvider from "@/components/landing/MotionProvider";
 import LandingNav from "@/components/landing/LandingNav";
 import Hero from "@/components/landing/Hero";
+import ExtensionSection from "@/components/landing/ExtensionSection";
 import ParserSection from "@/components/landing/ParserSection";
 import BoardSection from "@/components/landing/BoardSection";
 import TracksSection from "@/components/landing/TracksSection";
@@ -15,6 +16,7 @@ export default function Page() {
 
         <main>
           <Hero />
+          <ExtensionSection />
           <ParserSection />
           <BoardSection />
           <TracksSection />
