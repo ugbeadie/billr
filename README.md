@@ -115,19 +115,9 @@ needs special handling.
 
 ### See it in action
 
-<!--
-  TO EMBED THE DEMO VIDEO:
-  1. Open https://github.com/ugbeadie/billr/issues/new
-  2. Drag trackr-ext.mp4 into the comment box, wait for the upload to finish
-  3. GitHub inserts a URL like https://github.com/user-attachments/assets/xxxxx
-  4. Paste that URL on its own line below, replacing the italic placeholder
-  5. Close the tab WITHOUT submitting the issue - the upload is already permanent
+https://github.com/user-attachments/assets/fe8ad02a-05b3-4763-902b-6d5da6c37117
 
-  Don't commit the .mp4 and link it by path: GitHub only renders a player for
-  its own attachment URLs, and <video> tags get stripped from READMEs.
--->
-
-_A 15-second demo video goes here._
+_A 15-second demo video._
 
 ### Try it yourself
 
