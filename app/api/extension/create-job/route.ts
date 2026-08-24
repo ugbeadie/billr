@@ -43,8 +43,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No board found" }, { status: 404 });
   }
 
-  // Honour the column the user picked in the extension, but only after
-  // confirming it belongs to their own board.
+  // Honour the user's pick, but only if the column is on their own board.
   let targetColumn = body.columnId
     ? await db.query.columns.findFirst({
         where: and(
@@ -54,8 +53,7 @@ export async function POST(req: Request) {
       })
     : undefined;
 
-  // Quick-save sends no column. Fall back to "Applied" if the user still has
-  // one, otherwise the first column on the board — never 404 over a rename.
+  // Quick-save sends no column, so fall back rather than 404 over a rename.
   if (!targetColumn) {
     targetColumn =
       (await db.query.columns.findFirst({
@@ -97,12 +95,10 @@ export async function POST(req: Request) {
     appliedDate: new Date(),
   });
 
-  // Every server action does this too; without it the board can serve a cached
-  // payload that predates this job.
+  // Without this the board can serve a payload that predates this job.
   revalidatePath("/dashboard");
   revalidatePath("/stats");
 
-  // Return where it landed, so the popup reports the truth.
   return NextResponse.json({
     success: true,
     columnId: targetColumn.id,

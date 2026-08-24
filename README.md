@@ -113,49 +113,86 @@ it falls back to Open Graph tags and page heuristics. **LinkedIn**, **Indeed**
 and **Glassdoor** additionally have hand-tuned extraction, since their markup
 needs special handling.
 
-### Try it (about 2 minutes, no Chrome developer account needed)
+### See it in action
 
-1. **Create an account** at [trackr.ugbeadie.com](https://trackr.ugbeadie.com).
-   Your board is set up automatically with WishList, Applied, Interviewing,
-   Offer, Rejected and Ghosted columns.
+<!--
+  TO EMBED THE DEMO VIDEO:
+  1. Open https://github.com/ugbeadie/billr/issues/new
+  2. Drag trackr-ext.mp4 into the comment box, wait for the upload to finish
+  3. GitHub inserts a URL like https://github.com/user-attachments/assets/xxxxx
+  4. Paste that URL on its own line below, replacing the italic placeholder
+  5. Close the tab WITHOUT submitting the issue - the upload is already permanent
 
-2. **Download this project.** On the
+  Don't commit the .mp4 and link it by path: GitHub only renders a player for
+  its own attachment URLs, and <video> tags get stripped from READMEs.
+-->
+
+_A 15-second demo video goes here._
+
+### Try it yourself
+
+No paid Chrome developer account needed. Steps 1-5 are one-time setup and take
+about two minutes.
+
+<details>
+<summary><b>Set it up (once)</b></summary>
+
+<br>
+
+1. **Create your account** at [trackr.ugbeadie.com](https://trackr.ugbeadie.com).
+   You'll land on an empty board, already set up with six columns: WishList,
+   Applied, Interviewing, Offer, Rejected and Ghosted.
+
+2. **Download the code.** On the
    [repository page](https://github.com/ugbeadie/billr), click the green
-   **Code** button, then **Download ZIP**. Unzip it — you'll get a folder
-   named something like `billr-main`.
+   **Code** button, choose **Download ZIP**, then unzip the file. You'll get a
+   folder named `billr-main`.
 
    Prefer the terminal? `git clone https://github.com/ugbeadie/billr.git`
 
-3. **Open Chrome's extensions page.** Go to `chrome://extensions`, and switch
-   on **Developer mode** using the toggle in the top-right corner.
+3. **Turn on Developer mode.** In Chrome, open a new tab and go to
+   `chrome://extensions`. Flip the **Developer mode** switch in the top-right
+   corner. Three new buttons appear on the top-left.
 
-4. **Click "Load unpacked"** (top-left, appears once Developer mode is on) and
-   select the folder named **`extension`** that sits inside the project folder
-   you just unzipped — so `billr-main/extension`.
+4. **Click "Load unpacked"** and select the **`extension`** folder that lives
+   inside `billr-main`.
 
-   > Pick the `extension` folder itself. Don't select the project folder, and
-   > don't open `extension` and select the files inside it.
+   > Select the `extension` folder itself and confirm — don't open it first.
+   > If Chrome says *"Manifest file is missing or unreadable"*, you selected the
+   > wrong folder; go one level deeper into `billr-main/extension`.
 
-5. **Pin it.** Chrome tucks new extensions behind the puzzle-piece icon in the
-   toolbar — click it, find **Trackr**, and hit the pin so the icon stays
-   visible.
+   A card titled **Trackr - Job Tracker Extension** appears in the list.
 
-6. **Open a job posting** — any job board or company careers page.
+5. **Pin the icon.** Chrome hides new extensions: click the puzzle-piece icon in
+   the toolbar, find **Trackr**, and click the pin beside it so the briefcase
+   icon stays visible.
 
-7. **Click the Trackr icon.** You'll see the role and company, and a
-   **Save to Applied** button.
+</details>
 
-8. **Save it**, or click the pencil to edit the column, salary, job type, work
-   mode and description first.
+<details>
+<summary><b>Save your first job</b></summary>
 
-9. **Check your board** — the external-link icon in the extension header opens
-   your dashboard, where the job is waiting in the column you chose.
+<br>
 
-### Notes
+6. **Open any job posting** — LinkedIn, Indeed, Glassdoor, or a company's own
+   careers page.
 
-- You must be signed in at trackr.ugbeadie.com first; the extension uses your
+7. **Click the Trackr icon.** The popup reads the page and shows you the role
+   and company it found.
+
+8. **Click "Save to Applied"** — or click the pencil first to change the
+   column or correct any field.
+
+9. **Open your board** using the arrow icon in the popup's header. The job is
+   sitting in the column you chose.
+
+</details>
+
+**Good to know**
+
+- You must be signed in at trackr.ugbeadie.com first — the extension uses your
   existing session. If you aren't, the popup offers a sign-in button.
-- No page refresh is needed after installing — the extension injects its reader
+- No page refresh is needed after installing; the extension injects its reader
   on demand, so tabs you already had open still work.
 - On a page it can't read (a new tab, `chrome://` pages), the popup says so and
   offers a blank form to fill in by hand.

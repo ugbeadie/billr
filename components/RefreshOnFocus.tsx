@@ -4,12 +4,9 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 /**
- * Re-fetches the current route when the tab returns to the foreground.
- *
- * Jobs saved from the browser extension are written straight to the database,
- * which an already-open page has no way to hear about: revalidatePath clears
- * the server cache but pushes nothing to clients that are already rendered.
- * Coming back to the tab is exactly when the user expects to see the change.
+ * Re-fetches the route when the tab regains focus. Jobs saved from the
+ * extension go straight to the database, and revalidatePath pushes nothing to
+ * pages that are already rendered.
  */
 export default function RefreshOnFocus() {
   const router = useRouter();
@@ -19,7 +16,7 @@ export default function RefreshOnFocus() {
     const refresh = () => {
       if (document.visibilityState !== "visible") return;
 
-      // focus and visibilitychange both fire on tab return, hence the throttle.
+      // Both events fire on tab return, hence the throttle.
       const now = Date.now();
       if (now - lastRefresh.current < 1000) return;
       lastRefresh.current = now;

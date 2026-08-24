@@ -43,11 +43,9 @@ export default function JobDetailsModal({
     setDescriptionExpanded(false);
   }, [job]);
 
-  // The clamp is a height, so the toggle has to key off measured overflow, not
-  // a character count - a short description full of line breaks still runs past
-  // it. The element is held in state rather than a ref so this re-runs when the
-  // paragraph actually mounts, and a ResizeObserver catches the dialog
-  // animating in, fonts loading and the window resizing.
+  // The clamp is a height, so the toggle keys off measured overflow. The
+  // element lives in state, not a ref, so this re-runs when the paragraph
+  // mounts; the observer catches the dialog animating in and fonts loading.
   useEffect(() => {
     if (!descriptionEl) {
       setDescriptionClipped(false);
@@ -383,9 +381,7 @@ export default function JobDetailsModal({
                         <option value="">Select mode</option>
                         <option value="remote">Remote</option>
                         <option value="hybrid">Hybrid</option>
-                        {/* "onsite" to match CreateJobModal and the extension;
-                            "on-site" here never round-tripped back into this
-                            select. */}
+                        {/* "onsite" to match CreateJobModal and the extension */}
                         <option value="onsite">On-site</option>
                       </select>
                     </>
@@ -425,8 +421,7 @@ export default function JobDetailsModal({
               </div>
             </div>
 
-            {/* JOB DESCRIPTION - full width below both columns. It runs to
-                thousands of characters, so it can't share the detail grid. */}
+            {/* JOB DESCRIPTION - full width; too long for the detail grid */}
             <div
               className="mt-6 bg-white border rounded-lg p-5"
               style={{ borderLeft: `2px solid ${accent}` }}
@@ -457,9 +452,8 @@ export default function JobDetailsModal({
                   className="mt-2 w-full border rounded-md px-3 py-2 text-sm disabled:bg-gray-100"
                 />
               ) : job.description ? (
-                // whitespace-pre-line keeps the paragraph breaks the extension
-                // now preserves; max-height beats line-clamp here because
-                // line-clamp forces display:-webkit-box.
+                // max-height, not line-clamp: line-clamp forces -webkit-box
+                // and would fight whitespace-pre-line.
                 <p
                   ref={setDescriptionEl}
                   className={`mt-2 text-sm leading-relaxed text-gray-700 whitespace-pre-line overflow-hidden ${
