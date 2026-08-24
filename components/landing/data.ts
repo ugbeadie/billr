@@ -1,9 +1,3 @@
-/**
- * Deterministic on purpose — no Date.now(), no Math.random(), and dates
- * pre-formatted rather than run through locale-dependent toLocaleDateString,
- * so server and client render identical markup and hydration stays quiet.
- */
-
 export type MockJob = {
   id: string;
   company: string;
@@ -132,7 +126,7 @@ export const BOARD: { status: StatusKey; jobs: MockJob[] }[] = [
         position: "Senior Frontend Engineer, Payments Platform",
         salary: "₦16,000,000 – ₦22,000,000",
         location: "Victoria Island, Lagos",
-        jobType: "full-time",
+        jobType: "contract",
         jobMode: "onsite",
         appliedDate: "14 Aug 2026",
         url: "https://example.com/1",
@@ -269,9 +263,9 @@ export const BOARD: { status: StatusKey; jobs: MockJob[] }[] = [
         id: "i2",
         company: "Moniepoint",
         position: "Frontend Engineer",
-        salary: "₦13M – ₦19M",
+        salary: "₦700k – ₦900k",
         location: "Ikeja, Lagos",
-        jobType: "full-time",
+        jobType: "contract",
         jobMode: "hybrid",
         appliedDate: "30 Jul 2026",
       },
@@ -396,8 +390,7 @@ export const BOARD_BY_STATUS = Object.fromEntries(
   BOARD.map((c) => [c.status, c.jobs]),
 ) as Record<StatusKey, MockJob[]>;
 
-export const PARSER_URL =
-  "https://paystack.com/careers/senior-react-developer";
+export const PARSER_URL = "https://paystack.com/careers/senior-react-developer";
 
 /** Form fields, in the order CreateJobModal lays them out. */
 export const PARSER_FIELDS = [
@@ -419,7 +412,9 @@ export const PARSER_SOURCE: { text: string; field?: number }[] = [
   { text: "Lagos, Nigeria", field: 3 },
   { text: " office. The team works " },
   { text: "hybrid", field: 5 },
-  { text: " — two days a week on site, the rest wherever you like. This is a " },
+  {
+    text: " — two days a week on site, the rest wherever you like. This is a ",
+  },
   { text: "full-time", field: 4 },
   { text: " role.\n\nCompensation is " },
   { text: "₦12,000,000 – ₦18,000,000", field: 2 },

@@ -8,7 +8,6 @@ import {
   type MockJob,
 } from "./data";
 
-/** Static twin of JobTile.tsx:83-187. */
 export default function MockJobCard({
   job,
   accent,

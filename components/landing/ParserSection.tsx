@@ -15,7 +15,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMotionOK, revealProps } from "./motion";
-import { PARSER_FIELDS, PARSER_SOURCE, PARSER_TIMELINE, PARSER_URL } from "./data";
+import {
+  PARSER_FIELDS,
+  PARSER_SOURCE,
+  PARSER_TIMELINE,
+  PARSER_URL,
+} from "./data";
 
 const FIELD_ICONS = {
   building: Building2,
@@ -25,11 +30,6 @@ const FIELD_ICONS = {
   select: ChevronDown,
 } as const;
 
-/**
- * As each field fills, the fragment it came from lights up with a matching
- * number. Those numbers run out of order in the source on purpose — that
- * scattering is what the parser undoes.
- */
 export default function ParserSection() {
   const motionOK = useMotionOK();
   const ref = useRef<HTMLDivElement>(null);

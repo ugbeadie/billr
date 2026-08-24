@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import MockJobCard from "./MockJobCard";
 import { STATUS, type MockJob, type StatusKey } from "./data";
 
-/** Static twin of the column in KanbanBoard.tsx:313-391. */
 const ICONS: Record<StatusKey, typeof Star> = {
   wishlist: Star,
   applied: CheckCircle2,
@@ -32,11 +31,10 @@ export default function MockColumn({
   height?: string;
   scroll?: boolean;
   showAdd?: boolean;
-  /** Renders the zero state from KanbanBoard.tsx:344-360. */
   empty?: boolean;
-  /** Extends the clip box upward so a first card mid-drop can lift uncut. */
+  // Extends the clip box upward so a first card mid-drop can lift uncut. */
   liftRoom?: boolean;
-  /** Rendered above the cards — used for the hero's just-dropped card. */
+  // Rendered above the cards — used for the hero's just-dropped card. */
   children?: ReactNode;
   className?: string;
 }) {

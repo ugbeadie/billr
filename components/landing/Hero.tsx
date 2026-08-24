@@ -8,7 +8,6 @@ import MockJobCard from "./MockJobCard";
 import { BOARD_BY_STATUS, STATUS } from "./data";
 import { useMotionOK } from "./motion";
 
-/** Tall enough for exactly three full cards. */
 const COLUMN_H = "h-[500px]";
 
 export default function Hero() {
@@ -34,9 +33,9 @@ export default function Hero() {
           </h1>
 
           <p className="mt-6 max-w-md text-base leading-relaxed text-[#6B7280] sm:text-lg">
-            Paste a job link and the form fills itself. After that every
-            application sits on one board — what stage it is at, what it pays,
-            and who you are waiting on.
+            Capture a job from the posting itself. A Chrome extension reads the
+            page, or paste a link and AI fills the card — either way it lands on
+            a drag-and-drop board.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
