@@ -15,7 +15,8 @@ export default function CtaSection() {
           </h2>
           <p className="mt-4 max-w-md text-base leading-relaxed text-[#4B5563]">
             Add one application and see whether the board beats your
-            spreadsheet. Paste the link and the rest fills itself.
+            spreadsheet. Use the chrome extension or paste the link and the rest
+            fills itself.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -29,7 +30,10 @@ export default function CtaSection() {
           </div>
         </motion.div>
 
-        <div aria-hidden className="hidden lg:col-span-5 lg:flex lg:justify-end">
+        <div
+          aria-hidden
+          className="hidden lg:col-span-5 lg:flex lg:justify-end"
+        >
           <MockColumn
             status="applied"
             jobs={[]}

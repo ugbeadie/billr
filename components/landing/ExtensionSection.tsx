@@ -107,7 +107,7 @@ export default function ExtensionSection() {
 
         <motion.div {...revealProps} className="min-w-0 lg:col-span-7">
           <div className="overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-xl shadow-black/5">
-            <div className="flex items-center gap-3 border-b border-[#E5E7EB] px-4 py-3">
+            {/* <div className="flex items-center gap-3 border-b border-[#E5E7EB] px-4 py-3">
               <div aria-hidden className="flex gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#E5E7EB]" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#E5E7EB]" />
@@ -116,7 +116,7 @@ export default function ExtensionSection() {
               <div className="flex h-6 flex-1 items-center rounded-md bg-[#F3F4F6] px-3 text-[11px] text-[#9CA3AF]">
                 linkedin.com/jobs
               </div>
-            </div>
+            </div> */}
 
             <div className="relative bg-[#111827]">
               <video

@@ -39,7 +39,7 @@ export default function BoardSection() {
       </motion.div>
 
       <p className="mx-auto mt-2 max-w-7xl px-4 text-sm text-[#9CA3AF] sm:px-6 lg:px-8">
-        Scroll sideways — Wishlist and Ghosted are there too.
+        Scroll sideways — Rejected and Ghosted are there too.
       </p>
     </section>
   );

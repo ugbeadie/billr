@@ -45,6 +45,11 @@ export default function LandingFooter() {
                 The board
               </Link>
             </li>
+            <li>
+              <Link href="#extension" className={linkClass}>
+                The extension
+              </Link>
+            </li>
           </ul>
         </nav>
 
